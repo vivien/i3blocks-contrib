@@ -3,8 +3,8 @@
 Generic media player support
 
 This displays "ARTIST - SONG" if a music is playing.
-Supported players are: spotify, vlc, audacious, xmms2, mplayer, and 
-others.
+Supported players are: spotify, vlc, audacious, xmms2, mplayer, mpd
+and others.
 
 ``` ini
 [mediaplayer]
