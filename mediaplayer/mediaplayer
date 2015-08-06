@@ -106,9 +106,7 @@ sub playerctl {
 if ($player_arg eq '' or $player_arg eq 'mpd') {
     mpd;
 }
-elsif ($player_arg =~ /cmus$/) {
+if ($player_arg =~ /cmus$/) {
     cmus;
 }
-else {
-    playerctl;
-}
+playerctl;
