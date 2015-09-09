@@ -26,11 +26,6 @@ Dependencies
 -------------
 perl, acpi
 	
-	
-Bugs
-----
-Disappears on 80% only. 
-
 
 	
 	
