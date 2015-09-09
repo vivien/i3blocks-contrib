@@ -54,7 +54,7 @@ elif (( $percentage >= 60 && $percentage < 70 ))
 elif (( $percentage >= 70 && $percentage < 80 ))
  then
  color="#6DFF00"
-elif (( $percentage > 80 ))
+elif (( $percentage >= 80 ))
  then
  color="#10BA00"
 fi
