@@ -16,7 +16,7 @@ then
 elif (( $percentage >= 60 && $percentage < 80 ));
 then
  squares="■■■■"
-elif (( "$percentage" > 80 || "$percentage" = 80 ));
+elif (( $percentage >= 80 ));
 then
  squares="■■■■■"
 fi
