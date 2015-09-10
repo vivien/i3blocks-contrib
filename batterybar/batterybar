@@ -1,29 +1,28 @@
 #!/bin/bash
 
-percentage=$(acpi battery | perl -pe 's/(.*([gldC]),\s)([0-9]+)(.*)/$3/')
-status=$(acpi battery | perl -pe 's/(^.*:.*)(Discharging|Charging|AC|Full)(.*)/$2/g')
+percentage=$(acpi battery | grep -o -P '[0-9]+(?=%)')
+status=$(acpi battery | grep -o -P 'Discharging|Charging|Full|AC|Unknown')
 squares="■"
 
-if (( $percentage > 0 && $percentage < 20  ))
-then
- squares="■"
-elif (( $percentage >= 20 && $percentage < 40 ));
-then
- squares="■■"
-elif (( $percentage >= 40 && $percentage < 60 ));
-then
- squares="■■■"
-elif (( $percentage >= 60 && $percentage < 80 ));
-then
- squares="■■■■"
-elif (( $percentage >= 80 ));
-then
- squares="■■■■■"
+
+if (( $percentage > 0 && $percentage < 20  )); then
+    squares="■"
+elif (( $percentage >= 20 && $percentage < 40 )); then
+    squares="■■"
+elif (( $percentage >= 40 && $percentage < 60 )); then
+    squares="■■■"
+elif (( $percentage >= 60 && $percentage < 80 )); then
+    squares="■■■■"
+elif (( $percentage >=80 )); then
+    squares="■■■■■"
+fi
+
+if [[ "$status" = "Unknown" ]]; then
+    squares="?"
 fi
 
 case "$status" in
-
-"Charging") 
+"Charging")
 color="#00AFE3"
 ;;
 "Full")
@@ -32,37 +31,28 @@ color="#FFFFFF"
 "AC")
 color="#535353"
 ;;
-"Discharging")
-if (( $percentage >= 0 && $percentage < 10 ))
-then
- color="#FF0027"
-elif (( $percentage >= 10 && $percentage < 20 ))
-then
- color="#FF3B05"
-elif (( $percentage >= 20 && $percentage < 30 ))
- then
- color="#FFB923"
-elif (( $percentage >= 30 && $percentage < 40 ))
- then
- color="#FFD000"
-elif (( $percentage >= 40 && $percentage < 60 ))
- then
- color="#E4FF00"
-elif (( $percentage >= 60 && $percentage < 70 ))
- then
- color="#ADFF00"
-elif (( $percentage >= 70 && $percentage < 80 ))
- then
- color="#6DFF00"
-elif (( $percentage >= 80 ))
- then
- color="#10BA00"
+"Discharging"|"Unknown")
+if (( $percentage >= 0 && $percentage < 10 )); then
+    color="#FF0027"
+elif (( $percentage >= 10 && $percentage < 20 )); then
+    color="#FF3B05"
+elif (( $percentage >= 20 && $percentage < 30 )); then
+    color="#FFB923"
+elif (( $percentage >= 30 && $percentage < 40 )); then
+    color="#FFD000"
+elif (( $percentage >= 40 && $percentage < 60 )); then
+    color="#E4FF00"
+elif (( $percentage >= 60 && $percentage < 70 )); then
+    color="#ADFF00"
+elif (( $percentage >= 70 && $percentage < 80 )); then
+    color="#6DFF00"
+elif (( $percentage >= 80 )); then
+    color="#10BA00"
 fi
 ;;
 esac
 
-if (( $BLOCK_BUTTON == 1 )) 
-then
- echo "$percentage% $status"
+if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
+    echo "$percentage% $status"
 fi
-echo "<span foreground=\"$color\">$squares</span>" 
+    echo "<span foreground=\"$color\">$squares</span>" 
