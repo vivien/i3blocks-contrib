@@ -14,7 +14,7 @@ Installation
 <ol>
 
 <li> Copy the battery_bar script into /usr/share/i3blocks/.</li>
-<li> Give it execution permission (`#chmod +x battery_bar`).</li>
+<li> Give it execution permission (`chmod +x batterybar`).</li>
 <li> Add the following blocket to your i3blocks.conf:</li>
 
 </ol>
