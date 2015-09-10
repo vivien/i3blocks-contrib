@@ -5,15 +5,15 @@ status=$(acpi battery | grep -o -P 'Discharging|Charging|Full|AC|Unknown')
 squares="■"
 
 
-if (( $percentage > 0 && $percentage < 20  )); then
+if (( percentage > 0 && percentage < 20  )); then
     squares="■"
-elif (( $percentage >= 20 && $percentage < 40 )); then
+elif (( percentage >= 20 && percentage < 40 )); then
     squares="■■"
-elif (( $percentage >= 40 && $percentage < 60 )); then
+elif (( percentage >= 40 && percentage < 60 )); then
     squares="■■■"
-elif (( $percentage >= 60 && $percentage < 80 )); then
+elif (( percentage >= 60 && percentage < 80 )); then
     squares="■■■■"
-elif (( $percentage >=80 )); then
+elif (( percentage >=80 )); then
     squares="■■■■■"
 fi
 
@@ -32,21 +32,21 @@ color="#FFFFFF"
 color="#535353"
 ;;
 "Discharging"|"Unknown")
-if (( $percentage >= 0 && $percentage < 10 )); then
+if (( percentage >= 0 && percentage < 10 )); then
     color="#FF0027"
-elif (( $percentage >= 10 && $percentage < 20 )); then
+elif (( percentage >= 10 && percentage < 20 )); then
     color="#FF3B05"
-elif (( $percentage >= 20 && $percentage < 30 )); then
+elif (( percentage >= 20 && percentage < 30 )); then
     color="#FFB923"
-elif (( $percentage >= 30 && $percentage < 40 )); then
+elif (( percentage >= 30 && percentage < 40 )); then
     color="#FFD000"
-elif (( $percentage >= 40 && $percentage < 60 )); then
+elif (( percentage >= 40 && percentage < 60 )); then
     color="#E4FF00"
-elif (( $percentage >= 60 && $percentage < 70 )); then
+elif (( percentage >= 60 && percentage < 70 )); then
     color="#ADFF00"
-elif (( $percentage >= 70 && $percentage < 80 )); then
+elif (( percentage >= 70 && percentage < 80 )); then
     color="#6DFF00"
-elif (( $percentage >= 80 )); then
+elif (( percentage >= 80 )); then
     color="#10BA00"
 fi
 ;;
