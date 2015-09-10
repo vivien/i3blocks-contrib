@@ -11,16 +11,19 @@ Left-clicking briefly shows the battery level in percent.<br>
 
 Installation
 ------------
-1-Copy the battery_bar script into /usr/share/i3blocks/.<br>
-2-Give it execution permission. (#chmod +x battery_bar).<br>
-3-Add the following blocket to your i3blocks.conf:<br>
+<ol>
 
-[battery_bar]<br>
-label=bat:<br>
-interval=5<br>
-markup=pango<br>
+<li> Copy the battery_bar script into /usr/share/i3blocks/.<br>
+<li> Give it execution permission. (`#chmod +x battery_bar`).<br>
+<li> Add the following blocket to your i3blocks.conf:<br>
+
+```
+[batterybar]
+label=bat:
+interval=5
+markup=pango
 min_width=bat: ■■■■■
-
+```
 	
 Dependencies
 -------------
