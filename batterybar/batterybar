@@ -1,7 +1,29 @@
 #!/bin/bash
+#  batterybar; displays battery percentage as a bar on i3blocks
+#  
+#  Copyright 2015 Kefta <adnan.37h@gmail.com>
+#  
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#  
+#  
 
-percentage=$(acpi battery | grep -o -P '[0-9]+(?=%)')
-status=$(acpi battery | grep -o -P 'Discharging|Charging|Full|AC|Unknown')
+
+
+percentage=$(acpi battery | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
+status=$(acpi battery | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
 squares="■"
 
 
@@ -18,37 +40,37 @@ elif (( percentage >=80 )); then
 fi
 
 if [[ "$status" = "Unknown" ]]; then
-    squares="?"
+    squares="?$squares"
 fi
 
 case "$status" in
 "Charging")
-color="#00AFE3"
+    color="#00AFE3"
 ;;
 "Full")
-color="#FFFFFF"
+    color="#FFFFFF"
 ;;
 "AC")
-color="#535353"
+    color="#535353"
 ;;
 "Discharging"|"Unknown")
-if (( percentage >= 0 && percentage < 10 )); then
-    color="#FF0027"
-elif (( percentage >= 10 && percentage < 20 )); then
-    color="#FF3B05"
-elif (( percentage >= 20 && percentage < 30 )); then
-    color="#FFB923"
-elif (( percentage >= 30 && percentage < 40 )); then
-    color="#FFD000"
-elif (( percentage >= 40 && percentage < 60 )); then
-    color="#E4FF00"
-elif (( percentage >= 60 && percentage < 70 )); then
-    color="#ADFF00"
-elif (( percentage >= 70 && percentage < 80 )); then
-    color="#6DFF00"
-elif (( percentage >= 80 )); then
-    color="#10BA00"
-fi
+    if (( percentage >= 0 && percentage < 10 )); then
+        color="#FF0027"
+    elif (( percentage >= 10 && percentage < 20 )); then
+        color="#FF3B05"
+    elif (( percentage >= 20 && percentage < 30 )); then
+        color="#FFB923"
+    elif (( percentage >= 30 && percentage < 40 )); then
+        color="#FFD000"
+    elif (( percentage >= 40 && percentage < 60 )); then
+        color="#E4FF00"
+    elif (( percentage >= 60 && percentage < 70 )); then
+        color="#ADFF00"
+    elif (( percentage >= 70 && percentage < 80 )); then
+        color="#6DFF00"
+    elif (( percentage >= 80 )); then
+        color="#10BA00"
+    fi
 ;;
 esac
 
