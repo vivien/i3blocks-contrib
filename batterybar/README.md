@@ -29,8 +29,4 @@ min_width=bat: ■■■■■
 	
 Dependencies
 -------------
-perl, acpi
-	
-
-	
-	
+acpi
