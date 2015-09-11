@@ -1,7 +1,7 @@
 #!/bin/bash
 
-percentage=$(acpi battery | grep -o -P '[0-9]+(?=%)')
-status=$(acpi battery | grep -o -P 'Discharging|Charging|Full|AC|Unknown')
+percentage=$(acpi battery | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
+status=$(acpi battery | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
 squares="■"
 
 
@@ -23,32 +23,32 @@ fi
 
 case "$status" in
 "Charging")
-color="#00AFE3"
+    color="#00AFE3"
 ;;
 "Full")
-color="#FFFFFF"
+    color="#FFFFFF"
 ;;
 "AC")
-color="#535353"
+    color="#535353"
 ;;
 "Discharging"|"Unknown")
-if (( percentage >= 0 && percentage < 10 )); then
-    color="#FF0027"
-elif (( percentage >= 10 && percentage < 20 )); then
-    color="#FF3B05"
-elif (( percentage >= 20 && percentage < 30 )); then
-    color="#FFB923"
-elif (( percentage >= 30 && percentage < 40 )); then
-    color="#FFD000"
-elif (( percentage >= 40 && percentage < 60 )); then
-    color="#E4FF00"
-elif (( percentage >= 60 && percentage < 70 )); then
-    color="#ADFF00"
-elif (( percentage >= 70 && percentage < 80 )); then
-    color="#6DFF00"
-elif (( percentage >= 80 )); then
-    color="#10BA00"
-fi
+    if (( percentage >= 0 && percentage < 10 )); then
+        color="#FF0027"
+    elif (( percentage >= 10 && percentage < 20 )); then
+        color="#FF3B05"
+    elif (( percentage >= 20 && percentage < 30 )); then
+        color="#FFB923"
+    elif (( percentage >= 30 && percentage < 40 )); then
+        color="#FFD000"
+    elif (( percentage >= 40 && percentage < 60 )); then
+        color="#E4FF00"
+    elif (( percentage >= 60 && percentage < 70 )); then
+        color="#ADFF00"
+    elif (( percentage >= 70 && percentage < 80 )); then
+        color="#6DFF00"
+    elif (( percentage >= 80 )); then
+        color="#10BA00"
+    fi
 ;;
 esac
 
