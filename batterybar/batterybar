@@ -25,6 +25,8 @@
 output=$(acpi battery)
 percentage=$(echo "$output" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
 status=$(echo "$output" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
+remaining=$( echo "$output" | grep -o -m1 -P '\d\d:\d\d')
+[[ -n $remaining ]] && remaining_formatted=" ($remaining)"
 squares="■"
 
 
@@ -114,6 +116,6 @@ case "$status" in
 esac
 
 if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
-    echo "$percentage% $status"
+    echo "$status $percentage%$remaining_formatted"
 fi
     echo "<span foreground=\"$color\">$squares</span>" 
