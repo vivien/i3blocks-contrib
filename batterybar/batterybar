@@ -116,6 +116,6 @@ case "$status" in
 esac
 
 if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
-    echo "$status $percentage%$remaining_formatted"
+    echo "$status <span foreground=\"$color\">$percentage%$remaining_formatted</span>"
 fi
     echo "<span foreground=\"$color\">$squares</span>" 
