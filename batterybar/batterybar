@@ -25,7 +25,7 @@
 output=$(acpi battery)
 percentage=$(echo "$output" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
 status=$(echo "$output" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
-remaining=$( echo "$output" | grep -o -m1 -P '\d\d:\d\d')
+remaining=$( echo "$output" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]')
 [[ -n $remaining ]] && remaining_formatted=" ($remaining)"
 squares="■"
 
