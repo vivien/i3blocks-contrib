@@ -11,17 +11,21 @@ REFRESH_SYMBOL="\uf021 "
 # By default, show both the symbol and the numbers
 SYMBOL_ONLY=0
 
+# By default, show something when no upgrades are pending
+ALWAYS_PRINT=1
+
 # Colors for when there is/isn't a pending upgrade
 REFRESH_COLOR="#00FF00"
 NONREFRESH_COLOR="#FFFFFF"
 
-while getopts s:oc:n:h opt; do
+while getopts s:oc:n:Nh opt; do
     case "$opt" in
         s) REFRESH_SYMBOL="$OPTARG" ;;
         o) SYMBOL_ONLY=1 ;;
         c) REFRESH_COLOR="$OPTARG" ;;
+        N) ALWAYS_PRINT=0 ;;
         n) NONREFRESH_COLOR="$OPTARG" ;;
-        h) printf "Usage: apt-upgrades [-s refresh_symbol] [-o] [-c refresh_color] [-n nonrefresh_color] [-h]\nOptions:\n-s\trefresh symbol\n-o\tshow symbol only, no numbers\n-c\tcolor when upgrade pending\n-n\tcolor when no upgrade pending\n-h\tshow this help text\n" && exit 0;;
+        h) printf "Usage: apt-upgrades [-s refresh_symbol] [-o] [-c refresh_color] [-N|-n nonrefresh_color] [-h]\nOptions:\n-s\tSpecify a refresh symbol\n-o\tShow refresh symbol only, but no numbers\n-c\tColor when upgrade is pending\n-n\tColor when no upgrade is pending\n-N\tOnly display text if upgrade is pending (supercedes -n)\n-h\tShow this help text\n" && exit 0;;
     esac
 done
 
@@ -38,13 +42,15 @@ if [ $upgraded -ne 0 ] || [ $new -ne 0 ] || [ $removed -ne 0 ] || [ $held -ne 0 
     if [ $SYMBOL_ONLY -eq 1 ]; then
         echo -e "$REFRESH_SYMBOL"
         echo -e "$REFRESH_SYMBOL"
-        echo $color
-        exit 0
+    else
+        echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
+        echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
     fi
-else
+    echo $color
+elif [ $ALWAYS_PRINT -eq 1 ]; then
     color="$NONREFRESH_COLOR"
+    echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
+    echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
+    echo $color
 fi
 
-echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
-echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
-echo $color
