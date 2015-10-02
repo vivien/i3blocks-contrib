@@ -23,9 +23,12 @@ PARTITIONLESS_COLOR = "red"
 PARTITIONLESS_TEXT = "no partitions"
 SEPARATOR = "<span color='gray'> | </span>"
 
-# FontAwesome unicode lock/unlock
-FA_LOCK = "\uf023"
-FA_UNLOCK = "\uf09c"
+# Indicate whether an encrypted partition is locked/unlocked, "" is allowed. 
+LOCKED_INDICATOR = "\uf023 "
+UNLOCKED_INDICATOR = "\uf09c "
+
+# Shows instead of space available when a partition is mounted readonly
+READONLY_INDICATOR = "ro"
 
 # Maximum length of a filesystem label to display. Use None to disable
 # truncation, a positive integer to right truncate to that many characters, or
@@ -129,9 +132,9 @@ def getSpaceAvailable(path):
         return lines[1].strip()
 
 def getLockedCryptOutput(path):
-    form = "<span color='{}'>[{} {}]</span>"
+    form = "<span color='{}'>[{}{}]</span>"
     kname = pangoEscape(getKernelName(path))
-    output = form.format(LOCKED_COLOR, FA_LOCK, kname)
+    output = form.format(LOCKED_COLOR, LOCKED_INDICATOR, kname)
     return output
 
 def getParentKernelName(path):
@@ -148,7 +151,7 @@ def getUnlockedCryptOutput(path):
     if mountPoint:
         color = MOUNTED_COLOR
         if isReadOnly(path):
-            spaceAvail = "ro"
+            spaceAvail = READONLY_INDICATOR
         else:
             spaceAvail = pangoEscape(getSpaceAvailable(path))
         mountPoint = "<i>{}</i>:".format(pangoEscape(mountPoint))
@@ -158,8 +161,8 @@ def getUnlockedCryptOutput(path):
     kernelName = pangoEscape(getKernelName(path))
     parentKernelName = pangoEscape(getParentKernelName(path))
     
-    block = "<span color='{}'>[{} {}:{}]</span>"
-    block = block.format(color, FA_UNLOCK, parentKernelName, kernelName)
+    block = "<span color='{}'>[{}{}:{}]</span>"
+    block = block.format(color, UNLOCKED_INDICATOR, parentKernelName, kernelName)
 
     label = pangoEscape(getFSLabel(path))
     if label:
@@ -176,7 +179,7 @@ def getUnencryptedPartitionOutput(path):
     if mountPoint:
         color = MOUNTED_COLOR
         if isReadOnly(path):
-            spaceAvail = "ro" 
+            spaceAvail = READONLY_INDICATOR 
         else:
             spaceAvail = pangoEscape(getSpaceAvailable(path))
         mountPoint = "<i>{}</i>:".format(pangoEscape(mountPoint))
