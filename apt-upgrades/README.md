@@ -13,11 +13,12 @@ Suggested: fonts-font-awesome
 # Options
 
 ```
-Usage: apt-upgrades [-s refresh_symbol] [-o] [-c refresh_color] [-n nonrefresh_color] [-h]
+Usage: apt-upgrades [-s refresh_symbol] [-o] [-c refresh_color] [-N|-n nonrefresh_color] [-h]
 Options:
--s  refresh symbol
--o  show symbol only, no numbers
--c  color when upgrade pending
--n  color when no upgrade pending
--h  show this help text
+-s  Specify a refresh symbol
+-o  Show refresh symbol only, but no numbers
+-c  Color when upgrade is pending
+-n  Color when no upgrade is pending
+-N  Only display text if upgrade is pending (supercedes -n)
+-h  Show this help text
 ```

@@ -14,9 +14,9 @@ It supports usb mass storage devices, including those with multiple partitions, 
 
 # Requirements
 
-Dependencies: fonts-font-awesome, udev, python3, util-linux ( >= 2.23 )
+Dependencies: udev, python3, util-linux ( >= 2.23 )
 
-Suggested: i3 ( >= 4.3 ), i3blocks ( >= 1.4 )
+Suggested: i3 ( >= 4.3 ), i3blocks ( >= 1.4 ), fonts-font-awesome
 
 # Installation
 
@@ -61,6 +61,7 @@ Try plugging in a usb device to make sure everything works.
 Configuration is done by editing the top portion of `usb.py`.
 You will find several options that you can configure.
 Probably the most useful to you will be the ignore functions which allow you to ignore devices, e.g. those that are always plugged in.
+If you decide not to install FontAwesome, then you will probably want to change the `LOCKED_INDICATOR` and `UNLOCKED_INDICATOR` variables, as these use unicode symbols provided by FontAwesome (and not many other fonts).
 You do not need to restart i3 after making a change to the config.
 
 # Bugs
