@@ -1,4 +1,19 @@
-All blocklets are licenced individually. Consult the `LICENCE.md` contained within each blocklet's directory for the licencing under which the contained blocklet code is published. All blocklets without a `LICENCE.md` in their directory, and all code within the parent of this repository are published under the GNU General Public License.
+This project is a repository project composed of many individual blocklet
+projects. As such, we empower developers to license their blocklet source as
+they see fit with one major caveat.
+
+This repository servers as the single packaging source for most OS
+distributions. As such, we insist that any license you choose meet both the
+[Debian](http://www.debian.org/social_contract#guidelines) and
+[Fedora](https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#License_of_Fedora_SPEC_Files)
+free license specifications. For a handy chart, see
+[Wikipedia](https://en.wikipedia.org/wiki/Comparison_of_free_and_open-source_software_licenses#Approvals).
+
+All blocklets are licensed individually. Consult the `LICENSE.md` contained
+within each blocklet's directory for the licencing under which the contained
+blocklet code is published. All blocklets without a `LICENSE.md` in their
+directory, and all code within the parent of this repository are published
+under the following license. 
 
 ```
                     GNU GENERAL PUBLIC LICENSE
