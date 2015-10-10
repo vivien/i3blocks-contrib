@@ -1,9 +1,8 @@
 This project is a repository project composed of many individual blocklet
 projects. As such, we empower developers to license their blocklet source as
-they see fit with one major caveat.
-
-This repository servers as the single packaging source for most OS
-distributions. As such, we insist that any license you choose meet both the
+they see fit with one major caveat. This repository servers as the single
+packaging source for most OS distributions. As such, we insist that any license
+you choose meet both the
 [Debian](http://www.debian.org/social_contract#guidelines) and
 [Fedora](https://fedoraproject.org/wiki/Licensing:Main?rd=Licensing#License_of_Fedora_SPEC_Files)
 free license specifications. For a handy chart, see
