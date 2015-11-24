@@ -6,7 +6,7 @@
 # i3blocks blocklet script to display pending system upgrades 
 
 # FontAwesome refresh symbol, change if you do not want to install FontAwesome
-REFRESH_SYMBOL="\uf021 "
+PENDING_SYMBOL="\uf021 "
 
 # By default, show both the symbol and the numbers
 SYMBOL_ONLY=0
@@ -15,17 +15,25 @@ SYMBOL_ONLY=0
 ALWAYS_PRINT=1
 
 # Colors for when there is/isn't a pending upgrade
-REFRESH_COLOR="#00FF00"
-NONREFRESH_COLOR="#FFFFFF"
+PENDING_COLOR="#00FF00"
+NONPENDING_COLOR="#FFFFFF"
 
 while getopts s:oc:n:Nh opt; do
     case "$opt" in
-        s) REFRESH_SYMBOL="$OPTARG" ;;
+        s) PENDING_SYMBOL="$OPTARG" ;;
         o) SYMBOL_ONLY=1 ;;
-        c) REFRESH_COLOR="$OPTARG" ;;
+        c) PENDING_COLOR="$OPTARG" ;;
+        n) NONPENDING_COLOR="$OPTARG" ;;
         N) ALWAYS_PRINT=0 ;;
-        n) NONREFRESH_COLOR="$OPTARG" ;;
-        h) printf "Usage: apt-upgrades [-s refresh_symbol] [-o] [-c refresh_color] [-N|-n nonrefresh_color] [-h]\nOptions:\n-s\tSpecify a refresh symbol\n-o\tShow refresh symbol only, but no numbers\n-c\tColor when upgrade is pending\n-n\tColor when no upgrade is pending\n-N\tOnly display text if upgrade is pending (supercedes -n)\n-h\tShow this help text\n" && exit 0;;
+        h) printf \
+"Usage: apt-upgrades [-s pending_symbol] [-o] [-c pending_color] [-N|-n nonpending_color] [-h]
+Options:
+-s\tSpecify a refresh symbol. Default: \"\\\\uf021 \"
+-o\tShow refresh symbol only, but no numbers.
+-c\tColor when upgrade is pending. Default:  #00FF00
+-n\tColor when no upgrade is pending. Default: #FFFFFF
+-N\tOnly display text if upgrade is pending (supercedes -n)
+-h\tShow this help text\n" && exit 0;;
     esac
 done
 
@@ -38,19 +46,19 @@ aptitude full-upgrade --simulate --assume-yes |\
     xargs echo)
 
 if [ $upgraded -ne 0 ] || [ $new -ne 0 ] || [ $removed -ne 0 ] || [ $held -ne 0 ]; then
-    color="$REFRESH_COLOR"
+    color="$PENDING_COLOR"
     if [ $SYMBOL_ONLY -eq 1 ]; then
-        echo -e "$REFRESH_SYMBOL"
-        echo -e "$REFRESH_SYMBOL"
+        echo -e "$PENDING_SYMBOL"
+        echo -e "$PENDING_SYMBOL"
     else
-        echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
-        echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
+        echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
+        echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
     fi
     echo $color
 elif [ $ALWAYS_PRINT -eq 1 ]; then
-    color="$NONREFRESH_COLOR"
-    echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
-    echo -e "$REFRESH_SYMBOL$upgraded/$new/$removed/$held"
+    color="$NONPENDING_COLOR"
+    echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
+    echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
     echo $color
 fi
 
