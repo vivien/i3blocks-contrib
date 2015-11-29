@@ -15,12 +15,14 @@ You could have it displayed by launchincg bluetoothctl.
 For example, here is a sample output when launching bluetoothctl in a
 terminal, where the privata date was edited-out:
 
+  ```
   $ bluetoothctl
   [NEW] Controller 99:99:99:99:99:99 your_host [default]
   [NEW] Device xx:xx:xx:xx:xx:xx MDR-ZX330BT
   [NEW] Device 99:99:99:99:99:99 deviceX
   # quit
   $
+  ```
 
 In this output, the BT headset is the one named MDR-WX330BT. Please refer to
 your product's documentation for the actual device name. You should save or
@@ -28,9 +30,11 @@ write down the xx:xx....:xx digit series.
 
 Now open the i3blocks config in your favourite text editor and add this:
 
+  ```
   [headset]
   interval=60
   command= ~/.config/i3blocks/i3blocks-btheadset "xx:xx:xx:xx:xx:xx"
+  ```
 
 Reload i3 configuration and you now should see right away a new block showing
 a small headset. It's green if the device is connected or neutral (that is,
@@ -52,18 +56,22 @@ The `btheadset.sh` is provided separately because it's handy to have it for
 situations shere you'd like to handle your bluetooth headset from the command
 line. This script can be invoked like this:
 
+  ```
   $ ./btheadset.sh on|off|status [HEADSET_ID]
+  ```
 
 The first parameter is the command you want it to perform:
 
-. *on* will connect the headset (it must have been previously paired by you)
-. *off* will disconnect the headset so you could connect it to another device
-. *status* will display the connected or disconnected status
+* *on* will connect the headset (it must have been previously paired by you)
+* *off* will disconnect the headset so you could connect it to another device
+* *status* will display the connected or disconnected status
 
 If you want to avoid typing the HEADSET_ID each time, then edit this script
 and insert the device ID on the line reading:
 
+  ```
   HEADSET_ID=""
+  ```
 
 Put the device ID between the double colons, then save the file. Yous should
 now be able to invoke the script without specifying this id. Test it on the
@@ -75,12 +83,14 @@ used by the headset. By default, the "High Fidelity" profile is automatically
 selected when the device is connected. If you'd rather use another profile,
 then change the line reading:
 
+  ```
   HEADSET_PROFILE="a2dp_sink"
+  ```
 
 Please refer to the Pulse Audio documentation for the correct string to be
 used here. Alternatively, you could change it in the `pavucontrol` utility
 then use this to see what's the needed string:
 
+  ```
   $ pacmd list-cards # the search through the output to see the profile string
-
-
+  ```
