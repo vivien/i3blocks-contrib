@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Copyright (C) 2015 Valentin Rusu <vrusu@fsfe.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the Affero GNU General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+HEADSET_ID=$1
+
+pushd `dirname $0` > /dev/null
+SCRIPT_DIR=$(pwd -P)
+popd > /dev/null
+STATUS=$($SCRIPT_DIR/btheadset.sh status $HEADSET_ID)
+
+case $BLOCK_BUTTON in
+  1)
+    [ "connected" == "$STATUS" ] && $SCRIPT_DIR/btheadset.sh off $HEADSET_ID > /dev/null
+    [ "disconnected" == "$STATUS" ] && $SCRIPT_DIR/btheadset.sh on $HEADSET_ID > /dev/null
+    # re-read the status here
+    STATUS=$($SCRIPT_DIR/btheadset.sh status $HEADSET_ID)
+    ;;
+esac
+
+echo ""
+echo ""
+
+[ "connected" == "$STATUS" ] && echo "#00FF00"
+echo
+
