@@ -3,8 +3,12 @@
 bluetooth-headset is an i3block script able to display bluetooth headset
 status. It also handles (dis)connection when the user clicks it.
 
-This script is compatible with *PulseAudio-enabled* systems. Please feel free to
-adjust it if you're using something else.
+# Dependencies
+
+* Working bluetooth configuration - distribution dependent
+* Your user should be able to `sudo` commands
+* Pulse Audio and its pavucontrol utility
+* [Font Awesome](https://fortawesome.github.io/Font-Awesome/)
 
 # Usage
 
@@ -34,6 +38,11 @@ Now open the i3blocks config in your favourite text editor and add this:
   [headset]
   interval=60
   command= ~/.config/i3blocks/i3blocks-btheadset "xx:xx:xx:xx:xx:xx"
+  ```
+
+  ```
+  i3blocks-headset HEADSET_ID
+      HEADSET_ID is the bluetooth ID of your headset.
   ```
 
 Reload i3 configuration and you now should see right away a new block showing

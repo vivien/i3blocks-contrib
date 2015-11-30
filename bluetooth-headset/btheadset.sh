@@ -26,18 +26,18 @@ HEADSET_PROFILE="a2dp_sink"
 STATUS_CONNECTED="connected"
 STATUS_DISCONNECTED="disconnected"
 
-if [ "x$1" == "x" ]; then
+if [[ -z "$1" ]]; then
   echo "Usage:"
   echo "  btheadset on|off|status [DEVICE_ID]"
   echo ""
   exit 1
 fi
 
-if [ ! "x$2" == "x" ]; then
+if [[ ! -z "$2" ]]; then
   HEADSET_ID=$2
 fi
 
-if [ "x$HEADSET_ID" == "x" ]; then
+if [[ -z "$HEADSET_ID" ]]; then
   echo "DEVICE_ID was not set, so quitting now."
   exit 1
 fi
@@ -73,7 +73,7 @@ function wait_status()
 {
 STATUS=$(show_status)
 count=0
-while [ ! "$STATUS" == "$1" ]; do
+while [[ ! "$STATUS" == "$1" ]]; do
   sleep 1
   STATUS=$(show_status)
   ((count++))

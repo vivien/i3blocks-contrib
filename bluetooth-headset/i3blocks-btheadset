@@ -22,7 +22,7 @@ popd > /dev/null
 STATUS=$($SCRIPT_DIR/btheadset.sh status $HEADSET_ID)
 
 case $BLOCK_BUTTON in
-  1)
+  3)
     [ "connected" == "$STATUS" ] && $SCRIPT_DIR/btheadset.sh off $HEADSET_ID > /dev/null
     [ "disconnected" == "$STATUS" ] && $SCRIPT_DIR/btheadset.sh on $HEADSET_ID > /dev/null
     # re-read the status here
