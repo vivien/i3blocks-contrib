@@ -17,7 +17,7 @@ Suggested: fonts-font-awesome
 [time]
 #label=
 label=time:
-command=/usr/local/libexec/i3blocks/simplecal
+command=$SCRIPT_DIR/simplecal
 interval=5
 
 ```
