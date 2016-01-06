@@ -7,7 +7,7 @@ thresholds, see the script for details.
 
 ``` ini
 [temperature]
-command=./temperature
+command=$SCRIPT_DIR/temperature
 label=TEMP
 interval=10
 ```
