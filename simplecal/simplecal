@@ -11,12 +11,12 @@ DATE_PATTERN="%H:%M:%S %d.%m.%Y"
 # command after clicking
 #
 
-CAL="gsimplecal"
+CAL="${BLOCK_INSTANCE:-gsimplecal}"
 
 #---------------------------------------------------------------
 
 if [ "${BLOCK_BUTTON}" == "1" ]; then 
-	$CAL
+	i3-msg -q exec $CAL
 fi
 
 date +"$DATE_PATTERN"                                  
