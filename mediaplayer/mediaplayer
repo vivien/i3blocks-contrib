@@ -22,7 +22,11 @@
 # (playerctl will attempt to connect to org.mpris.MediaPlayer2.[NAME] on your
 # DBus session).
 
+use Time::HiRes qw(usleep);
 use Env qw(BLOCK_INSTANCE);
+
+use constant DELAY => 50; # Delay in ms to let network-based players (spotify) reflect new data.
+use constant SPOTIFY_STR => 'spotify';
 
 my @metadata = ();
 my $player_arg = "";
@@ -46,10 +50,12 @@ sub buttons {
     else {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
             system("playerctl $player_arg previous");
+            usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
         } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
             system("playerctl $player_arg play-pause");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("playerctl $player_arg next");
+            usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
         }
     }
 }
@@ -88,16 +94,17 @@ sub mpd {
 }
 
 sub playerctl {
+    buttons;
+
     my $artist = qx(playerctl $player_arg metadata artist);
     # exit status will be nonzero when playerctl cannot find your player
-    exit(0) if $?;
-
-    buttons;
+    exit(0) if $? || $artist eq '(null)';
 
     push(@metadata, $artist) if $artist;
 
     my $title = qx(playerctl $player_arg metadata title);
-    exit(0) if $?;
+    exit(0) if $? || $title eq '(null)';
+
     push(@metadata, $title) if $title;
 
     print(join(" - ", @metadata)) if @metadata;
