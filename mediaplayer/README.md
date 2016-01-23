@@ -8,7 +8,7 @@ and others.
 
 ``` ini
 [mediaplayer]
-command=./mediaplayer
+command=$SCRIPT_DIR/mediaplayer
 instance=spotify
 interval=5
 signal=10
