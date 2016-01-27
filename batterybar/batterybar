@@ -22,9 +22,9 @@
 
 
 
-output=$(acpi battery)
+output=$(acpi battery 2>/dev/null)
 percentage=$(echo "$output" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
-status=$(echo "$output" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
+status=$(echo "$output" | egrep -o -m1 'Discharging|Charging|AC|Full' || echo "Unknown")
 remaining=$( echo "$output" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]')
 [[ -n $remaining ]] && remaining_formatted=" ($remaining)"
 squares="■"
@@ -67,8 +67,9 @@ while getopts 1:2:3:4:5:6:7:8:c:f:a:h opt; do
 done
 
 
-
-if (( percentage > 0 && percentage < 20  )); then
+if [[ -z "$percentage" ]]; then
+    percentage=?
+elif (( percentage > 0 && percentage < 20  )); then
     squares="■"
 elif (( percentage >= 20 && percentage < 40 )); then
     squares="■■"
@@ -94,7 +95,7 @@ case "$status" in
 "AC")
     color="$ac_color"
 ;;
-"Discharging"|"Unknown")
+"Discharging")
     if (( percentage >= 0 && percentage < 10 )); then
         color="${dis_colors[0]}"
     elif (( percentage >= 10 && percentage < 20 )); then
@@ -113,9 +114,12 @@ case "$status" in
         color="${dis_colors[7]}"
     fi
 ;;
+"Unknown")
+    color="${dis_colors[0]}"
+;;
 esac
 
 if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
     echo "$status <span foreground=\"$color\">$percentage%$remaining_formatted</span>"
 fi
-    echo "<span foreground=\"$color\">$squares</span>" 
+echo "<span foreground=\"$color\">$squares</span>" 
