@@ -7,6 +7,8 @@
 
 ###############################################################################
 # BEGIN CONFIG
+# Most of these can be specified as command line options, run with --help for
+# more information.
 # You may edit any of the following entries.  DO NOT delete any of them, else 
 # the main script will have unpredictable behavior.
 ###############################################################################
@@ -64,6 +66,7 @@ def fastIgnore(path):
 ###############################################################################
 
 from subprocess import check_output
+import argparse
 
 def pangoEscape(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -236,6 +239,100 @@ def makeAttributeMap(path):
 def getAttributeMaps(paths):
     return {path : makeAttributeMap(path) for path in paths}
 
+def parseArguments():
+    parser = argparse.ArgumentParser(prog="usb.py",
+        description="i3blocks blocklet script to output connected"
+        " usb storage device info")
+    parser.add_argument("--info-text-color", nargs=1, 
+        help="Set the info text color. "
+        "Default: {}".format(INFO_TEXT_COLOR))
+    parser.add_argument("--mounted-color", nargs=1, 
+        help="Set the color of mounted devices. "
+        "Default: {}".format(MOUNTED_COLOR))
+    parser.add_argument("--plugged-color", nargs=1, 
+        help="Set the color of plugged devices. "
+        "Default: {}".format(PLUGGED_COLOR))
+    parser.add_argument("--locked-color", nargs=1, 
+        help="Set the color of locked crypt devices. "
+        "Default: {}".format(LOCKED_COLOR))
+    parser.add_argument("--unlocked-not-mounted-color", nargs=1, 
+        help="Set the color of unlocked not mounted crypt devices. "
+        "Default: {}".format(UNLOCKED_NOT_MOUNTED_COLOR))
+    parser.add_argument("--partitionless-color", nargs=1, 
+        help="Set the color of devicees with no partitions. "
+        "Defaut: {}".format(PARTITIONLESS_COLOR))
+    parser.add_argument("--partitionless-text", nargs=1, 
+        help="Set the text to display for a device with no partitions. "
+        "Default: {}".format(PARTITIONLESS_TEXT))
+    parser.add_argument("--separator", nargs=1, 
+        help="Set the separator between devices. "
+        "Default: {}".format(SEPARATOR))
+    parser.add_argument("--locked-indicator", nargs=1, 
+        help="Set the indicator to use for a locked crypt device. "
+        "Default: {}".format(LOCKED_INDICATOR))
+    parser.add_argument("--unlocked-indicator", nargs=1, 
+        help="Set the indicator to use for an unlocked crypt device. "
+        "Default: {}".format(UNLOCKED_INDICATOR))
+    parser.add_argument("--readonly-indicator", nargs=1, 
+        help="Set the indicator to use for a readonly device. "
+        "Default: {}".format(READONLY_INDICATOR))
+    parser.add_argument("--truncate-fs-labels", type=int, nargs=1, 
+        help="Trucate device labels to a certain number of characters, must be"
+        "an integer."
+        "Default: {}".format(TRUNCATE_FS_LABELS))
+    parser.add_argument("-i", "--ignore", action="append", 
+        help="Ignore a device by path. "
+        "If path doesn't begin with / then it is assumed to be in /dev/")
+    args = parser.parse_args()
+    setParsedArgs(args)
+    
+def setParsedArgs(args):
+    if args.info_text_color != None:
+        global INFO_TEXT_COLOR
+        INFO_TEXT_COLOR = args.info_text_color[0]
+    if args.mounted_color != None:
+        global MOUNTED_COLOR
+        MOUNTED_COLOR = args.mounted_color[0]
+    if args.plugged_color != None:
+        global PLUGGED_COLOR
+        PLUGGED_COLOR = args.plugged_color[0]
+    if args.locked_color != None:
+        global LOCKED_COLOR
+        LOCKED_COLOR = args.locked_color[0]
+    if args.unlocked_not_mounted_color != None:
+        global UNLOCKED_NOT_MOUNTED_COLOR
+        UNLOCKED_NOT_MOUNTED_COLOR = args.unlocked_not_mounted_color[0]
+    if args.partitionless_color != None:
+        global PARTITIONLESS_COLOR
+        PARTITIONLESS_COLOR = args.partitionless_color[0]
+    if args.partitionless_text != None:
+        global PARTITIONLESS_TEXT
+        PARTITIONLESS_TEXT = args.partitionless_text[0]
+    if args.separator != None:
+        global SEPARATOR
+        SEPARATOR = args.separator[0]
+    if args.locked_indicator != None:
+        global LOCKED_INDICATOR
+        LOCKED_INDICATOR = args.locked_indicator[0]
+    if args.unlocked_indicator != None:
+        global UNLOCKED_INDICATOR
+        UNLOCKED_INDICATOR = args.unlocked_indicator[0]
+    if args.readonly_indicator != None:
+        global READONLY_INDICATOR
+        READONLY_INDICATOR = args.readonly_indicator[0]
+    if args.truncate_fs_labels != None:
+        global TRUNCATE_FS_LABELS
+        TRUNCATE_FS_LABELS = args.truncate_fs_labels[0]
+    if args.ignore != None:
+        args.ignore = list(map(lambda p: 
+            p if p.startswith("/") else "/dev/{}".format(p), args.ignore))
+        global fastIgnore
+        oldFastIgnore = fastIgnore
+        def newFastIgnore(path):
+            return oldFastIgnore(path) or path in args.ignore
+        fastIgnore = newFastIgnore
+
+parseArguments()
 leaves = getLeafDevicePaths()
 leaves = [path for path in leaves if not fastIgnore(path)]
 attributeMaps = getAttributeMaps(leaves)
