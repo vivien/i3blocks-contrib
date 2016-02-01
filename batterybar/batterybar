@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #  batterybar; displays battery percentage as a bar on i3blocks
 #  
 #  Copyright 2015 Keftaa <adnan.37h@gmail.com>
