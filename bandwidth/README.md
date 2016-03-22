@@ -2,7 +2,7 @@
 
 i3blocks-bandwidth is an i3blocks blocklet script to monitor bandwidth usage
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-bandwidth/master/bandwidth.png)
+![](bandwidth.png)
 
 # Usage
 

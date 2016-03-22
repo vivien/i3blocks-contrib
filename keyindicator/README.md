@@ -1,5 +1,9 @@
 # Key indicators
 
+![](keyindicator-active.png)
+
+![](keyindicator-inactive.png)
+
 Add the following bindings to i3 config file:
 
 ```
