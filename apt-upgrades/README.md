@@ -2,7 +2,7 @@
 
 i3blocks-apt-upgrades is an i3blocks blocklet script to show the number of pending system upgrades.
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-apt-upgrades/master/apt-upgrades.png)
+![](apt-upgrades.png)
 
 # Requirements
 

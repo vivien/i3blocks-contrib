@@ -2,9 +2,9 @@
 
 i3blocks-disk-io is an i3blocks blocklet script to monitor disk io
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-disk-io/master/disk-io-1.png)
+![](disk-io-1.png)
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-disk-io/master/disk-io-2.png)
+![](disk-io-2.png)
 
 # Dependencies
 

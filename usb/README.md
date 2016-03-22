@@ -5,13 +5,13 @@ device info.
 It supports usb mass storage devices, including those with multiple partitions,
 including LUKS partitions.
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-usb/master/images/1.png)
+![](images/1.png)
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-usb/master/images/2.png)
+![](images/2.png)
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-usb/master/images/3.png)
+![](images/3.png)
 
-![](https://raw.githubusercontent.com/kb100/i3blocks-usb/master/images/4.png)
+![](images/4.png)
 
 
 # Requirements

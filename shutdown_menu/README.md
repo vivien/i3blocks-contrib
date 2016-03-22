@@ -5,9 +5,9 @@ Use rofi or zenity to change the system's runstate thanks to systemd.
 The script can be used to shutdown, reboot, logout, lock etc.
 It is inspired from an example in [i3pystatus' Wiki][i3pystatus].
 
-![](https://raw.githubusercontent.com/vivien/i3blocks-contrib/master/shutdown_menu/rofi.png)
+![](rofi.png)
 
-![](https://raw.githubusercontent.com/vivien/i3blocks-contrib/master/shutdown_menu/zenity.png)
+![](zenity.png)
 
 ## Requirements
 
