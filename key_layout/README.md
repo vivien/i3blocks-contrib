@@ -1,4 +1,7 @@
 #key layout
+
+![](key_layout.png)
+
 Displays the current keyboard layout using setxkbmap.
 
 ```ini
