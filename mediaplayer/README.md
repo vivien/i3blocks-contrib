@@ -2,6 +2,8 @@
 
 Generic media player support
 
+![Example screenshot](mediaplayer.png)
+
 This displays "ARTIST - SONG" if music is playing.
 Supported players are:
 - spotify, vlc, audacious, xmms2, mplayer and others that
