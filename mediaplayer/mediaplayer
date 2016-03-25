@@ -110,7 +110,7 @@ sub playerctl {
     print(join(" - ", @metadata)) if @metadata;
 }
 
-if ($player_arg eq '' or $player_arg eq 'mpd') {
+if ($player_arg eq '' or $player_arg =~ /mpd/) {
     mpd;
 }
 if ($player_arg =~ /cmus/) {
