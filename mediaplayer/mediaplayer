@@ -46,8 +46,15 @@ sub buttons {
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("mpc next");
         }
-    }
-    else {
+    } elsif ($method eq 'cmus') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("cmus-remote --prev");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("cmus-remote --pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("cmus-remote --next");
+        }
+    } elsif ($method eq 'playerctl') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
             system("playerctl $player_arg previous");
             usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
@@ -75,7 +82,7 @@ sub cmus {
         }
 
         if (@metadata) {
-            buttons;
+            buttons('cmus');
 
             # metadata found so we are done
             print(join ' - ', @metadata);
@@ -94,7 +101,7 @@ sub mpd {
 }
 
 sub playerctl {
-    buttons;
+    buttons('playerctl');
 
     my $artist = qx(playerctl $player_arg metadata artist);
     # exit status will be nonzero when playerctl cannot find your player
