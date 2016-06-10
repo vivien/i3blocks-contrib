@@ -5,7 +5,7 @@
 #
 # i3blocks blocklet script to monitor bandwidth usage
 
-iface="${BLOCK_INSTANCE:-$(ip route | awk '/^default/ {print $5; exit}')}"
+iface="${BLOCK_INSTANCE:-$(ip route | awk '/^default via/ {print $5; exit}')}"
 dt=3
 unit=Mb
 printf_command='printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;'
