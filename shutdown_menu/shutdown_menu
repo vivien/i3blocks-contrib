@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Use rofi/zenity to change system runstate thanks to systemd.
 #

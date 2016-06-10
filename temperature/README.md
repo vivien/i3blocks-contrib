@@ -1,5 +1,7 @@
 # Temperature
 
+![](temperature.png)
+
 Support multiple chips, through *lm-sensors*.
 
 The script may be called with `-w` and `-c` switches to specify 

@@ -52,8 +52,8 @@ my %indicators = (
 my $mask = 0;
 open(XSET, "xset -q |") or die;
 while (<XSET>) {
-    if (/LED mask:\s*([0-9]+)/) {
-        $mask = $1;
+    if (/LED mask:\s*([0-9a-f]+)/) {
+        $mask = hex $1;
         last;
     }
 }

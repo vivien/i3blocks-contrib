@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (C) 2015 James Murphy                                                  
 # Licensed under the terms of the GNU GPL v2 only.                                 
@@ -45,9 +45,9 @@ aptitude full-upgrade --simulate --assume-yes |\
     grep '[0-9]\+' |\
     xargs echo)
 
-if [ $upgraded -ne 0 ] || [ $new -ne 0 ] || [ $removed -ne 0 ] || [ $held -ne 0 ]; then
+if [[ $upgraded != 0 ]] || [[ $new != 0 ]] || [[ $removed != 0 ]] || [[ $held != 0 ]]; then
     color="$PENDING_COLOR"
-    if [ $SYMBOL_ONLY -eq 1 ]; then
+    if [[ $SYMBOL_ONLY == 1 ]]; then
         echo -e "$PENDING_SYMBOL"
         echo -e "$PENDING_SYMBOL"
     else
@@ -55,7 +55,7 @@ if [ $upgraded -ne 0 ] || [ $new -ne 0 ] || [ $removed -ne 0 ] || [ $held -ne 0 
         echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
     fi
     echo $color
-elif [ $ALWAYS_PRINT -eq 1 ]; then
+elif [[ $ALWAYS_PRINT == 1 ]]; then
     color="$NONPENDING_COLOR"
     echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
     echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"

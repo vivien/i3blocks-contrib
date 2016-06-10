@@ -1,4 +1,6 @@
 # i3blocks battery bar
+
+![](screenshot.png)
 	
 What does it do ?
 -----------------
