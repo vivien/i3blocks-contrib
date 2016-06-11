@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+#
 #	kbdd_layout is a script that parse layout with kbdd in real time
 #	Copyright (C) 2016 Anton Karmanov <starcom24@gmail.com>
 #
@@ -14,12 +16,23 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#!/bin/bash
+# In case user is restarting block after making layout changes
+# e.g. via setxkbmap, reload kbdd
+killall kbdd 2>/dev/null
+kbdd >/dev/null || exit 1
 
 # Get initial state of layout
-N=$( dbus-send --print-reply=literal --dest=ru.gentoo.KbddService \
-	/ru/gentoo/KbddService ru.gentoo.kbdd.getCurrentLayout |\
-	sed -un 's/^.*uint32 //p' )
+N=$( dbus-send --print-reply=literal --dest=ru.gentoo.KbddService\
+    /ru/gentoo/KbddService ru.gentoo.kbdd.getCurrentLayout 2>/dev/null |\
+    sed -un 's/^.*uint32 //p' )
+
+# In case dbus service wasn't available yet, poll until service is ready
+while [[ -z "$N" ]]; do
+    sleep .1
+    N=$( dbus-send --print-reply=literal --dest=ru.gentoo.KbddService\
+        /ru/gentoo/KbddService ru.gentoo.kbdd.getCurrentLayout 2>/dev/null |\
+        sed -un 's/^.*uint32 //p' )
+done
 echo $( dbus-send --print-reply=literal --dest=ru.gentoo.KbddService \
 	/ru/gentoo/KbddService ru.gentoo.kbdd.getLayoutName uint32:$N )
 

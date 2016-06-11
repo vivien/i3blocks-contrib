@@ -1,17 +1,30 @@
-#kbdd_layout
+# kbdd_layout
 
 ![view of block](block.png)
 
-This blocklet gets [kbdd](https://github.com/qnikst/kbdd) layout throught dbus service in real time mode.
+This blocklet gets [kbdd](https://github.com/qnikst/kbdd) layout through dbus service in real time mode.
 
-kbdd is a useful daemon made for lightweight window managers. It works with xkb and remember layout for windows.
+kbdd is a useful daemon made for lightweight window managers. 
+It works with xkb and remembers layouts for each window.
 
-The blocklet needs running kbdd and it works properly even if setxkbmap does not show your current layout.
+# Requirements
+
+Dependencies: kbdd (typically in package of the same name).
+
+You can set your keyboard configuration e.g. with
+
+```
+exec --no-startup-id "setxkbmap -layout us,ru -option 'grp:ctrl_alt_toggle'"
+```
+
+in your i3 config.
+The blocklet must be restarted if you execute another setxkbmap command,
+or it may give incorrect results.
+
+# Config
 
 ```ini
 [kbdd_layout]
 command=$SCRIPT_DIR/kbdd_layout
-interval=-3
+interval=persist
 ```
-
-Keep in mind, that interval should be '-3' (that means persist), so the blocklet does not support short text and color strings.
