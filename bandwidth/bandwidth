@@ -58,7 +58,7 @@ case "$unit" in
     Kb|Kbit|Kbits)   bytes_per_unit=$((1024 / 8));;
     KB|KByte|KBytes) bytes_per_unit=$((1024));;
     Mb|Mbit|Mbits)   bytes_per_unit=$((1024 * 1024 / 8));;
-    MB|MByte|MBytes) bytes_per_unit=$((1024 * 1024 / 8));;
+    MB|MByte|MBytes) bytes_per_unit=$((1024 * 1024));;
     Gb|Gbit|Gbits)   bytes_per_unit=$((1024 * 1024 * 1024 / 8));;
     GB|GByte|GBytes) bytes_per_unit=$((1024 * 1024 * 1024));;
     Tb|Tbit|Tbits)   bytes_per_unit=$((1024 * 1024 * 1024 * 1024 / 8));;
