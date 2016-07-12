@@ -8,7 +8,8 @@
 iface="${BLOCK_INSTANCE:-$(ip route | awk '/^default via/ {print $5; exit}')}"
 dt=3
 unit=Mb
-printf_command='printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;'
+label="<span font='FontAwesome'>  </span>" # down arrow up arrow
+printf_command="printf \"${label}%-5.1f/%5.1f %s/s\n\", rx, wx, unit;"
 
 function check_proc_net_dev {
     if [ ! -f "/proc/net/dev" ]; then
@@ -39,7 +40,7 @@ Options:
 \tAllowed units: Kb, KB, Mb, MB, Gb, GB, Tb, TB
 \tUnits may have optional it/its/yte/ytes on the end, e.g. Mbits, KByte
 -p\tAwk command to be called after a measurement is made. 
-\tDefault: printf \"%%-5.1f/%%5.1f %%s/s\\\\n\", rx, wx, unit;
+\tDefault: printf \"<span font='FontAwesome'>  </span>%%-5.1f/%%5.1f %%s/s\\\\n\", rx, wx, unit;
 \tExposed variables: rx, wx, tx, unit, iface
 -l\tList available interfaces in /proc/net/dev
 -h\tShow this help text

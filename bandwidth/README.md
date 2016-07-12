@@ -9,7 +9,7 @@ i3blocks-bandwidth is an i3blocks blocklet script to monitor bandwidth usage
 The default configuration uses
 
 ```
-printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;
+printf "<span font='FontAwesome'>  </span>%-5.1f/%5.1f %s/s\n", rx, wx, unit;
 ```
 
 as the default print command. The `%-5.1f` and `%5.1f` indicate that 
@@ -37,7 +37,7 @@ Options:
     Allowed units: Kb, KB, Mb, MB, Gb, GB, Tb, TB
     Units may have optional it/its/yte/ytes on the end, e.g. Mbits, KByte
 -p  Awk command to be called after a measurement is made. 
-    Default: printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;
+    Default: printf "<span font='FontAwesome'>  </span>%-5.1f/%5.1f %s/s\n", rx, wx, unit;
     Exposed variables: rx, wx, tx, unit, iface
 -l  List available interfaces in /proc/net/dev
 -h  Show this help text
