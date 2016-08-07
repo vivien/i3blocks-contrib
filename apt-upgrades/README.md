@@ -18,8 +18,8 @@ Create apt/dpkg hooks to signal the script.
 For example, create `/etc/apt/apt.conf.d/80i3blocks` with contents
 
 ```
-APT::Update::Post-Invoke { "pkill -RTMIN+1 i3blocks"; };
-DPkg::Post-Invoke { "pkill -RTMIN+1 i3blocks"; };
+APT::Update::Post-Invoke { "pkill -RTMIN+1 i3blocks || true"; };
+DPkg::Post-Invoke { "pkill -RTMIN+1 i3blocks || true"; };
 ```
 **Warning**: make sure to 
 ```ShellSession
