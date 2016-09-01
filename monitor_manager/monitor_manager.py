@@ -232,7 +232,6 @@ class MonitorManager():
         screen_height = root.winfo_screenheight()
         if x+width > screen_width - BUFFER:
             x =  screen_width - BUFFER - width
-            print("x adj")
         elif x < BUFFER:
             x = BUFFER
         if y+height > screen_height - BUFFER:
@@ -279,12 +278,12 @@ class MonitorManager():
                         command += ["--brightness", "1"]
                 else:
                     command += ["--off"]
-                try:
-                    check_output(command, universal_newlines=True)
-                except CalledProcessError as err:
-                    self.infoLabel.config(text="xrandr returned nonzero exit status {}".format(err.returncode), fg="red")
             if firstActive:
                 prevFirstActive = firstActive
+        try:
+            check_output(command, universal_newlines=True)
+        except CalledProcessError as err:
+            self.infoLabel.config(text="xrandr returned nonzero exit status {}".format(err.returncode), fg="red")
 
     def getUserConfirmationIfDangerousConfiguration(self):
         result = "yes"
@@ -452,10 +451,6 @@ class MonitorManager():
         statusOptionMenu.var = var
         statusOptionMenu.config(relief=FLAT)
         self.statusOptionMenus.append(statusOptionMenu)
-        if output.sameAs != None:
-            self.setMenuToDuplicate(statusOptionMenu)
-        else:
-            self.setMenuToOutput(statusOptionMenu, output)
 
         blankedButton = Button(self.frame, font=FONTAWESOME_FONT,  **style)
         self.blankedButtons.append(blankedButton)
@@ -470,7 +465,7 @@ class MonitorManager():
         downButton = Button(self.frame, text=DOWN_ARROW, font=FONTAWESOME_FONT, **style)
         self.downButtons.append(downButton)
        
-        widgets = [toggleButton, nameLabel, primaryButton,  statusOptionMenu, 
+        widgets = [toggleButton, nameLabel, primaryButton, statusOptionMenu, 
                 blankedButton, duplicateButton, upButton, downButton]
         for widget in widgets:
             widget.output = output
@@ -498,12 +493,15 @@ class MonitorManager():
         output = optionMenu.output
         menu.delete(0, END)
         duplicables = self.getDuplicableOutputsFor(output)
-        for otherOutput in duplicables:
+        defaultIndex = 0
+        for i,otherOutput in enumerate(duplicables):
                 label = otherOutput.name
-                menu.add_command(label=label, command=setLabelAndSameAsFunc(var,label,otherOutput))
+                menu.add_command(label=label, command=setLabelAndSameAsFunc(var,label,output))
+                if label == output.sameAs:
+                    defaultIndex = i
         if len(duplicables) > 0:
-            var.set(menu.entrycget(0, "label"))
-            output.sameAs = menu.entrycget(0, "label")
+            var.set(menu.entrycget(defaultIndex, "label"))
+            output.sameAs = menu.entrycget(defaultIndex, "label")
         else:
             var.set("None")
 
