@@ -32,13 +32,13 @@ bindsym Control+Mod1+Delete exec $SCRIPTDIR/shutdown_menu
 If you want to enable confirmations (e.g. before shutting down):
 
 ```
-$SCRIPTDIR/shutdown_menu -c
+$SCRIPTDIR/shutdown_menu -c; echo Quit
 ```
 
 If you have both `rofi` and `zenity`, and want to choose the preferred launcher:
 
 ```
-$SCRIPTDIR/shutdown_menu -p rofi
+$SCRIPTDIR/shutdown_menu -p rofi; echo Quit
 ```
 
 As for the i3blocks label to use, we recommend FontAwesome's
