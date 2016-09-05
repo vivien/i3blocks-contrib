@@ -87,7 +87,7 @@ USER: my_mailbox@mail_server.com
 
 When config files is created, add an instance option with name of config file
 to your i3blocks.conf. Let's imagine, that we have the
-~/.config/i3blocks-email/mailbox\_config file, then email section should be:
+~/.config/i3blocks-email/my\_mailbox\_config file, then email section should be:
 ```ini
 [email]
 command=$SCRIPT_DIR/email
