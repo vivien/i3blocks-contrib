@@ -18,7 +18,7 @@ make
 ```ini
 [bandwidth]
 label=
-command=.../i3blocks-contrib/bandwidth/bandwidth2 -w 307200:30720 -c 512000:51200
+command=$SCRIPT_DIR/bandwidth2 -w 307200:30720 -c 512000:51200
 interval=persist
 markup=pango
 ```
