@@ -4,7 +4,10 @@ Generic media player support
 
 ![Example screenshot](mediaplayer.png)
 
-This displays "ARTIST - SONG" if music is playing.
+This displays "ARTIST - SONG" if music is playing. By
+left-clicking/right-clicking the displayed text, it will play the previous/next
+song. Middle-clicking will pause/unpause the song.
+
 Supported players are:
 - spotify, vlc, audacious, xmms2, mplayer and others that
 use MPRIS DBus Interface Specification
