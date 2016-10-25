@@ -8,7 +8,7 @@ bandwidth2 is a blocklet to monitor bandwidth usage. It is a C version of the ba
 * By default sum all the network interfaces (except lo) instead of only default route interface.
 * Warning and critical colors as an option.
 
-##Build
+## Build
 
 ```
 make
@@ -23,7 +23,7 @@ interval=persist
 markup=pango
 ```
 
-##Options
+## Options
 
 ```
 Usage: ./bandwidth2 [-b|B] [-t seconds] [-i interface] [-w Bytes:Bytes] [-c Bytes:Bytes] [-h]
