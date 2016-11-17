@@ -25,12 +25,32 @@ NOT_CLONED_SYMBOL = "\uf096"
 PRIMARY_SYMBOL = "\uf005"
 SECONDARY_SYMBOL = "\uf006"
 CLONED_SYMBOL = "\uf24d"
+ROTATION_NORMAL = "\uf151"
+ROTATION_LEFT = "\uf191"
+ROTATION_RIGHT = "\uf152"
+ROTATION_INVERTED = "\uf150"
+REFLECTION_NORMAL = "\uf176"
+REFLECTION_X = "\uf07e"
+REFLECTION_Y = "\uf07d"
+REFLECTION_XY = "\uf047"
 TOGGLE_ON = "\uf205"
 TOGGLE_OFF = "\uf204"
 APPLY_SYMBOL = "\uf00c"
 CANCEL_SYMBOL = "\uf00d"
 ARANDR_SYMBOL = "\uf085"
 REFRESH_SYMBOL = "\uf021"
+
+SHOW_ON_OFF = True 
+SHOW_NAMES = True
+SHOW_PRIMARY = True 
+SHOW_MODE = True 
+SHOW_BLANKED = True
+SHOW_DUPLICATE = True
+SHOW_ROTATION = True 
+SHOW_REFLECTION = True 
+SHOW_BRIGHTNESS = True
+SHOW_BRIGHTNESS_VALUE = False
+SHOW_UP_DOWN = True
 
 FONTAWESOME_FONT_FAMILY = "FontAwesome"
 FONTAWESOME_FONT_SIZE = 11
@@ -39,11 +59,16 @@ DEFAULT_FONT_FAMILY = "DejaVu Sans Mono"
 DEFAULT_FONT_SIZE = 11
 DEFAULT_FONT = (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE)
 
-BUFFER = 20
+BRIGHTNESS_SLIDER_HANDLE_LENGTH = 20
+BRIGHTNESS_SLIDER_WIDTH = 15
+BRIGHTNESS_SLIDER_LENGTH = 50
+
+WINDOW_CLOSE_TO_BOUNDARY_BUFFER = 20
 
 class Output:
     def __init__(self, name=None, w=None, h=None, x=None, y=None, rate=None,
-            active=False, primary=False, sameAs=None, blanked=False):
+            active=False, primary=False, sameAs=None, blanked=False, rotation="normal",
+            reflection="normal", brightness=1.0):
         self.name = name
         self.w = w
         self.h = h
@@ -58,6 +83,9 @@ class Output:
         self.currentModeIndex = None
         self.preferredModeIndex = None
         self.row = None
+        self.rotation = rotation
+        self.reflection = reflection
+        self.brightness = brightness
 
     def setPreferredMode(self):
         if self.preferredModeIndex != None:
@@ -73,7 +101,14 @@ class Output:
         outputs = []
         xrandrText = check_output(["xrandr","--verbose"],universal_newlines=True)
         outputBlocks = re.split(r'\n(?=\S)', xrandrText, re.MULTILINE)
-        infoPattern = re.compile(r'^(\S+) connected (primary )?((\d+)x(\d+)\+(\d+)\+(\d+))?')
+        infoPattern = re.compile(
+                r'^(\S+)'                        # output name
+                ' connected '                    # must be connected
+                '(primary )?'                    # check if primary output
+                '((\d+)x(\d+)\+(\d+)\+(\d+) )?'  # width x height + xoffset + yoffset
+                '(\(\S+\) )?'                    # mode code (0x4a)
+                '(normal|left|inverted|right) '  # rotation
+                '(X axis|Y axis|X and Y axis)?') # reflection
         brightnessPattern = re.compile(r'^\tBrightness: ([\d.]+)', re.MULTILINE)
         modePattern = re.compile(r'^  (\d+)x(\d+)[^\n]*?\n +h:[^\n]*?\n +v:[^\n]*?([\d.]+)Hz$', re.MULTILINE)
         for outputBlock in outputBlocks:
@@ -86,10 +121,26 @@ class Output:
                 if infoMatch.group(3):
                     output.active = True
                     output.w, output.h, output.x, output.y = map(int,infoMatch.group(4, 5, 6, 7))
+                if infoMatch.group(9):
+                    output.rotation = infoMatch.group(9)
+                    if output.rotation in ["left", "right"]:
+                        output.w, output.h = output.h, output.w
+                if infoMatch.group(10):
+                    if infoMatch.group(10) == "X axis":
+                        output.reflection = "x"
+                    elif infoMatch.group(10) == "Y axis":
+                        output.reflection = "y"
+                    elif infoMatch.group(10) == "X and Y axis":
+                        output.reflection = "xy"
+                    else:
+                        output.reflection = "normal"
+                else:
+                    output.reflection = "normal"
                 brightnessMatch = brightnessPattern.search(outputBlock)
                 if brightnessMatch:
                     try:
                         brightness = float(brightnessMatch.group(1))
+                        output.brightness = brightness
                         if abs(brightness) < 1e-09:
                             output.blanked = True
                     except ValueError:
@@ -203,17 +254,31 @@ class MonitorManager():
         
         for duplicateButton in self.duplicateButtons:
             duplicateButton.bind("<Button-1>", self.toggleDuplicate)
-            self.setInfo(duplicateButton, "Extend/duplicate output")
+            self.setInfo(duplicateButton, "Duplicate another output")
+
+        for rotateButton in self.rotateButtons:
+            rotateButton.bind("<Button-1>", self.cycleRotation)
+            self.setInfo(rotateButton, "Rotate output")
+
+        for reflectButton in self.reflectButtons:
+            reflectButton.bind("<Button-1>", self.cycleReflection)
+            self.setInfo(reflectButton, "Reflect output")
+
+        for brightnessSlider in self.brightnessSliders:
+            brightnessSlider.bind("<ButtonRelease-1>", self.updateBrightness)
+            self.setInfo(brightnessSlider, "Adjust brightness")
         
         for upButton in self.upButtons:
             upButton.bind("<Button-1>", self.handleUp)
             upButton.bind("<Button-4>", self.handleUp)
             upButton.bind("<Button-5>", self.handleDown)
-    
+            self.setInfo(upButton, "Move up")
+
         for downButton in self.downButtons:
             downButton.bind("<Button-1>", self.handleDown)
             downButton.bind("<Button-4>", self.handleUp)
             downButton.bind("<Button-5>", self.handleDown)
+            self.setInfo(downButton, "Move down")
             
     def gridRow(self, row, widgets):
         column = 0
@@ -230,14 +295,14 @@ class MonitorManager():
         y = root.winfo_pointery() - height//2
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
-        if x+width > screen_width - BUFFER:
-            x =  screen_width - BUFFER - width
-        elif x < BUFFER:
-            x = BUFFER
-        if y+height > screen_height - BUFFER:
-            y = screen_height - BUFFER - height
-        elif y < BUFFER:
-            y = BUFFER
+        if x+width > screen_width - WINDOW_CLOSE_TO_BOUNDARY_BUFFER:
+            x =  screen_width - WINDOW_CLOSE_TO_BOUNDARY_BUFFER - width
+        elif x < WINDOW_CLOSE_TO_BOUNDARY_BUFFER:
+            x = WINDOW_CLOSE_TO_BOUNDARY_BUFFER
+        if y+height > screen_height - WINDOW_CLOSE_TO_BOUNDARY_BUFFER:
+            y = screen_height - WINDOW_CLOSE_TO_BOUNDARY_BUFFER - height
+        elif y < WINDOW_CLOSE_TO_BOUNDARY_BUFFER:
+            y = WINDOW_CLOSE_TO_BOUNDARY_BUFFER
 
         root.geometry('+{}+{}'.format(x, y))
 
@@ -252,6 +317,8 @@ class MonitorManager():
         if not self.getUserConfirmationIfDangerousConfiguration():
             return
         command = ["xrandr"]
+        if not self.existsPrimary():
+            command += ["--noprimary"]
         partition = self.sameAsPartition()
         prevFirstActive = None
         for p in partition:
@@ -272,10 +339,9 @@ class MonitorManager():
                         command += ["--rate", output.rate ]
                     else:
                             command += ["--auto"]
-                    if output.blanked:
-                        command += ["--brightness", "0"]
-                    else:
-                        command += ["--brightness", "1"]
+                    command += ["--brightness", str(output.brightness)]
+                    command += ["--rotate", output.rotation]
+                    command += ["--reflect", output.reflection]
                 else:
                     command += ["--off"]
             if firstActive:
@@ -315,7 +381,7 @@ class MonitorManager():
         self.root.destroy()
 
     def handleArandr(self, e=None):
-        call(["i3-msg", "exec", "arandr"])
+        call(["i3-msg", "-q", "exec", "arandr"])
         self.root.destroy()
 
     def handleUp(self, e):
@@ -343,9 +409,17 @@ class MonitorManager():
 
     def setPrimary(self, e):
         output = e.widget.output
+        output.primary = not output.primary
         for otherOutput in self.outputs:
-            otherOutput.primary = (otherOutput == output)
+            if otherOutput != output:
+                otherOutput.primary = False
         self.softRefreshList() 
+
+    def existsPrimary(self):
+        for output in self.outputs:
+            if output.primary:
+                return True
+        return False
 
     def toggleActive(self, e):
         output = e.widget.output
@@ -360,8 +434,61 @@ class MonitorManager():
 
     def toggleBlanked(self, e):
         output = e.widget.output
-        output.blanked = not output.blanked
+        if output.blanked:
+            output.blanked = False
+            output.brightness = 1.0
+        else:
+            output.blanked = True
+            output.brightness = 0.0
         self.softRefreshList()
+
+    def updateBrightness(self, e):
+        output = e.widget.output
+        output.brightness = .01 * e.widget.get()
+        output.blanked = False
+        if abs(output.brightness) < 1e-09:
+            output.blanked = True
+        self.softRefreshList()
+
+    def cycleRotation(self, e):
+        output = e.widget.output
+        if output.rotation == "normal":
+            output.rotation = "right"
+        elif output.rotation == "right":
+            output.rotation = "inverted"
+        elif output.rotation == "inverted":
+            output.rotation = "left"
+        else:
+            output.rotation = "normal"
+        self.softRefreshList()
+
+    def rotationSymbol(self, rotation):
+        return {
+            "normal": ROTATION_NORMAL,
+            "left": ROTATION_LEFT,
+            "right": ROTATION_RIGHT,
+            "inverted": ROTATION_INVERTED,
+                }[rotation]
+
+    def cycleReflection(self, e):
+        output = e.widget.output
+        if output.reflection == "normal":
+            output.reflection = "x"
+        elif output.reflection == "x":
+            output.reflection = "y"
+        elif output.reflection == "y":
+            output.reflection = "xy"
+        else:
+            output.reflection = "normal"
+        self.softRefreshList()
+
+    def reflectionSymbol(self, reflection):
+        return {
+            "normal": REFLECTION_NORMAL,
+            "x": REFLECTION_X,
+            "y": REFLECTION_Y,
+            "xy": REFLECTION_XY,
+                }[reflection]
 
     def toggleDuplicate(self, e):
         duplicateButton = e.widget
@@ -380,7 +507,8 @@ class MonitorManager():
     def softRefreshList(self, e=None):
         for widget in set().union(self.nameLabels, self.primaryButtons, 
                 self.statusOptionMenus, self.blankedButtons, 
-                self.duplicateButtons, self.upButtons, self.downButtons):
+                self.duplicateButtons, self.rotateButtons, self.reflectButtons,
+                self.brightnessSliders, self.upButtons, self.downButtons):
             widget.config(fg="gray" if not widget.output.active else "black")
 
         for widget in self.toggleButtons:
@@ -409,6 +537,15 @@ class MonitorManager():
         for widget in self.duplicateButtons:
             widget.config(text=CLONED_SYMBOL if widget.output.sameAs else NOT_CLONED_SYMBOL)
 
+        for widget in self.rotateButtons:
+            widget.config(text=self.rotationSymbol(widget.output.rotation))
+
+        for widget in self.reflectButtons:
+            widget.config(text=self.reflectionSymbol(widget.output.reflection))
+
+        for widget in self.brightnessSliders:
+            widget.set(int(100*widget.output.brightness))
+
     def hardRefreshList(self, e=None):
         self.outputs = Output.realOutputs()
         self.root.after_idle(self.populateGrid)
@@ -423,6 +560,9 @@ class MonitorManager():
         self.statusOptionMenus = []
         self.blankedButtons = []
         self.duplicateButtons = []
+        self.rotateButtons = []
+        self.reflectButtons = []
+        self.brightnessSliders = []
         self.upButtons = []
         self.downButtons = []
         for row, output in enumerate(self.outputs):
@@ -434,39 +574,83 @@ class MonitorManager():
     def makeLabelRow(self, output, row):
         output.row = row
         style = {'relief':FLAT, 'padx':1, 'pady':1, 'anchor':'w'}
+        widgets = []
 
         toggleButton = Button(self.frame, font=FONTAWESOME_FONT, **style)
+        toggleButton.output = output
         self.toggleButtons.append(toggleButton)
+        if SHOW_ON_OFF: 
+            widgets.append(toggleButton)
 
         nameLabel = Label(self.frame, font=DEFAULT_FONT)
+        nameLabel.output = output
         self.nameLabels.append(nameLabel)
+        if SHOW_NAMES:
+            widgets.append(nameLabel)
 
         primaryButton = Button(self.frame, font=FONTAWESOME_FONT, **style)
+        primaryButton.output = output
         self.primaryButtons.append(primaryButton)
         if not output.primary:
             primaryButton.config(fg="gray")
+        if SHOW_PRIMARY:
+            widgets.append(primaryButton)
 
         var = StringVar(self.frame)
         statusOptionMenu = OptionMenu(self.frame, var, None)
+        statusOptionMenu.output = output
         statusOptionMenu.var = var
         statusOptionMenu.config(relief=FLAT)
         self.statusOptionMenus.append(statusOptionMenu)
+        if SHOW_MODE or SHOW_DUPLICATE:
+            widgets.append(statusOptionMenu)
 
         blankedButton = Button(self.frame, font=FONTAWESOME_FONT,  **style)
+        blankedButton.output = output
         self.blankedButtons.append(blankedButton)
+        if SHOW_BLANKED:
+            widgets.append(blankedButton)
 
         duplicateButton = Button(self.frame, font=FONTAWESOME_FONT, **style)
         duplicateButton.statusOptionMenu = statusOptionMenu
+        duplicateButton.output = output
         self.duplicateButtons.append(duplicateButton)
+        if SHOW_DUPLICATE:
+            widgets.append(duplicateButton)
+
+        rotateButton = Button(self.frame, font=FONTAWESOME_FONT, **style)
+        rotateButton.output = output
+        self.rotateButtons.append(rotateButton)
+        if SHOW_ROTATION:
+            widgets.append(rotateButton)
+
+        reflectButton = Button(self.frame, font=FONTAWESOME_FONT, **style)
+        reflectButton.output = output
+        self.reflectButtons.append(reflectButton)
+        if SHOW_REFLECTION:
+            widgets.append(reflectButton)
+
+        brightnessSlider = Scale(self.frame, orient="horizontal", from_=0, to=100,
+                length=BRIGHTNESS_SLIDER_LENGTH, showvalue=SHOW_BRIGHTNESS_VALUE, 
+                sliderlength=BRIGHTNESS_SLIDER_HANDLE_LENGTH,
+                width=BRIGHTNESS_SLIDER_WIDTH, font=FONTAWESOME_FONT)
+        brightnessSlider.output = output
+        self.brightnessSliders.append(brightnessSlider)
+        if SHOW_BRIGHTNESS:
+            widgets.append(brightnessSlider)
 
         upButton = Button(self.frame, text=UP_ARROW, font=FONTAWESOME_FONT, **style)
+        upButton.output = output
         self.upButtons.append(upButton)
+        if SHOW_UP_DOWN:
+            widgets.append(upButton)
 
         downButton = Button(self.frame, text=DOWN_ARROW, font=FONTAWESOME_FONT, **style)
+        downButton.output = output
         self.downButtons.append(downButton)
+        if SHOW_UP_DOWN:
+            widgets.append(downButton)
        
-        widgets = [toggleButton, nameLabel, primaryButton, statusOptionMenu, 
-                blankedButton, duplicateButton, upButton, downButton]
         for widget in widgets:
             widget.output = output
         self.gridRow(row, widgets) 
