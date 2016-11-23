@@ -45,6 +45,10 @@ sub buttons {
             system("mpc toggle");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("mpc next");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("mpc volume +10");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("mpc volume -10");
         }
     } elsif ($method eq 'cmus') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
