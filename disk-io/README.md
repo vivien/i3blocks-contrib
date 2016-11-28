@@ -1,6 +1,6 @@
-# i3blocks-disk-io
+# disk-io
 
-i3blocks-disk-io is an i3blocks blocklet script to monitor disk io
+Monitor disk reads and writes.
 
 ![](disk-io-1.png)
 

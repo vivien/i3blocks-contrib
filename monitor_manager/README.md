@@ -13,7 +13,7 @@ python3, python3-tk, xrandr, fontawesome (fonts-font-awesome package), arandr su
 
 # Usage
 
-`i3blocks.conf`
+Add the following to your i3blocks config:
 
 ```
 [monitors]

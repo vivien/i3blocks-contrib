@@ -1,8 +1,7 @@
-# i3blocks-usb
+# usb
 
-i3blocks-usb is an i3blocks blocket script to output connected usb storage 
-device info.
-It supports usb mass storage devices, including those with multiple partitions,
+Output connected usb storage device info.
+Supports usb mass storage devices, including those with multiple partitions,
 including LUKS partitions.
 
 ![](images/1.png)
@@ -18,7 +17,7 @@ including LUKS partitions.
 
 Dependencies: udev, python3, util-linux ( >= 2.23 )
 
-Suggested: i3 ( >= 4.3 ), i3blocks ( >= 1.4 ), fonts-font-awesome
+Suggested: fonts-font-awesome
 
 # Installation
 

@@ -1,21 +1,21 @@
-# i3blocks battery bar
+# batterybar
+
+Display the battery level in a set of five unicode squares (U+25A0).
 
 ![](screenshot.png)
 	
-What does it do ?
------------------
-
-It displays the battery level in a set of five unicode squares (U+25A0).
-
 It also changes color for more accuracy and to distinguish between charging, 
-discharging, charged and AC statuses.
+discharging, charged, and AC statuses.
 
 You can also specify your own set of colors.
 	
 Left-clicking briefly shows the battery level in percent.
+	
+# Dependencies
 
-Installation
-------------
+* acpi
+
+# Installation
 
 * Copy the batterybar script into your directory of choice, e.g. ~/.i3blocks/
 * Give it execution permission (`chmod +x batterybar`)
@@ -29,8 +29,3 @@ interval=5
 markup=pango
 min_width=bat: ■■■■■
 ```
-	
-Dependencies
-------------
-
-* acpi

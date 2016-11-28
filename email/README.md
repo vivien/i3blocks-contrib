@@ -1,12 +1,12 @@
-# i3blocks-email
-## Description
-![message](email.png)
+# email
 
-This blocklet is a python script, that shows you count of new messages in your
-email box. It uses IMAP.
+Show the count of new messages in your
+email box using IMAP.
 Left button mouse click opens custom URL.
 
-## Dependencies
+![message](email.png)
+
+# Dependencies
 
 Python 3, [python-keyring](https://pypi.python.org/pypi/keyring) (optional),
 gnome-keyring (if pyton-keyring using, also you able to use any other
@@ -26,7 +26,7 @@ Alternatively you can get python-keyring with
 $ pip install keyring
 ```
 
-## Usage
+# Usage
 
 There are two ways to set up email blocklet. You able to specify options in
 **"Settings"** section inside [email](email) file. And if you not allowed to

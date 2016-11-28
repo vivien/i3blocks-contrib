@@ -1,8 +1,8 @@
 # kbdd_layout
 
-![view of block](block.png)
+Show keyboard layout using dbus and [kbdd](https://github.com/qnikst/kbdd).
 
-This blocklet gets [kbdd](https://github.com/qnikst/kbdd) layout through dbus service in real time mode.
+![view of block](block.png)
 
 kbdd is a useful daemon made for lightweight window managers. 
 It works with xkb and remembers layouts for each window.

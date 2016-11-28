@@ -1,8 +1,12 @@
-#key layout
+# key_layout
+
+Display the current keyboard layout using setxkbmap.
 
 ![](key_layout.png)
 
-Displays the current keyboard layout using setxkbmap.
+# Installation
+
+Use the following in your i3blocks config:
 
 ```ini
 [key_layout]

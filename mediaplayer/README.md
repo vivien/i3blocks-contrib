@@ -1,6 +1,6 @@
-# Media player
+# mediaplayer
 
-Generic media player support
+Generic media player status/controls.
 
 ![Example screenshot](mediaplayer.png)
 
@@ -21,6 +21,10 @@ See: https://github.com/acrisci/playerctl
 
 If you leave the instance empty it will try to find an
 active player used on it's own.
+
+# Installation
+
+Add the following to your i3blocks config:
 
 ``` ini
 [mediaplayer]
