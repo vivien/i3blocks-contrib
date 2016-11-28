@@ -1,9 +1,11 @@
 # bandwidth2
 
+Monitor bandwidth usage.
+This is a C version of the bandwidth blocklet.
+
 ![](bandwidth2.png)
 
-bandwidth2 is a blocklet to monitor bandwidth usage. It is a C version of the bandwidth blocklet. It comes with some other features though:
-
+It comes with some other features though:
 * Automatically estimate what unit (K,M,G,T) to use depending on the value. You can still choose between bits and bytes.
 * By default sum all the network interfaces (except lo) instead of only default route interface.
 * Warning and critical colors as an option.

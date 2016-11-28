@@ -1,8 +1,12 @@
-# Key indicators
+# keyindicator
+
+Show the status of capslock or numlock.
 
 ![](keyindicator-active.png)
 
 ![](keyindicator-inactive.png)
+
+# Installation
 
 Add the following bindings to i3 config file:
 

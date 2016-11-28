@@ -1,6 +1,6 @@
-# i3blocks-bandwidth
+# bandwidth
 
-i3blocks-bandwidth is an i3blocks blocklet script to monitor bandwidth usage
+Monitor bandwidth usage.
 
 ![](bandwidth.png)
 

@@ -1,8 +1,8 @@
 # volume-pulseaudio
 
-volume-pulseaudio is an i3blocks blocklet to display the system volume and
-optionally the default playback device and index. It also offers controls
-for these via clicks.
+Display the system volume and
+optionally the default playback device and index.
+Offers controls for these via clicks.
 
 ![](volume-pulseaudio-high.png)
 ![](volume-pulseaudio-med.png)

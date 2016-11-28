@@ -1,4 +1,4 @@
-# Shutdown menu
+# shutdown_menu
 
 Use rofi or zenity to change the system's runstate thanks to systemd.
 
@@ -9,13 +9,13 @@ It is inspired from an example in [i3pystatus' Wiki][i3pystatus].
 
 ![](zenity.png)
 
-## Requirements
+# Requirements
 
 - `systemd`,
 - `rofi` or `zenity`,
 - shell with associative array support.
 
-## Usage
+# Usage
 
 For now, configuration has to be done by modifying the first part of the
 script. A custom lock script can be provided, as well as any `rofi`/`zenity`

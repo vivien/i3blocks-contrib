@@ -1,6 +1,10 @@
-# Open VPN
+# openvpn
 
 Support multiple VPN, with colors.
+
+# Usage
+
+Add the following to your i3blocks config:
 
 ``` ini
 [openvpn]
