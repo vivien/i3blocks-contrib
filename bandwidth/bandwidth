@@ -5,11 +5,15 @@
 #
 # i3blocks blocklet script to monitor bandwidth usage
 
-iface="${BLOCK_INSTANCE:-$(ip route | awk '/^default via/ {print $5; exit}')}"
+iface="${BLOCK_INSTANCE}"
 dt=3
 unit=Mb
 label="<span font='FontAwesome'>  </span>" # down arrow up arrow
 printf_command="printf \"${label}%-5.1f/%5.1f %s/s\n\", rx, wx, unit;"
+
+function default_interface {
+    ip route | awk '/^default via/ {print $5; exit}'
+}
 
 function check_proc_net_dev {
     if [ ! -f "/proc/net/dev" ]; then
@@ -50,10 +54,11 @@ done
 
 check_proc_net_dev
 
-if [ -z "$iface" ]; then
-    echo Could not determine default interface
-    exit 1
-fi
+while [ -z "$iface" ]; do
+    echo No default interface
+    sleep "$dt"
+    iface=$(default_interface)
+done
 
 case "$unit" in
     Kb|Kbit|Kbits)   bytes_per_unit=$((1024 / 8));;
