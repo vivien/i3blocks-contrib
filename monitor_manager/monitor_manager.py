@@ -107,7 +107,7 @@ class Output:
                 '(primary )?'                    # check if primary output
                 '((\d+)x(\d+)\+(\d+)\+(\d+) )?'  # width x height + xoffset + yoffset
                 '(\(\S+\) )?'                    # mode code (0x4a)
-                '(normal|left|inverted|right) '  # rotation
+                '(normal|left|inverted|right)? ?'  # rotation
                 '(X axis|Y axis|X and Y axis)?') # reflection
         brightnessPattern = re.compile(r'^\tBrightness: ([\d.]+)', re.MULTILINE)
         modePattern = re.compile(r'^  (\d+)x(\d+)[^\n]*?\n +h:[^\n]*?\n +v:[^\n]*?([\d.]+)Hz$', re.MULTILINE)
