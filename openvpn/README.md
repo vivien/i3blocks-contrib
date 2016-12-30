@@ -18,5 +18,5 @@ Note: devices in configuration file should be named with their number (ex: tun0,
 
 ```
 Usage: openvpn [-p pid_file_format]
--p : format string to glob all pid files (default '/run/openvpn/*.pid)'
+-p : format string to glob all pid files (default '/run/openvpn/*.pid')
 ```
