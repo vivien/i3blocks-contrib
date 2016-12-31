@@ -12,7 +12,8 @@ command=$SCRIPT_DIR/openvpn
 interval=20
 ```
 
-Note: devices in configuration file should be named with their number (ex: tun0, tap1)
+Note: devices in configuration file should be named with their number (ex: tun0, tap1),
+as dynamic devices are not supported.
 
 # Options
 
