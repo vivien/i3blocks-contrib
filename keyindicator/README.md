@@ -30,3 +30,9 @@ instance=NUM
 interval=once
 signal=11
 ```
+
+If you would rather the indicator hide itself when the status is off:
+
+``` ini
+command=$SCRIPT_DIR/keyindicator --hide
+```
