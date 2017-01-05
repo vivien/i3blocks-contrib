@@ -25,12 +25,14 @@ use File::Basename;
 my $indicator = $ENV{BLOCK_INSTANCE} || "CAPS";
 my $color_on  = "#00FF00";
 my $color_off = "#222222";
+my $hide      = 0;
 
 sub help {
     my $program = basename($0);
-    printf "Usage: %s [-c <color on>] [-C <color off>]\n", $program;
+    printf "Usage: %s [-c <color on>] [-C <color off>] [--hide]\n", $program;
     printf "  -c <color on>: hex color to use when indicator is on\n";
     printf "  -C <color off>: hex color to use when indicator is off\n";
+    printf "  --hide: don't output anything when indicator is off\n";
     printf "\n";
     printf "Note: environment variable \$BLOCK_INSTANCE should be one of:\n";
     printf "  CAPS, NUM (default is CAPS).\n";
@@ -40,7 +42,8 @@ sub help {
 Getopt::Long::config qw(no_ignore_case);
 GetOptions("help|h" => \&help,
            "c=s"    => \$color_on,
-           "C=s"    => \$color_off) or exit 1;
+           "C=s"    => \$color_off,
+           "hide"   => \$hide) or exit 1;
 
 # Key mapping
 my %indicators = (
@@ -59,10 +62,18 @@ while (<XSET>) {
 }
 close(XSET);
 
+# Determine if indicator is on or off
+my $indicator_status = ($indicators{$indicator} || 0) & $mask;
+
+# Exit if --hide and indicator is off
+if ($hide and !$indicator_status) {
+    exit 0
+}
+
 # Output
 printf "%s\n", $indicator;
 printf "%s\n", $indicator;
-if (($indicators{$indicator} || 0) & $mask) {
+if ($indicator_status) {
     printf "%s\n", $color_on;
 } else {
     printf "%s\n", $color_off;

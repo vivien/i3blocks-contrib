@@ -30,3 +30,15 @@ instance=NUM
 interval=once
 signal=11
 ```
+
+# Options
+
+```
+Usage: keyindicator [-c <color on>] [-C <color off>] [--hide]
+  -c <color on>: hex color to use when indicator is on
+  -C <color off>: hex color to use when indicator is off
+  --hide: don't output anything when indicator is off
+
+Note: environment variable $BLOCK_INSTANCE should be one of:
+  CAPS, NUM (default is CAPS).
+```
