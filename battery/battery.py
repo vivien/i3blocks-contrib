@@ -30,23 +30,30 @@ else:
     state = state_batteries[0]
     commasplitstatus = commasplitstatus_batteries[0]
     percentleft = int(sum(percentleft_batteries)/len(percentleft_batteries))
+
     # stands for charging
     FA_LIGHTNING = "<span color='yellow'><span font='FontAwesome'>\uf0e7</span></span>"
 
     # stands for plugged in
     FA_PLUG = "<span font='FontAwesome'>\uf1e6</span>"
 
-    fulltext = ""
+    # stands for using battery
+    FA_BATTERY = "<span font='FontAwesome'>\uf240</span>"
+
+    # stands for unknown status of battery
+    FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
+
     timeleft = ""
 
     if state == "Discharging":
         time = commasplitstatus[-1].split()[0]
         time = ":".join(time.split(":")[0:2])
         timeleft = " ({})".format(time)
+        fulltext = FA_BATTERY + " "
     elif state == "Full":
         fulltext = FA_PLUG + " "
     elif state == "Unknown":
-        fulltext = "<span font='FontAwesome'>\uf128</span> "
+        fulltext = FA_QUESTION + " " + FA_BATTERY + " "
     else:
         fulltext = FA_LIGHTNING + " " + FA_PLUG + " "
 
