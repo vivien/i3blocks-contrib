@@ -25,13 +25,17 @@ use File::Basename;
 my $indicator = $ENV{BLOCK_INSTANCE} || "CAPS";
 my $color_on  = "#00FF00";
 my $color_off = "#222222";
+my $bg_color_on = "#000000";
+my $bg_color_off = "#000000";
 my $hide      = 0;
 
 sub help {
     my $program = basename($0);
-    printf "Usage: %s [-c <color on>] [-C <color off>] [--hide]\n", $program;
+    printf "Usage: %s [-c <color on>] [-C <color off>] [-b <bg color on>] [-B <bg color off>] [--hide]\n", $program;
     printf "  -c <color on>: hex color to use when indicator is on\n";
     printf "  -C <color off>: hex color to use when indicator is off\n";
+    printf "  -b <background color on>: hex color to use when indicator is on\n";
+    printf "  -B <background color off>: hex color to use when indicator is off\n";
     printf "  --hide: don't output anything when indicator is off\n";
     printf "\n";
     printf "Note: environment variable \$BLOCK_INSTANCE should be one of:\n";
@@ -43,6 +47,8 @@ Getopt::Long::config qw(no_ignore_case);
 GetOptions("help|h" => \&help,
            "c=s"    => \$color_on,
            "C=s"    => \$color_off,
+           "b=s"    => \$bg_color_on,
+           "B=s"    => \$bg_color_off,
            "hide"   => \$hide) or exit 1;
 
 # Key mapping
@@ -71,11 +77,8 @@ if ($hide and !$indicator_status) {
 }
 
 # Output
-printf "%s\n", $indicator;
-printf "%s\n", $indicator;
-if ($indicator_status) {
-    printf "%s\n", $color_on;
-} else {
-    printf "%s\n", $color_off;
-}
+my $fg_color = $indicator_status ? $color_on : $color_off;
+my $bg_color = $indicator_status ? $bg_color_on : $bg_color_off;
+
+printf "<span color='%s' bgcolor='%s'>%s</span>\n", $fg_color, $bg_color, $indicator;
 exit 0
