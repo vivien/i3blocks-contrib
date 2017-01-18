@@ -54,6 +54,7 @@ done
 
 check_proc_net_dev
 
+iface=$(default_interface)
 while [ -z "$iface" ]; do
     echo No default interface
     sleep "$dt"
@@ -81,7 +82,6 @@ fi
 
 init_received=$(awk '{print $2}' <<< $init_line)
 init_sent=$(awk '{print $10}' <<< $init_line)
-sleep "$dt"
 
 (while true; do cat /proc/net/dev; sleep "$dt"; done) |\
     stdbuf -oL grep "^[ ]*$iface:" |\
