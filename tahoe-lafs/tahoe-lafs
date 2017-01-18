@@ -1,0 +1,22 @@
+#!/bin/bash
+
+NODE_URL=${BLOCK_INSTANCE%/}
+DISK_AVAIL=$(curl -s "$NODE_URL/statistics?t=json" 2>/dev/null| jq -r '.stats."storage_server.disk_avail"')
+
+if [[ -n "$DISK_AVAIL" ]] && [[ "$DISK_AVAIL" != "null" ]]; then
+    DISK_AVAIL=$(echo "$DISK_AVAIL" | awk '
+    {
+        GB=$1/1024/1024/1024
+        if(GB<1000){
+            printf "%.1fG\n", GB
+        }
+        else{
+            printf "%.1fT\n", GB/1024
+        }
+    }')
+    echo "tahoe: $DISK_AVAIL"
+else
+    echo "tahoe down"
+    echo "tahoe down"
+    echo "#FF0000"
+fi
