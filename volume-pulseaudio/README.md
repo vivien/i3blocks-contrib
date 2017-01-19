@@ -41,7 +41,7 @@ Options:
 	2	 symb vol [index]	 (default short)
 	3	 symb vol
 -p	Omit the percent sign (%) in volume
--a  Use ALSA name if possible
+-a	Use ALSA name if possible
 -H	Symbol to use when audio level is high. Default: '  '
 -M	Symbol to use when audio level is medium. Default: '  '
 -L	Symbol to use when audio level is low. Default: '  '
