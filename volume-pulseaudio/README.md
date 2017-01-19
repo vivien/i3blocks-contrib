@@ -32,7 +32,7 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 # Options
 
 ```
-Usage: volume-pulseaudio [-F format] [-f format] [-p] [-H symb] [-M symb]
+Usage: volume-pulseaudio [-F format] [-f format] [-p] [-a] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
 Options:
 -F, -f	Output format (-F long format, -f short format) to use, amonst:
@@ -41,6 +41,7 @@ Options:
 	2	 symb vol [index]	 (default short)
 	3	 symb vol
 -p	Omit the percent sign (%) in volume
+-a  Use ALSA name if possible
 -H	Symbol to use when audio level is high. Default: '  '
 -M	Symbol to use when audio level is medium. Default: '  '
 -L	Symbol to use when audio level is low. Default: '  '

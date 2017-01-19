@@ -17,12 +17,14 @@ MUTED_COLOR="#a0a0a0"
 LONG_FORMAT=0
 SHORT_FORMAT=2
 USE_PERCENT=1
+USE_ALSA_NAME=0
 
-while getopts F:f:pH:M:L:T:t:C:c:h opt; do
+while getopts F:f:paH:M:L:T:t:C:c:h opt; do
     case "$opt" in
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
         p) USE_PERCENT=0 ;;
+        a) USE_ALSA_NAME=1 ;;
         H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
         M) AUDIO_MED_SYMBOL="$OPTARG" ;;
         L) AUDIO_LOW_SYMBOL="$OPTARG" ;;
@@ -32,7 +34,7 @@ while getopts F:f:pH:M:L:T:t:C:c:h opt; do
         C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
         h) printf \
-"Usage: volume-pulseaudio [-F format] [-f format] [-p] [-H symb] [-M symb]
+"Usage: volume-pulseaudio [-F format] [-f format] [-p] [-a] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, amonst:
@@ -41,6 +43,7 @@ Options:
 \t2\t symb vol [index]\t (default short)
 \t3\t symb vol
 -p\tOmit the percent sign (%%) in volume
+-a\tUse ALSA name if possible
 -H\tSymbol to use when audio level is high. Default: '$AUDIO_HIGH_SYMBOL'
 -M\tSymbol to use when audio level is medium. Default: '$AUDIO_MED_SYMBOL'
 -L\tSymbol to use when audio level is low. Default: '$AUDIO_LOW_SYMBOL'
@@ -78,7 +81,22 @@ done < <(pacmd list-sinks | grep "index:\|name:\|volume: front\|muted:" | grep -
 INDEX=$(echo "$INDEX" | grep -o '[0-9]\+')
 VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
 VOL="${VOL%?}"
-NAME=$(echo "$NAME" | sed 's/.*\.\(.*\)>/\1/') 
+
+NAME=$(echo "$NAME" | sed \
+'s/.*<.*\.\(.*\)>.*/\1/; t;'\
+'s/.*<\(.*\)>.*/\1/; t;'\
+'s/.*/unknown/')
+
+if [[ $USE_ALSA_NAME == 1 ]] ; then
+    ALSA_NAME=$(
+        pacmd list-sinks |\
+        awk '/^\s*\*/{f=1}/^\s*index:/{f=0}f' |\
+        grep "alsa.name\|alsa.mixer_name" |\
+        head -n1 |\
+        sed 's/.*= "\(.*\)".*/\1/')
+    NAME=${ALSA_NAME:-$NAME}
+fi
+
 if [[ $MUTED =~ "no" ]] ; then
 	SYMBOL=$AUDIO_HIGH_SYMBOL
     [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMBOL=$AUDIO_MED_SYMBOL
