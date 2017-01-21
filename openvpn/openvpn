@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Made by Pierre Mavro/Deimosfr <deimos@deimos.fr>
 # Minor contribution by Thor K. H. <thor@roht.no>
 # Licensed under the terms of the GNU GPL v3, or any later version.
