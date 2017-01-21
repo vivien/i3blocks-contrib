@@ -17,7 +17,7 @@ Add the following to your i3blocks config:
 
 ```
 [monitors]
-command=$SCRIPT_DIR/monitor_manager.py
+command=$SCRIPT_DIR/monitor_manager
 interval=once
 ```
 

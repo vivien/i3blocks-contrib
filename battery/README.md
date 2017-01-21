@@ -22,7 +22,7 @@ To use with i3blocks, copy the blocklet configuration in the given `i3blocks.con
 
 ```INI
 [battery]
-command=$SCRIPT_DIR/battery.py
+command=$SCRIPT_DIR/battery
 markup=pango
 interval=30
 ```
