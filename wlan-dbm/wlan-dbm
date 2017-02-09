@@ -2,21 +2,28 @@
 
 [[ -n $BLOCK_INSTANCE ]] || BLOCK_INSTANCE=wlan0
 
-dbm=$(iw dev $BLOCK_INSTANCE link | grep -Eoe '-[0-9]{2}')
+IW=$(which iw || echo "/sbin/iw")
+
+if [[ ! -x $IW ]]; then
+	echo "No iw binary was found on the system." 1>2
+	exit 1
+fi
+
+dbm=$($IW dev $BLOCK_INSTANCE link | grep 'dBm$' | grep -Eoe '-[0-9]{2}')
 
 [[ -n $dbm ]] || exit 0
 
 echo ${dbm} dBm
-echo ${dbm} dBm
+echo ${dbm}
 
 if [[ $dbm -ge -55 ]]; then
-	echo \#00FF00
+	echo "#00FF00"
 elif [[ $dbm -ge -60 ]]; then
-	echo \#CCFF00
+	echo "#CCFF00"
 elif [[ $dbm -ge -70 ]]; then
-	echo \#FFFF00
+	echo "#FFFF00"
 elif [[ $dbm -ge -80 ]]; then
-	echo \#FFAA00
+	echo "#FFAA00"
 else
-	echo \#FF0000
+	echo "#FF0000"
 fi
