@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# i3blocks blocklet script to display wifi signal in dBm
 
-[[ -n $BLOCK_INSTANCE ]] || BLOCK_INSTANCE=wlan0
+IFACE="${BLOCK_INSTANCE:-wlan0}"
+USE_PERCENT=0
 
 IW=$(which iw || echo "/sbin/iw")
 
@@ -9,12 +12,30 @@ if [[ ! -x $IW ]]; then
 	exit 1
 fi
 
-dbm=$($IW dev $BLOCK_INSTANCE link | grep 'dBm$' | grep -Eoe '-[0-9]{2}')
+while getopts p opt; do
+    case "$opt" in
+        p) USE_PERCENT=1 ;;
+    esac
+done
 
-[[ -n $dbm ]] || exit 0
+dbm=$($IW dev "$IFACE" link | grep 'dBm$' | grep -Eoe '-[0-9]{2}')
 
-echo ${dbm} dBm
-echo ${dbm}
+[[ -n "$dbm" ]] || exit 1
+
+if [[ $USE_PERCENT -eq 0 ]]; then
+    echo "$dbm" dBm
+    echo "$dbm"
+else
+    if [[ "$dbm" -le -100 ]]; then
+        quality=0
+    elif [[ $dBm -ge -50 ]]; then
+        quality=100
+    else
+        quality=$((2 * (dbm + 100)))
+    fi
+    echo "$quality%"
+    echo "$quality%"
+fi
 
 if [[ $dbm -ge -55 ]]; then
 	echo "#00FF00"
