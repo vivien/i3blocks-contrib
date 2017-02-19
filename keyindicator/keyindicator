@@ -25,8 +25,8 @@ use File::Basename;
 my $indicator = $ENV{BLOCK_INSTANCE} || "CAPS";
 my $color_on  = "#00FF00";
 my $color_off = "#222222";
-my $bg_color_on = "#000000";
-my $bg_color_off = "#000000";
+my $bg_color_on;
+my $bg_color_off;
 my $hide      = 0;
 
 sub help {
@@ -80,5 +80,10 @@ if ($hide and !$indicator_status) {
 my $fg_color = $indicator_status ? $color_on : $color_off;
 my $bg_color = $indicator_status ? $bg_color_on : $bg_color_off;
 
-printf "<span color='%s' bgcolor='%s'>%s</span>\n", $fg_color, $bg_color, $indicator;
+if (defined $bg_color) {
+    printf "<span color='%s' bgcolor='%s'>%s</span>\n", $fg_color, $bg_color, $indicator;
+} else {
+    printf "<span color='%s'>%s</span>\n", $fg_color, $indicator;
+}
+
 exit 0
