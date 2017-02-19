@@ -36,7 +36,7 @@ signal=11
 # Options
 
 ```
-Usage: keyindicator [-c <color on>] [-C <color off>] [-b <bg color on>] [-B <bg color off] [--hide]
+Usage: keyindicator [-c <color on>] [-C <color off>] [-b <bg color on>] [-B <bg color off>] [--hide]
   -c <color on>: hex color to use when indicator is on
   -C <color off>: hex color to use when indicator is off
   -b <background color on>: hex color to use when indicator is on
