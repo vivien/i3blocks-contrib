@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Copyright 2016 Patrick Haun
-# Edited: Denis Kadyshev
+# Edited: 2017 Denis Kadyshev
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-setxkbmap -query | awk '
-    BEGIN{layout="";variant=""}
-    /^layout/{layout=$2}
-    /^variant/{variant=$2}
-    END{printf("%s%s",layout,variant)}'
+xset -q | awk -v l='unk' \
+    'function mask_compare(mask, code) {
+        # CapsLock: +1; NumLock: +2; Both Caps&Num lock: +3;
+        if (mask==code || mask==code+1 || mask==code+2 || mask==code+3)
+        return 1
+        return 0
+    }
+    /LED mask:/{
+        if (mask_compare($NF, "00000000")) l="en"
+        if (mask_compare($NF, "00001004")) l="ru"
+        # TODO: other languages goes here
+    } END {
+        print l
+    }'
