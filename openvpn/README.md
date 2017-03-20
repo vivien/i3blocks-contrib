@@ -14,6 +14,7 @@ interval=20
 
 Note: devices in configuration file should be named with their number (ex: tun0, tap1),
 as dynamic devices are not supported.
+Also make sure that your openvpn config filename ends in `.conf`.
 
 # Options
 
