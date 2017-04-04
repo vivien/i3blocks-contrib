@@ -19,7 +19,7 @@ SHORT_FORMAT=2
 USE_PERCENT=1
 USE_ALSA_NAME=0
 
-while getopts F:f:paH:M:L:T:t:C:c:h opt; do
+while getopts F:f:paH:M:L:X:T:t:C:c:h opt; do
     case "$opt" in
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
