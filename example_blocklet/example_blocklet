@@ -1,0 +1,100 @@
+#!/bin/bash
+#<PublicDomain>
+
+# Variables ]===================================================================
+
+# Although user modifiable variables in your blocklet are rather discouraged,
+# nothing stops you.
+
+full_text="Example"
+short_text="Example"
+color="#6c71c4"
+
+# Logic ]=======================================================================
+
+# If you want to use pango, use the -p option
+# For FontAwesome, please add -f
+while getopts ":fp" opt; do
+  case $opt in
+    f)
+	  full_text="$full_text (I)"
+	  short_text="I"
+    ;;
+    p)
+      if [[ "$1" == '-p' ]]; then
+        full_text="<b>$full_text</b>"
+        full_text="$full_text <i>with</i>"
+        full_text="$full_text <span size='large' foreground='#dc322f' background='#fdf6e3'>P"
+          full_text="$full_text<span foreground='#cb4b16'>a</span>"
+          full_text="$full_text<span foreground='#b58900'>n</span>"
+          full_text="$full_text<span foreground='#859900'>g</span>"
+          full_text="$full_text<span foreground='#268bd2'>o</span>"
+          full_text="$full_text<span foreground='#6c71c4'>!</span>"
+        full_text="$full_text</span>"
+
+		short_text="<b><i>$short_text</i></b>"
+      fi
+    ;;
+    ?)
+      echo "Invalid option: -$OPTARG"
+
+      # Exit with 33 will set the urgency to true
+      # Urgency sets the background to urgent_workspace background color
+      exit 33
+    ;;
+  esac
+done
+
+# Add the block instance parameter defined by instance=foo in the config
+# This is the proper way to pass a config preference 
+#   i.e. sda1, Speaker, eth0, etc...
+if [[ "$BLOCK_INSTANCE" ]]; then
+  full_text="$BLOCK_INSTANCE:$full_text"
+else 
+  full_text="NoInstance:$full_text"
+fi
+
+# Add the block name defined by [foobar] in the config
+# This SHOULD NOT be used for configuring your blocklet
+if [[ "$BLOCK_NAME" ]]; then
+  full_text="$BLOCK_NAME.$full_text"
+fi
+
+# Add the interval to the beginning (plus an 's')
+if [[ "$BLOCK_INTERVAL" ]]; then
+  full_text="[${BLOCK_INTERVAL}s]$full_text"
+fi
+
+# Change color and message on mouse click!
+if [[ "$BLOCK_BUTTON" ]]; then
+  # X and Y are absolute from the top left of the display
+  # This position is reported by i3bar, not i3blocks
+  full_text="X: $BLOCK_X | Y: $BLOCK_Y"
+
+  [[ "$BLOCK_BUTTON" -eq  1 ]] && color="#dc322f" # Red
+  [[ "$BLOCK_BUTTON" -eq  2 ]] && color="#cb4b16" # Orange
+  [[ "$BLOCK_BUTTON" -eq  3 ]] && color="#b58900" # Yellow
+  [[ "$BLOCK_BUTTON" -eq  4 ]] && color="#859900" # Green
+  [[ "$BLOCK_BUTTON" -eq  5 ]] && color="#2aa198" # Cyan
+  [[ "$BLOCK_BUTTON" -eq  6 ]] && color="#268bd2" # Blue
+  [[ "$BLOCK_BUTTON" -eq  7 ]] && color="#6c71c4" # Magenta
+  [[ "$BLOCK_BUTTON" -eq  8 ]] && color="#d33682" # Violet
+  [[ "$BLOCK_BUTTON" -eq  9 ]] && color="#ffffff" # White
+  [[ "$BLOCK_BUTTON" -eq 10 ]] && color="#000000" # Black
+fi
+
+# On right click, copy the block message to the clipboard
+[[ "$BLOCK_BUTTON" -eq 3 ]] && echo -n "$full_text" | xclip -q -l 1 & &> /dev/null
+
+# Display ]=====================================================================
+
+# The first line sent to STDOUT is the full text
+echo "$full_text"
+
+# The second, the short text
+echo "$short_text"
+# The short text is displayed instead when the bar is too full for the screen
+
+# Third, the color
+echo "$color"
+#</PublicDomain>
