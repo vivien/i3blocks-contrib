@@ -22,7 +22,6 @@
 readarray -t output <<< $(acpi battery)
 battery_count=${#output[@]}
 
-remainings=()
 for line in "${output[@]}";
 do
     percentages+=($(echo "$line" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%'))
