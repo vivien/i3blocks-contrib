@@ -88,7 +88,7 @@ do
     fi
 
     if [[ "${statuses[$i]}" = "Unknown" ]]; then
-        squares="<sup>?</sup>${squares[$i]}"
+        squares="<sup>?</sup>$squares"
     fi
 
     case "${statuses[$i]}" in
