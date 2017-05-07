@@ -93,13 +93,13 @@ do
 
     case "${statuses[$i]}" in
     "Charging")
-        colors="$charging_color"
+        color="$charging_color"
     ;;
     "Full")
-        colors="$full_color"
+        color="$full_color"
     ;;
     "AC")
-        colors="$ac_color"
+        color="$ac_color"
     ;;
     "Discharging"|"Unknown")
         if (( percentages[$i] >= 0 && percentages[$i] < 10 )); then
