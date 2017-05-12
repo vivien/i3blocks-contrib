@@ -3,6 +3,7 @@
 Be always on top of your available updates with this blocklet. Optionally show AUR updates with the help of yaourt. Colorize the outputs for if your system is up to date or you got available updates.
 
 ![](screenshot.png)
+
 ![](screenshot2.png)
 	
 # Dependencies
@@ -35,7 +36,7 @@ label=
 command=~/.config/i3blocks/scripts/arch-update.py -a -b "#5fff5f" -u "#FFFF85"
 markup=pango
 interval= 3600
-
+```
 # Configuration
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
 - `-u`/`--updates_available_color`: set the color of the output when updates are available
