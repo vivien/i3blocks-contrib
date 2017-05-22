@@ -84,7 +84,7 @@ void display(int const unit, double b, int const warning, int const critical)
     b = b * 8;
 
   if (b < 1024) {
-    printf("%5.1lf %c/s", b, unit);
+    printf("%5.1lf  %c/s", b, unit);
   } else if (b < 1024 * 1024) {
     printf("%5.1lf K%c/s", b / 1024, unit);
   } else if (b < 1024 * 1024 * 1024) {
