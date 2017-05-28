@@ -43,6 +43,7 @@ Options:
 -S  Subscribe to volume events (requires persistent block, always uses long format)
 -p	Omit the percent sign (%) in volume
 -a	Use ALSA name if possible
+-d  Use device description instead of name if possible
 -H	Symbol to use when audio level is high. Default: '  '
 -M	Symbol to use when audio level is medium. Default: '  '
 -L	Symbol to use when audio level is low. Default: '  '

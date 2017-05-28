@@ -18,16 +18,18 @@ LONG_FORMAT=0
 SHORT_FORMAT=2
 USE_PERCENT=1
 USE_ALSA_NAME=0
+USE_DESCRIPTION=0
 
 SUBSCRIBE=0
 
-while getopts F:Sf:paH:M:L:X:T:t:C:c:h opt; do
+while getopts F:Sf:padH:M:L:X:T:t:C:c:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
         p) USE_PERCENT=0 ;;
         a) USE_ALSA_NAME=1 ;;
+        d) USE_DESCRIPTION=1 ;;
         H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
         M) AUDIO_MED_SYMBOL="$OPTARG" ;;
         L) AUDIO_LOW_SYMBOL="$OPTARG" ;;
@@ -110,6 +112,13 @@ grep "alsa.name\|alsa.mixer_name" |\
 head -n1 |\
 sed 's/.*= "\(.*\)".*/\1/')
         NAME=${ALSA_NAME:-$NAME}
+    elif [[ $USE_DESCRIPTION == 1 ]] ; then
+        DESCRIPTION=$(pacmd list-sinks |\
+awk '/^\s*\*/{f=1}/^\s*index:/{f=0}f' |\
+grep "device.description" |\
+head -n1 |\
+sed 's/.*= "\(.*\)".*/\1/')
+        NAME=${DESCRIPTION:-$NAME}
     fi
 
     if [[ $MUTED =~ "no" ]] ; then
