@@ -39,7 +39,7 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:h opt; do
         C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
         h) printf \
-"Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a] [-H symb] [-M symb]
+"Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, amonst:
@@ -50,6 +50,7 @@ Options:
 -S\tSubscribe to volume events (requires persistent block, always uses long format)
 -p\tOmit the percent sign (%%) in volume
 -a\tUse ALSA name if possible
+-d\tUse device description instead of name if possible
 -H\tSymbol to use when audio level is high. Default: '$AUDIO_HIGH_SYMBOL'
 -M\tSymbol to use when audio level is medium. Default: '$AUDIO_MED_SYMBOL'
 -L\tSymbol to use when audio level is low. Default: '$AUDIO_LOW_SYMBOL'
