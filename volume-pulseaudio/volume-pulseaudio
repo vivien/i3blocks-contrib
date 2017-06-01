@@ -22,7 +22,7 @@ USE_DESCRIPTION=0
 
 SUBSCRIBE=0
 
-while getopts F:Sf:padH:M:L:X:T:t:C:c:mh opt; do
+while getopts F:Sf:padH:M:L:X:T:t:C:c:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
@@ -38,10 +38,9 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:mh opt; do
         t) AUDIO_LOW_THRESH="$OPTARG" ;;
         C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
-        m) MOVE_INPUT=1 ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] -m [-h]
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, amonst:
 \t0\t symb vol [index:name]\t (default long)
@@ -60,19 +59,17 @@ Options:
 -t\tThreshold for low audio level. Default: $AUDIO_LOW_THRESH
 -C\tColor for non-muted audio. Default: $DEFAULT_COLOR
 -c\tColor for muted audio. Default: $MUTED_COLOR
--m\tMove all pulse input when changing default sink
 -h\tShow this help text
 " && exit 0;;
     esac
 done
 
-function move_pulse_input {
-  DEFSINK=$(pacmd list-sinks | grep 'index:' | grep '*' | grep -o '[0-9]\+')
-  SINK=${1:-$DEFSINK}
-  pacmd list-sink-inputs | grep index | while read line
-  do
-    pacmd move-sink-input $(cut -f2 -d' ' <<< $line) $SINK
-  done
+function move_sinks_to_new_default {
+    DEFAULT_SINK=$1
+    pacmd list-sink-inputs | grep index: | grep -o '[0-9]\+' | while read SINK
+    do
+        pacmd move-sink-input $SINK $DEFAULT_SINK
+    done
 }
 
 function set_default_playback_device_next {
@@ -83,7 +80,7 @@ function set_default_playback_device_next {
     default_sink_index=$(( ($default_sink_index + $num_devices + $inc) % $num_devices ))
     default_sink=${sink_arr[$default_sink_index]}
     pacmd set-default-sink $default_sink
-    [[ $MOVE_INPUT == 1 ]] && move_pulse_input $default_sink
+    move_sinks_to_new_default $default_sink
 }
 
 case "$BLOCK_BUTTON" in
