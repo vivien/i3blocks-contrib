@@ -4,6 +4,7 @@
 # Licensed under the terms of the GNU GPL v3 only.
 #
 # i3blocks blocklet script to see the available updates of pacman and the AUR
+import subprocess
 from subprocess import check_output
 import argparse
 
@@ -44,7 +45,14 @@ def get_update_count():
 
 
 def get_aur_update_count():
-    output = check_output(['yaourt', '-Qua']).decode('utf-8')
+    output = ''
+    try:
+        output = check_output(['yaourt', '-Qua']).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # yaourt exits with 1 and no output if no updates are available.
+        # we ignore this case and go on
+        if not (exc.returncode == 1 and not exc.output):
+            raise exc
     if not output:
         return 0
 
