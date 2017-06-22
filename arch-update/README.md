@@ -38,6 +38,7 @@ markup=pango
 interval= 3600
 ```
 # Configuration
+- `-q`/`--quiet`: do not produce output if system is up to date
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
 - `-u`/`--updates_available_color`: set the color of the output when updates are available
 - `-a`/`--aur`: activate AUR update support  
