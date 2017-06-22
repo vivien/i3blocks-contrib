@@ -29,6 +29,12 @@ def create_argparse():
         action='store_true',
         help='Include AUR packages. Attn: Yaourt must be installed'
     )
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action = 'store_true',
+        help = 'Do not produce output when system is up to date'
+    )
     return parser.parse_args()
 
 
@@ -70,8 +76,8 @@ update_count = get_update_count()
 
 if args.aur:
     update_count += get_aur_update_count()
-if update_count == 0:
-    print(message.format(args.base_color, 'system up to date'))
-else:
+if update_count > 0:
     info = str(update_count) + ' updates available'
     print(message.format(args.updates_available_color, info))
+elif not args.quiet:
+    print(message.format(args.base_color, 'system up to date'))
