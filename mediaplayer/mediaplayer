@@ -131,7 +131,12 @@ sub playerctl {
 
 sub rhythmbox {
     buttons('rhythmbox');
-
+    
+    #don't always open a rhythmbox if one isn't already open
+    if (system("pgrep -x rhythmbox >/dev/null 2>&1") != 0) {
+        print(' - ');
+        exit(0);
+    }
     my $data = qx(rhythmbox-client --print-playing);
     print($data);
 }
