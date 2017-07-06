@@ -139,10 +139,12 @@ sub rhythmbox {
 if ($player_arg eq '' or $player_arg =~ /mpd/) {
     mpd;
 }
-if ($player_arg =~ /cmus/) {
+elsif ($player_arg =~ /cmus/) {
     cmus;
 }
-if ($player_arg =~ /rhythmbox/) {
+elsif ($player_arg =~ /rhythmbox/) {
     rhythmbox;
 }
-playerctl;
+else {
+    playerctl;
+}
