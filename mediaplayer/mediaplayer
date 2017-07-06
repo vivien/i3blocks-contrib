@@ -68,6 +68,14 @@ sub buttons {
             system("playerctl $player_arg next");
             usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
         }
+    } elsif ($method eq 'rhythmbox') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("rhythmbox-client --previous");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("rhythmbox-client --play-pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("rhythmbox-client --next");
+        }
     }
 }
 
@@ -121,10 +129,20 @@ sub playerctl {
     print(join(" - ", @metadata)) if @metadata;
 }
 
+sub rhythmbox {
+    buttons('rhythmbox');
+
+    my $data = qx(rhythmbox-client --print-playing);
+    print($data);
+}
+
 if ($player_arg eq '' or $player_arg =~ /mpd/) {
     mpd;
 }
 if ($player_arg =~ /cmus/) {
     cmus;
+}
+if ($player_arg =~ /rhythmbox/) {
+    rhythmbox;
 }
 playerctl;

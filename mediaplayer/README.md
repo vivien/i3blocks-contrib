@@ -13,6 +13,7 @@ Supported players are:
 use MPRIS DBus Interface Specification
 - mpd
 - cmus
+- rhythmbox
 
 mpd is supported through mpc (music player client).
 
