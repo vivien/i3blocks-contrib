@@ -81,7 +81,7 @@ iostat -dyz "$dt" | awk -v sep="$sep" "
             printf \"\n\";
             fflush(stdout);
         }
-        else if(\$1~/^Device:/) {
+        else if(\$1~/^Device:?/) {
             rx = wx = 0;
         }
         else if(\$1~$regex) {
