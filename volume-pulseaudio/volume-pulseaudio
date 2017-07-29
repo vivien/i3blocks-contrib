@@ -11,6 +11,8 @@ AUDIO_LOW_SYMBOL='  '
 
 AUDIO_MUTED_SYMBOL='  '
 
+AUDIO_INTERVAL=5
+
 DEFAULT_COLOR="#ffffff"
 MUTED_COLOR="#a0a0a0"
 
@@ -22,7 +24,7 @@ USE_DESCRIPTION=0
 
 SUBSCRIBE=0
 
-while getopts F:Sf:padH:M:L:X:T:t:C:c:h opt; do
+while getopts F:Sf:padH:M:L:X:T:t:C:c:i:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
@@ -38,9 +40,10 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:h opt; do
         t) AUDIO_LOW_THRESH="$OPTARG" ;;
         C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
+        i) AUDIO_INTERVAL="$OPTARG" ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, amonst:
 \t0\t symb vol [index:name]\t (default long)
@@ -59,6 +62,7 @@ Options:
 -t\tThreshold for low audio level. Default: $AUDIO_LOW_THRESH
 -C\tColor for non-muted audio. Default: $DEFAULT_COLOR
 -c\tColor for muted audio. Default: $MUTED_COLOR
+-i\tInterval size of volume increase/decrease. Default: $AUDIO_INTERVAL
 -h\tShow this help text
 " && exit 0;;
     esac
@@ -87,8 +91,8 @@ case "$BLOCK_BUTTON" in
     1) set_default_playback_device_next ;;
     2) amixer -q -D pulse sset Master toggle ;;
     3) set_default_playback_device_next -1 ;;
-    4) amixer -q -D pulse sset Master 5%+ ;;
-    5) amixer -q -D pulse sset Master 5%- ;;
+    4) amixer -q -D pulse sset Master $AUDIO_INTERVAL%+ ;;
+    5) amixer -q -D pulse sset Master $AUDIO_INTERVAL%- ;;
 esac
 
 function print_format {
