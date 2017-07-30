@@ -29,16 +29,17 @@ label=Updates:
 interval=3600
 markup=pango
 ```
-Another advanced example with fontawesome label, AUR updates included and custom colors for both messages:
+Another advanced example with fontawesome label, AUR updates included, watched packages, and custom colors for both messages:
 ```ini
 [pacman-updates]
 label=
-command=~/.config/i3blocks/scripts/arch-update.py -a -b "#5fff5f" -u "#FFFF85"
+command=~/.config/i3blocks/scripts/arch-update.py -a -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
 markup=pango
 interval= 3600
 ```
 # Configuration
 - `-q`/`--quiet`: do not produce output if system is up to date
+- `-w`/`--watch`: Explicitly watch for specified packages. Listed elements are treated as regular expressions for matching.
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
 - `-u`/`--updates_available_color`: set the color of the output when updates are available
 - `-a`/`--aur`: activate AUR update support  

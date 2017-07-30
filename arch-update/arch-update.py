@@ -7,6 +7,7 @@
 import subprocess
 from subprocess import check_output
 import argparse
+import re
 
 
 def create_argparse():
@@ -35,22 +36,30 @@ def create_argparse():
         action = 'store_true',
         help = 'Do not produce output when system is up to date'
     )
+    parser.add_argument(
+        '-w',
+        '--watch',
+        nargs='*',
+        default=[],
+        help='Explicitly watch for specified packages. '
+        'Listed elements are treated as regular expressions for matching.'
+    )
     return parser.parse_args()
 
 
-def get_update_count():
+def get_updates():
     output = check_output(['checkupdates']).decode('utf-8')
     if not output:
-        return 0
+        return []
 
-    updates = [line
+    updates = [line.split(' ')[0]
                for line in output.split('\n')
                if line]
 
-    return len(updates)
+    return updates
 
 
-def get_aur_update_count():
+def get_aur_updates():
     output = ''
     try:
         output = check_output(['yaourt', '-Qua']).decode('utf-8')
@@ -60,24 +69,38 @@ def get_aur_update_count():
         if not (exc.returncode == 1 and not exc.output):
             raise exc
     if not output:
-        return 0
+        return []
 
-    aur_updates = [line
+    aur_updates = [line.split(' ')[0]
                    for line in output.split('\n')
                    if line.startswith('aur/')]
 
-    return len(aur_updates)
+    return aur_updates
+
+
+def matching_updates(updates, watch_list):
+    matches = set()
+    for u in updates:
+        for w in watch_list:
+            if re.match(w, u):
+                matches.add(u)
+
+    return matches
 
 
 message = "<span color='{0}'>{1}</span>"
 args = create_argparse()
 
-update_count = get_update_count()
-
+updates = get_updates()
 if args.aur:
-    update_count += get_aur_update_count()
+    updates += get_aur_updates()
+
+update_count = len(updates)
 if update_count > 0:
     info = str(update_count) + ' updates available'
+    matches = matching_updates(updates, args.watch)
+    if matches:
+        info += ' [{0}]'.format(', '.join(matches))
     print(message.format(args.updates_available_color, info))
 elif not args.quiet:
     print(message.format(args.base_color, 'system up to date'))
