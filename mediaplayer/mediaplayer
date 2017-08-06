@@ -67,6 +67,10 @@ sub buttons {
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("playerctl $player_arg next");
             usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("playerctl $player_arg volume 0.01+");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("playerctl $player_arg volume 0.01-");
         }
     } elsif ($method eq 'rhythmbox') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
