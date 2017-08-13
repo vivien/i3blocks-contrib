@@ -43,17 +43,22 @@ else:
     # stands for unknown status of battery
     FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
 
-    timeleft = ""
-
-    if state == "Discharging":
-        time = commasplitstatus[-1].split()[0]
+    time = commasplitstatus[-1]
+    if time != "rate information unavailable":
+        time = time.split()[0]
         time = ":".join(time.split(":")[0:2])
         timeleft = " ({})".format(time)
+    else:
+        timeleft = ""
+
+    if state == "Discharging":
         fulltext = FA_BATTERY + " "
     elif state == "Full":
         fulltext = FA_PLUG + " "
+        timeleft = ""
     elif state == "Unknown":
         fulltext = FA_QUESTION + " " + FA_BATTERY + " "
+        timeleft = ""
     else:
         fulltext = FA_LIGHTNING + " " + FA_PLUG + " "
 
