@@ -5,6 +5,7 @@
 #
 # A battery indicator blocklet script for i3blocks
 
+import re
 from subprocess import check_output
 
 status = check_output(['acpi'], universal_newlines=True)
@@ -43,10 +44,11 @@ else:
     # stands for unknown status of battery
     FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
 
-    time = commasplitstatus[-1]
-    if time != "rate information unavailable":
-        time = time.split()[0]
-        time = ":".join(time.split(":")[0:2])
+    time = commasplitstatus[-1].strip()
+    # check if it matches a time
+    time = re.match(r"(\d+):(\d+)", time)
+    if time:
+        time = ":".join(time.groups())
         timeleft = " ({})".format(time)
     else:
         timeleft = ""
