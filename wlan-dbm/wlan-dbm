@@ -28,7 +28,7 @@ if [[ $USE_PERCENT -eq 0 ]]; then
 else
     if [[ "$dbm" -le -100 ]]; then
         quality=0
-    elif [[ $dBm -ge -50 ]]; then
+    elif [[ $dbm -ge -50 ]]; then
         quality=100
     else
         quality=$((2 * (dbm + 100)))
