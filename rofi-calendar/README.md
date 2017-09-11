@@ -1,6 +1,6 @@
 # rofi-calendar
 
-Have a minimal calendar pop up when clicking the date blocklet
+Have a minimal calendar pop up in rofi when clicking the date blocklet
 
 ![](screenshot.png)
 
@@ -14,8 +14,8 @@ Have a minimal calendar pop up when clicking the date blocklet
 
 * Copy the script into your directory of choice, e.g. ~/.i3blocks/blocklets
 * Give it execution permission (`chmod +x rofi-calendar`)
-* Edit rofi launch options to fit your needs
-* Add the following blocket to your i3blocks.conf:
+* Edit rofi launch options in the script to fit your needs
+* Add the following blocklet to your i3blocks.conf:
 
 ```ini
 [rofi-calendar]
