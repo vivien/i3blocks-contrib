@@ -21,7 +21,7 @@ cal --color=always \
         -eh 1 \
         -width -22 \
         -no-custom \
-        -p "$date" 
+        -p "$date" > /dev/null 
     esac
 echo $blockdate
 date '+%d.%m.%Y'
