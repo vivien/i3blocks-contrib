@@ -18,6 +18,8 @@ Usage: battery-bar-icon [OPTION] color
 
 ![](full.png)
 
+![](ac.png)
+
 ![](charging.png)
 
 ![](unplugged.png)
