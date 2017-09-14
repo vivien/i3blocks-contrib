@@ -1,13 +1,21 @@
-#! /bin/sh
+#!/bin/sh
 
 blockdate=$(date '+%a. %d. %b. %Y')
 
 case "$BLOCK_BUTTON" in
     1|2|3) date=$(date '+%A, %d. %B')
 export TERM=xterm
+
+datelen=$(echo $date | wc -m )
+
+if [ $datelen -gt 22 ]; then
+    date=$(date '+%A %d. %b.')  
+fi
+
 cal --color=always \
     | sed 's/\x1b\[[7;]*m/\<b\>\<u\>/g' \
     | sed 's/\x1b\[[27;]*m/\<\/u\>\<\/b\>/g' \
+    | sed 's/^/ /' \
     | tail -n +2 \
     | rofi \
         -dmenu \
@@ -21,7 +29,9 @@ cal --color=always \
         -eh 1 \
         -width -22 \
         -no-custom \
-        -p "$date" > /dev/null 
+        -p "$date" >/dev/null
+   
     esac
 echo $blockdate
 date '+%d.%m.%Y'
+
