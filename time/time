@@ -1,0 +1,57 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $click = shift || 0;
+my $tz_file = shift || "$ENV{HOME}/.tz";
+
+my $current_tz;
+if ($click == 1) {
+	$current_tz = get_tz();
+
+	my %tzmap = (
+		""                   => "Europe/London",
+		"Europe/London"      => "Brazil/East",
+		"Brazil/East"        => "Australia/Brisbane",
+		"Australia/Brisbane" => "Asia/Calcutta",
+		"Asia/Calcutta"      => "Europe/London",
+	);
+
+	if (exists $tzmap{$current_tz}) {
+		set_tz($tzmap{$current_tz});
+		$current_tz = $tzmap{$current_tz};
+	}
+}
+
+my %display_map = (
+	"Europe/London"      => "UK",
+	"Brazil/East"        => "Brazil",
+	"Australia/Brisbane" => "AU",
+	"Asia/Calcutta"      => "Hyderabad",
+);
+
+$ENV{TZ} = $current_tz || get_tz();
+print "".localtime() . " ($display_map{$ENV{TZ}})";
+
+
+sub get_tz {
+	my $current_tz = "Europe/London";
+
+	if (-f "$ENV{HOME}/.tz") {
+		open my $fh, '<', $tz_file;
+		$current_tz = <$fh>;
+		chomp $current_tz;
+		close $fh;
+	}
+
+	return $current_tz;
+}
+
+sub set_tz {
+	my $tz = shift;
+
+	open my $fh, '>', $tz_file;
+	print $fh $tz;
+	close $fh;
+}
