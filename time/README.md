@@ -14,9 +14,12 @@ To use with i3blocks, copy the below configuration into your i3blocks configurat
 
 ```INI
 [time]
-command=$SCRIPT_DIR/time ${BLOCK_BUTTON} [/path/to/tz/file]
+instance=%Y-%m-%d %H:%M
+command=$SCRIPT_DIR/time [/path/to/tz/file]
 interval=1
 ```
+
+Instance is an optional time format string. See [strftime](https://linux.die.net/man/3/strftime).
 
 # Configuration
 

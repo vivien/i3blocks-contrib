@@ -2,8 +2,10 @@
 
 use strict;
 use warnings;
+use POSIX qw/strftime/;
 
-my $click   = shift || 0;
+my $click   = $ENV{BLOCK_BUTTON} || 0;
+my $format  = $ENV{BLOCK_INSTANCE};
 my $tz_file = shift || "$ENV{HOME}/.tz";
 
 my $current_tz;
@@ -15,7 +17,7 @@ if ($click == 1) {
 	# Entries must be present in /usr/share/zoneinfo (Olson DB).
 	my %tzmap = (
 		""                   => $default_tz,
-		$current_tz          => "Brazil/East",
+		$default_tz          => "Brazil/East",
 		"Brazil/East"        => "Australia/Brisbane",
 		"Australia/Brisbane" => "Asia/Calcutta",
 		"Asia/Calcutta"      => $default_tz,
@@ -38,7 +40,8 @@ my %display_map = (
 $ENV{TZ}       = $current_tz || get_tz();
 my $tz_display = $display_map{$ENV{TZ}} || $ENV{TZ};
 
-print localtime() . " ($tz_display)";
+my $time = $format ? strftime($format, localtime()) : localtime();
+print "$time ($tz_display)";
 
 
 sub get_tz {
