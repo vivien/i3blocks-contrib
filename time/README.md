@@ -37,7 +37,7 @@ my %tzmap = (
 	);
 ```
 
-This hash defines how each timezone should be displayed (ie. Europe/London displays as "UK")
+This hash defines how each timezone should be displayed (e.g. Australia/Brisbane displays as "AU")
 ```perl
 my %display_map = (
 	$default_tz          => "Home",
