@@ -1,6 +1,6 @@
 # time
 
-Show the current time and changes displayed timezone on click.
+Shows the current time and changes displayed timezone on click.
 
 ![](time.png)
 
@@ -20,6 +20,7 @@ interval=1
 ```
 
 Instance is an optional time format string. See [strftime](https://linux.die.net/man/3/strftime).
+If `/path/to/tz/file` is omitted, the script uses `$HOME/.tz` by default.
 
 # Configuration
 
@@ -28,18 +29,18 @@ In the script there are two hashes that control the timezones used and the way t
 This hash defines the timezones that are switched to when clicking (ie. clicking when displaying Europe/London switches to Brazil/East)
 ```perl
 my %tzmap = (
-	""                   => "Europe/London",
-	"Europe/London"      => "Brazil/East",
-	"Brazil/East"        => "Australia/Brisbane",
-	"Australia/Brisbane" => "Asia/Calcutta",
-	"Asia/Calcutta"      => "Europe/London",
-);
+		""                   => $default_tz,
+		$default_tz          => "Brazil/East",
+		"Brazil/East"        => "Australia/Brisbane",
+		"Australia/Brisbane" => "Asia/Calcutta",
+		"Asia/Calcutta"      => $default_tz,
+	);
 ```
 
 This hash defines how each timezone should be displayed (ie. Europe/London displays as "UK")
 ```perl
 my %display_map = (
-	"Europe/London"      => "UK",
+	$default_tz          => "Home",
 	"Brazil/East"        => "Brazil",
 	"Australia/Brisbane" => "AU",
 	"Asia/Calcutta"      => "Hyderabad",
