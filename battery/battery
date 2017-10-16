@@ -26,11 +26,16 @@ else:
         if battery!='':
             state_batteries.append(battery.split(": ")[1].split(", ")[0])
             commasplitstatus = battery.split(", ")
-            percentleft_batteries.append(int(commasplitstatus[1].rstrip("%\n")))
+            p = int(commasplitstatus[1].rstrip("%\n"))
+            if p>0:
+                percentleft_batteries.append(p)
             commasplitstatus_batteries.append(commasplitstatus)
     state = state_batteries[0]
     commasplitstatus = commasplitstatus_batteries[0]
-    percentleft = int(sum(percentleft_batteries)/len(percentleft_batteries))
+    if percentleft_batteries:
+        percentleft = int(sum(percentleft_batteries)/len(percentleft_batteries))
+    else:
+        percentleft = 0
 
     # stands for charging
     FA_LIGHTNING = "<span color='yellow'><span font='FontAwesome'>\uf0e7</span></span>"
