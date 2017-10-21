@@ -5,10 +5,18 @@ blockdate=$(date '+%a. %d. %b. %Y')
 case "$BLOCK_BUTTON" in
     1|2|3) date=$(date '+%A, %d. %B')
 export TERM=xterm
+
+#resize the date when it's longer than 22 chars
+datelen=$(echo $date | wc -m )
+if [ $datelen -gt 22 ]; then
+    date=$(date '+%A %d. %b.')
+fi
+# use sed to translate highlighted day to pango syntax
 cal --color=always \
     | sed 's/\x1b\[[7;]*m/\<b\>\<u\>/g' \
     | sed 's/\x1b\[[27;]*m/\<\/u\>\<\/b\>/g' \
     | tail -n +2 \
+    | sed 's/^/ /' \
     | rofi \
         -dmenu \
         -markup-rows \
