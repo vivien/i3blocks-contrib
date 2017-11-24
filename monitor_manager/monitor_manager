@@ -346,6 +346,9 @@ class MonitorManager():
                     command += ["--off"]
             if firstActive:
                 prevFirstActive = firstActive
+        self.root.after_idle(lambda: self.executeXrandrCommand(command))
+
+    def executeXrandrCommand(self, command):
         try:
             check_output(command, universal_newlines=True)
         except CalledProcessError as err:
