@@ -45,7 +45,7 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:i:h opt; do
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] [-h]
 Options:
--F, -f\tOutput format (-F long format, -f short format) to use, amonst:
+-F, -f\tOutput format (-F long format, -f short format) to use, amongst:
 \t0\t symb vol [index:name]\t (default long)
 \t1\t symb vol [name]
 \t2\t symb vol [index]\t (default short)

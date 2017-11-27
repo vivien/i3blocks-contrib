@@ -35,7 +35,7 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-h]
 Options:
--F, -f	Output format (-F long format, -f short format) to use, amonst:
+-F, -f	Output format (-F long format, -f short format) to use, amongst:
 	0	 symb vol [index:name]	 (default long)
 	1	 symb vol [name]
 	2	 symb vol [index]	 (default short)
