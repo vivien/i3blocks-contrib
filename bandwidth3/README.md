@@ -1,8 +1,8 @@
-# bandwidth
+# bandwidth3
 
 Monitor bandwidth usage.
 
-![](bandwidth.png)
+![](bandwidth3.png)
 
 # Usage
 
@@ -31,7 +31,7 @@ to wifi later.
 # Options
 
 ```
-Usage: bandwidth [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
+Usage: bandwidth3 [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
 Options:
 -i  Network interface to measure. Default determined using `ip route`.
 -t  Time interval in seconds between measurements. Default: 3

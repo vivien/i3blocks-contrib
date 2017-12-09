@@ -36,7 +36,7 @@ while getopts i:t:u:p:lh opt; do
         p) printf_command="$OPTARG" ;;
         l) list_interfaces && exit 0 ;;
         h) printf \
-"Usage: bandwidth [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
+"Usage: bandwidth3 [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
 Options:
 -i\tNetwork interface to measure. Default determined using \`ip route\`.
 -t\tTime interval in seconds between measurements. Default: 3
