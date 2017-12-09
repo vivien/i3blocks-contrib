@@ -8,6 +8,7 @@ Show battery info.
 
 ```
 [battery]
+command=$SCRIPT_DIR/battery
 label=BAT
 #label=⚡
 #instance=1

@@ -8,6 +8,7 @@ Show bandwidth information
 
 ```
 [bandwidth]
+command=$SCRIPT_DIR/bandwidth
 #instance=eth0
 interval=5
 ```
