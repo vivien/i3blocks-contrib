@@ -1,4 +1,4 @@
-# battery 
+# battery2
 
 Show the current status of your battery.
 
@@ -21,8 +21,8 @@ fonts-font-awesome, acpi, python3
 To use with i3blocks, copy the blocklet configuration in the given `i3blocks.conf` into your i3blocks configuration file, the recommended config is
 
 ```INI
-[battery]
-command=$SCRIPT_DIR/battery
+[battery2]
+command=$SCRIPT_DIR/battery2
 markup=pango
 interval=30
 ```
