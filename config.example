@@ -78,6 +78,7 @@ separator=false
 
 [wifi]
 #instance=wlp3s0
+label=wifi:
 interval=10
 separator=false
 
@@ -95,8 +96,9 @@ interval=10
 min_width=CPU: 100.00%
 #separator=false
 
-#[load_average]
-#interval=10
+[load_average]
+label=LOAD
+interval=10
 
 # Battery indicator
 #
