@@ -4,7 +4,11 @@ Show system temperatures.
 
 ![](temperature.png)
 
-Support multiple chips, through *lm-sensors*.
+# Dependencies
+
+* `lm-sensors`
+
+# Usage
 
 The script may be called with `-w` and `-c` switches to specify 
 thresholds, see the script for details.
