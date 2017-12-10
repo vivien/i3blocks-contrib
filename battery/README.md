@@ -4,6 +4,10 @@ Show battery info.
 
 ![](battery.png)
 
+# Dependencies
+
+* `acpi`
+
 # Config
 
 ```
