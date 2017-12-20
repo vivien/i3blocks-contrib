@@ -1,6 +1,8 @@
 # apt-upgrades
 
-Show the number of pending system upgrades.
+Show the number of pending system upgrades, as reported by aptitude.
+More specifically, show: packages upgraded, newly installed, to remove, and not upgraded.
+
 
 ![](apt-upgrades.png)
 
