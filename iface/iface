@@ -32,21 +32,30 @@ fi
 
 #------------------------------------------------------------------------
 
-if [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; then
-  echo down # full text
-  echo down # short text
+AF=inet6?
+LABEL=""
+
+for flag in "$1" "$2"; do
+  case "$flag" in
+    -4)
+      AF=inet ;;
+    -6)
+      AF=inet6 ;;
+    -L)
+      if [[ "$IF" = "" ]]; then
+        LABEL="iface "
+      else
+        LABEL="$IF: "
+      fi ;;
+  esac
+done
+
+if [[ "$IF" = "" ]] || [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; then
+  echo "${LABEL}down" # full text
+  echo "${LABEL}down" # short text
   echo \#FF0000 # color
   exit
 fi
-
-case $1 in
-  -4)
-    AF=inet ;;
-  -6)
-    AF=inet6 ;;
-  *)
-    AF=inet6? ;;
-esac
 
 # if no interface is found, use the first device with a global scope
 IPADDR=$(ip addr show $IF | perl -n -e "/$AF ([^\/]+).* scope global/ && print \$1 and exit")
@@ -57,5 +66,5 @@ esac
 
 #------------------------------------------------------------------------
 
-echo "$IPADDR" # full text
-echo "$IPADDR" # short text
+echo "$LABEL$IPADDR" # full text
+echo "$LABEL$IPADDR" # short text
