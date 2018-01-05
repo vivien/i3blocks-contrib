@@ -36,3 +36,7 @@ instance=Master
 interval=once
 signal=10
 ```
+
+The script takes two optional parameters: step size and mixer selection, e.g. `$SCRIPT_DIR/volume "5%" default`.
+By default the script tries to make a reasonable choice for the mixer. If it does not work for your setup (e.g. for (un)muting), try to figure out the parameter using `amixer info`.
+
