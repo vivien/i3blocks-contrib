@@ -40,7 +40,7 @@ GetOptions("help|h" => \&help,
 # Get GPU usage from nvidia-settings
 open (NVS, 'nvidia-settings -q GPUUtilization -t |') or die;
 while (<NVS>) {
-    if (/^[a-zA-Z]*=(\d+) [a-zA-Z]*=(\d+) [a-zA-Z]*=(\d+) [a-zA-Z]*=(\d+)$/) {
+    if (/^[a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+)$/) {
         $gpu_usage = $1;
 	$gpu_mem = $2;
 	$gpu_video = $3;
