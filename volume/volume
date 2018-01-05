@@ -18,12 +18,17 @@
 #------------------------------------------------------------------------
 
 # The second parameter overrides the mixer selection
-# For PulseAudio users, use "pulse"
+# For PulseAudio users, eventually use "pulse"
 # For Jack/Jack2 users, use "jackplug"
 # For ALSA users, you may use "default" for your primary card
 # or you may use hw:# where # is the number of the card desired
 MIXER="default"
-[ -n "$(lsmod | grep pulse)" ] && MIXER="pulse"
+if [ command -v pulseaudio >/dev/null 2>&1 && pulseaudio --check ] ; then
+    # pulseaudio is running, but not all installations use "pulse"
+    if [ "$(amixer info | head -1 | cut -d ' ' -f 2)" == "pulse" ] ; then
+        MIXER="pulse"
+    fi
+fi
 [ -n "$(lsmod | grep jack)" ] && MIXER="jackplug"
 MIXER="${2:-$MIXER}"
 
