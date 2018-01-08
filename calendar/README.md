@@ -26,6 +26,8 @@ label=
 interval=1
 ```
 
+* Add `for_window [class="Yad"] floating enable` to your i3 config file. Unfortunately this is neccessary [because of a bug in `yad`](https://sourceforge.net/p/yad-dialog/tickets/301/). You may skip this step if you want to open the calendar popup as a normal tile instead.
+
 # Configuration
 
 You may want to
