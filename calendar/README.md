@@ -16,17 +16,19 @@ This is similar to the rofi-calendar blocklet, but without the rofi dependency a
 # Installation
 
 * Copy the script into your directory of choice, e.g. ~/.i3blocks/blocklets
-* Give it execution permission (`chmod +x calendar.sh`)
+* Give it execution permission (`chmod +x calendar`)
 * Add the script to your i3blocks.conf, for example like this:
 
 ```ini
 [calendar]
-command=$SCRIPT_DIR/calendar.sh
+command=$SCRIPT_DIR/calendar
 label=
 interval=1
 ```
 
-* Add `for_window [class="Yad"] floating enable` to your i3 config file. Unfortunately this is neccessary [because of a bug in `yad`](https://sourceforge.net/p/yad-dialog/tickets/301/). You may skip this step if you want to open the calendar popup as a normal tile instead.
+* Add `for_window [class="Yad"] floating enable` to your i3 config file.
+Unfortunately this is neccessary [because of a bug in `yad`](https://sourceforge.net/p/yad-dialog/tickets/301/).
+You may skip this step if you want to open the calendar popup as a normal tile instead.
 
 # Configuration
 
