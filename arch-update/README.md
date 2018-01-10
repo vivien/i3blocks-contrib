@@ -18,13 +18,13 @@ Be always on top of your available updates with this blocklet. Optionally show A
 
 # Installation
 
-* Copy the arch-update.py script into your directory of choice, e.g. ~/.i3blocks/
-* Give it execution permission (`chmod +x arch-update.py`)
+* Copy the arch-update script into your directory of choice, e.g. ~/.i3blocks/
+* Give it execution permission (`chmod +x arch-update`)
 * Add the following blocket to your i3blocks.conf:
 
 ```ini
 [arch-update]
-command=$SCRIPT_DIR/arch-update.py #run arch-update.py -h for options
+command=$SCRIPT_DIR/arch-update 
 label=Updates:
 interval=3600
 markup=pango
@@ -33,7 +33,7 @@ Another advanced example with fontawesome label, AUR updates included, watched p
 ```ini
 [pacman-updates]
 label=
-command=~/.config/i3blocks/scripts/arch-update.py -a -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
+command=$SCRIPT_DIR/arch-update -a -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
 markup=pango
 interval= 3600
 ```
@@ -43,4 +43,4 @@ interval= 3600
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
 - `-u`/`--updates_available_color`: set the color of the output when updates are available
 - `-a`/`--aur`: activate AUR update support  
-For the latest options call `$SCRIPT_DIR/arch-update.py -h`.
+For the latest options call `$SCRIPT_DIR/arch-update -h`.
