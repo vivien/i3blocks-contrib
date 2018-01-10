@@ -41,15 +41,16 @@ Instead of using `signal=1` in the configuration, you can use `interval=3600`
 to have the script execute every hour.
 This method avoids the usage of apt/dpkg hooks.
 
-# Options
+# Config
 
-```
-Usage: apt-upgrades [-s pending_symbol] [-o] [-c pending_color] [-N|-n nonpending_color] [-h]
-Options:
--s  Specify a refresh symbol. Default: "\uf021 "
--o  Show refresh symbol only, but no numbers.
--c  Color when upgrade is pending. Default:  #00FF00
--n  Color when no upgrade is pending. Default: #FFFFFF
--N  Only display text if upgrade is pending (supercedes -n)
--h  Show this help text
+```INI
+[apt-upgrades]
+command=$SCRIPT_DIR/apt-upgrades
+signal=1
+interval=once
+#PENDING_SYMBOL="\uf021 "
+#SYMBOL_ONLY=0
+#ALWAYS_PRINT=1
+#PENDING_COLOR="#00FF00"
+#NONPENDING_COLOR="#FFFFFF"
 ```
