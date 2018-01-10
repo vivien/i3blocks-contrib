@@ -34,9 +34,9 @@ done
 [[ -z $OUTLABEL ]] && OUTLABEL="OUT "
 
 # Use the provided interface, otherwise the device used for the default route.
-if [[ -n $BLOCK_INSTANCE ]]; then
+if [[ -z $INTERFACE ]] && [[ -n $BLOCK_INSTANCE ]]; then
   INTERFACE=$BLOCK_INSTANCE
-else
+elif [[ -z $INTERFACE ]]; then
   INTERFACE=$(ip route | awk '/^default/ { print $5 ; exit }')
 fi
 
