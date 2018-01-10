@@ -9,6 +9,8 @@ Show bandwidth information
 ```
 [bandwidth]
 command=$SCRIPT_DIR/bandwidth
-#instance=eth0
 interval=5
+#INTERFACE=eth0
+#INLABEL="IN "
+#OUTLABEL="OUT "
 ```
