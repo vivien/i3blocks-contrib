@@ -10,15 +10,15 @@ use warnings;
 use utf8;
 use Data::Validate::URI;
 
-my $cache_default = 1048576;
-my $signal = 4;
+my $cache_default = $ENV{CACHE_DEFAULT} || 1048576;
+my $signal = $ENV{SIGNAL} || or die;
 my $notify_i3bar = "pkill -RTMIN+$signal i3blocks";
 my $string = qx/xclip -out/;
 $string =~ s/[';\\]//g; # remove characters that can cause i3-msg to crash
 my $uriValidator = new Data::Validate::URI();
 my $BLOCK_BUTTON = $ENV{BLOCK_BUTTON} || 0;
-my $PLAYING_COLOR = "red";
-my $NOT_PLAYING_COLOR = "white";
+my $PLAYING_COLOR = $ENV{PLAYING_COLOR} || "red";
+my $NOT_PLAYING_COLOR = $ENV{PLAYING_COLOR} || "white";
 my $USER = $ENV{USER};
 my $i3cmd = "";
 my $i3cmdexitstatus = 0;
