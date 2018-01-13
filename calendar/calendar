@@ -4,6 +4,23 @@ width=200
 height=200
 datefmt="+%a %d.%m.%Y %H:%M:%S"
 
+OPTIND=1
+while getopts ":f:W:H:" opt; do
+    case $opt in
+        f) datefmt="$OPTARG" ;;
+        W) width="$OPTARG" ;;
+        H) height="$OPTARG" ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument." >&2
+            exit 1
+            ;;
+    esac
+done
+
 case "$BLOCK_BUTTON" in
   1|2|3) 
 
