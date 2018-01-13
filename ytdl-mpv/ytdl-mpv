@@ -11,7 +11,7 @@ use utf8;
 use Data::Validate::URI;
 
 my $cache_default = $ENV{CACHE_DEFAULT} || 1048576;
-my $signal = $ENV{SIGNAL} || or die;
+my $signal = $ENV{signal} || 1;
 my $notify_i3bar = "pkill -RTMIN+$signal i3blocks";
 my $string = qx/xclip -out/;
 $string =~ s/[';\\]//g; # remove characters that can cause i3-msg to crash
