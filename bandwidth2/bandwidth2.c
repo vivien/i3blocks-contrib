@@ -98,8 +98,35 @@ void display(int const unit, double b, int const warning, int const critical)
 int main(int argc, char *argv[])
 {
   int c, unit = 'B', t = 1;
-  char *iface = NULL;
+  char iface[BUFSIZ] = {0};
   int warningrx = 0, warningtx = 0, criticalrx = 0, criticaltx = 0;
+  char *envvar = NULL;
+
+  envvar = getenv("USE_BITS");
+  if (envvar && *envvar == '1')
+    unit = 'b';
+  envvar = getenv("USE_BYTES");
+  if (envvar && *envvar == '1')
+    unit = 'B';
+  envvar = getenv("REFRESH_TIME");
+  if (envvar)
+    t = atoi(envvar);
+  envvar = getenv("INTERFACE");
+  if (envvar)
+    snprintf(iface, BUFSIZ, "%s:", envvar);
+  envvar = getenv("WARN_RX");
+  if (envvar)
+      warningrx = atoi(envvar);
+  envvar = getenv("WARN_TX");
+  if (envvar)
+      warningtx = atoi(envvar);
+  envvar = getenv("CRIT_RX");
+  if (envvar)
+      criticalrx = atoi(envvar);
+  envvar = getenv("CRIT_TX");
+  if (envvar)
+      criticaltx = atoi(envvar);
+
   while (c = getopt(argc, argv, "bBht:i:w:c:"), c != -1) {
     switch (c) {
     case 'b':
@@ -110,7 +137,7 @@ int main(int argc, char *argv[])
       t = atoi(optarg);
       break;
     case 'i':
-      iface = strcat(optarg, ":");
+      snprintf(iface, BUFSIZ, "%s:", optarg);
       break;
     case 'w':
       sscanf(optarg, "%d:%d", &warningrx, &warningtx);
@@ -132,7 +159,7 @@ int main(int argc, char *argv[])
 
   while (1) {
     sleep(t);
-    get_values(iface, &s, &received, &sent);
+    get_values(iface[0] ? iface : NULL, &s, &received, &sent);
 
     rx = (received - received_old) / (float)(s - s_old);
     tx = (sent - sent_old) / (float)(s - s_old);
