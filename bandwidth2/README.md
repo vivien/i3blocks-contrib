@@ -16,26 +16,32 @@ It comes with some other features though:
 make
 ```
 
-### Example Blocklet
+### Config
 ```ini
 [bandwidth]
 label=
-command=$SCRIPT_DIR/bandwidth2 -w 307200:30720 -c 512000:51200
+command=$SCRIPT_DIR/bandwidth2 
 interval=persist
 markup=pango
+#INTERFACE=(checks all interfaces)
+#USE_BITS=0
+#USE_BYES=1
+#WARN_RX=0
+#WARN_TX=0
+#CRIT_RX=0
+#CRIT_TX=0
 ```
 
-## Options
+E.g.
 
-```
-Usage: ./bandwidth2 [-b|B] [-t seconds] [-i interface] [-w Bytes:Bytes] [-c Bytes:Bytes] [-h]
-
--b              use bits/s
--B              use Bytes/s  (default)
--t seconds      refresh time (default is 1)
--i interface    network interface to monitor. If not specified, check all interfaces.
--w Bytes:Bytes  Set warning (color orange) for Rx:Tx bandwidth. (default: none)
--c Bytes:Bytes  Set critical (color red) for Rx:Tx bandwidth. (default: none)
--h              this help
-
+```ini
+[bandwidth]
+label=
+command=$SCRIPT_DIR/bandwidth2 
+interval=persist
+markup=pango
+WARN_RX=307200
+WARN_TX=30720
+CRIT_RX=512000
+CRIT_TX=51200
 ```
