@@ -1,8 +1,9 @@
 # volume-pulseaudio
 
 Display the system volume and
-optionally the default playback device and index.
-Offers controls for these via clicks.
+optionally the default playback device and indeax.
+Offers controls for these via clicks/scrolling.
+Supports changing audiostreams that are already playing.
 
 ![](volume-pulseaudio-high.png)
 ![](volume-pulseaudio-med.png)
@@ -31,6 +32,36 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 The previous lines also assume your mixer is "pulse" and your scontrol is "Master".
 If yours are different, change them appropriately.
 
+Alternatively to using signals, you may use the `SUBSCRIBE=1` option in your config in order to have the block
+automatically respond to audio change events. This option requires `interval=persist`
+and always uses the `LONG_FORMAT`.
+
+# Config
+
+```INI
+[volume-pulseaudio]
+command=$SCRIPT_DIR/volume-pulseaudio
+interval=once
+signal=1
+#MIXER=[determined automatically]
+#SCONTROL=[determined automatically]
+##exposed format variables: ${SYMB}, ${VOL}, ${INDEX}, ${NAME}
+#LONG_FORMAT="${SYMB} ${VOL}% [${INDEX}:${NAME}]"
+#SHORT_FORMAT="${SYMB} ${VOL}% [${INDEX}]"
+#AUDIO_HIGH_SYMBOL='  '
+#AUDIO_MED_THRESH=50
+#AUDIO_MED_SYMBOL='  '
+#AUDIO_LOW_THRESH=0
+#AUDIO_LOW_SYMBOL='  '
+#AUDIO_DELTA=5
+#DEFAULT_COLOR="#ffffff"
+#MUTED_COLOR="#a0a0a0"
+#USE_ALSA_NAME=0
+#USE_DESCRIPTION=0
+## SUBSCRIBE=1 requires interval=persist and always uses LONG_FORMAT
+#SUBSCRIBE=0
+```
+
 # Known bug
 
 The script tries its best to guess your mixer and scontrol variables, which are needed for
@@ -44,33 +75,3 @@ In almost all cases, one of the following two will work
 
 If neither of these works for you, try using `alsamixer`, `amixer`, and `amixer info` to guide your guesses,
 and let us know what turned out to work.
-
-# Options
-
-```
-Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
-        [-m mixer] [-s scontrol] [-h]
-Options:
--F, -f	Output format (-F long format, -f short format) to use, amongst:
-	0	 symb vol [index:name]	 (default long)
-	1	 symb vol [name]
-	2	 symb vol [index]	 (default short)
-	3	 symb vol
--S	Subscribe to volume events (requires persistent block, always uses long format)
--p	Omit the percent sign (%) in volume
--a	Use ALSA name if possible
--d	Use device description instead of name if possible
--H	Symbol to use when audio level is high. Default: '  '
--M	Symbol to use when audio level is medium. Default: '  '
--L	Symbol to use when audio level is low. Default: '  '
--X	Symbol to use when audio is muted. Default: '  '
--T	Threshold for medium audio level. Default: 50
--t	Threshold for low audio level. Default: 0
--C	Color for non-muted audio. Default: #ffffff
--c	Color for muted audio. Default: #a0a0a0
--i	Interval size of volume increase/decrease. Default: 5
--m	Use the given mixer.
--s	Use the given scontrol.
--h	Show this help text
-```
