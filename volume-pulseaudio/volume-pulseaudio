@@ -1,35 +1,38 @@
 #!/bin/bash
 # Displays the default device, volume, and mute status for i3blocks
 
-AUDIO_HIGH_SYMBOL='  '
+set -a
 
-AUDIO_MED_THRESH=50
-AUDIO_MED_SYMBOL='  '
+AUDIO_HIGH_SYMBOL=${AUDIO_HIGH_SYMBOL:-'  '}
 
-AUDIO_LOW_THRESH=0
-AUDIO_LOW_SYMBOL='  '
+AUDIO_MED_THRESH=${AUDIO_MED_THRESH:-50}
+AUDIO_MED_SYMBOL=${AUDIO_MED_SYMBOL:-'  '}
 
-AUDIO_MUTED_SYMBOL='  '
+AUDIO_LOW_THRESH=${AUDIO_LOW_THRESH:-0}
+AUDIO_LOW_SYMBOL=${AUDIO_LOW_SYMBOL:-'  '}
 
-AUDIO_INTERVAL=5
+AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
 
-DEFAULT_COLOR="#ffffff"
-MUTED_COLOR="#a0a0a0"
+AUDIO_DELTA=${AUDIO_DELTA:-5}
 
-LONG_FORMAT=0
-SHORT_FORMAT=2
-USE_PERCENT=1
-USE_ALSA_NAME=0
-USE_DESCRIPTION=0
+DEFAULT_COLOR=${DEFAULT_COLOR:-"#ffffff"}
+MUTED_COLOR=${MUTED_COLOR:-"#a0a0a0"}
 
-SUBSCRIBE=0
+LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
+SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
+USE_ALSA_NAME=${USE_ALSA_NAME:-0}
+USE_DESCRIPTION=${USE_DESCRIPTION:-0}
 
-while getopts F:Sf:padH:M:L:X:T:t:C:c:i:m:s:h opt; do
+SUBSCRIBE=${SUBSCRIBE:-0}
+
+MIXER=${MIXER:-""}
+SCONTROL=${SCONTROL:-""}
+
+while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
-        p) USE_PERCENT=0 ;;
         a) USE_ALSA_NAME=1 ;;
         d) USE_DESCRIPTION=1 ;;
         H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
@@ -48,13 +51,9 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:i:m:s:h opt; do
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
         [-m mixer] [-s scontrol] [-h]
 Options:
--F, -f\tOutput format (-F long format, -f short format) to use, amongst:
-\t0\t symb vol [index:name]\t (default long)
-\t1\t symb vol [name]
-\t2\t symb vol [index]\t (default short)
-\t3\t symb vol
+-F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
+\${SYMB}, \${VOL}, \${INDEX}, \${NAME}
 -S\tSubscribe to volume events (requires persistent block, always uses long format)
--p\tOmit the percent sign (%%) in volume
 -a\tUse ALSA name if possible
 -d\tUse device description instead of name if possible
 -H\tSymbol to use when audio level is high. Default: '$AUDIO_HIGH_SYMBOL'
@@ -65,7 +64,7 @@ Options:
 -t\tThreshold for low audio level. Default: $AUDIO_LOW_THRESH
 -C\tColor for non-muted audio. Default: $DEFAULT_COLOR
 -c\tColor for muted audio. Default: $MUTED_COLOR
--i\tInterval size of volume increase/decrease. Default: $AUDIO_INTERVAL
+-i\tInterval size of volume increase/decrease. Default: $AUDIO_DELTA
 -m\tUse the given mixer.
 -s\tUse the given scontrol.
 -h\tShow this help text
@@ -110,19 +109,12 @@ case "$BLOCK_BUTTON" in
     1) set_default_playback_device_next ;;
     2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
     3) set_default_playback_device_next -1 ;;
-    4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_INTERVAL%+ ;;
-    5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_INTERVAL%- ;;
+    4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
+    5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
 esac
 
 function print_format {
-    PERCENT="%"
-    [[ $USE_PERCENT == 0 ]] && PERCENT=""
-    case "$1" in
-        1) echo "$SYMBOL$VOL$PERCENT [$NAME]" ;;
-        2) echo "$SYMBOL$VOL$PERCENT [$INDEX]";;
-        3) echo "$SYMBOL$VOL$PERCENT" ;;
-        *) echo "$SYMBOL$VOL$PERCENT [$INDEX:$NAME]" ;;
-    esac
+    echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
 }
 
 function print_block {
@@ -155,12 +147,12 @@ sed 's/.*= "\(.*\)".*/\1/')
     fi
 
     if [[ $MUTED =~ "no" ]] ; then
-        SYMBOL=$AUDIO_HIGH_SYMBOL
+        SYMB=$AUDIO_HIGH_SYMBOL
         [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMBOL=$AUDIO_MED_SYMBOL
         [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMBOL=$AUDIO_LOW_SYMBOL
         COLOR=$DEFAULT_COLOR
     else
-        SYMBOL=$AUDIO_MUTED_SYMBOL
+        SYMB=$AUDIO_MUTED_SYMBOL
         COLOR=$MUTED_COLOR
     fi
 
