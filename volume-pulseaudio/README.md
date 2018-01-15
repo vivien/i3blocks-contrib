@@ -61,17 +61,3 @@ signal=1
 ## SUBSCRIBE=1 requires interval=persist and always uses LONG_FORMAT
 #SUBSCRIBE=0
 ```
-
-# Known bug
-
-The script tries its best to guess your mixer and scontrol variables, which are needed for
-scrolling up/down and muting with middle click to work.
-However, there are an unknown number of edge cases and no known way to account for all of them. 
-Therefore, the `-m` and `-s`flags are provided to specify them manually. 
-In almost all cases, one of the following two will work
-
-- `-m default -s Master`
-- `-m pulse -s Master`
-
-If neither of these works for you, try using `alsamixer`, `amixer`, and `amixer info` to guide your guesses,
-and let us know what turned out to work.
