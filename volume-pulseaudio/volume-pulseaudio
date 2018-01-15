@@ -148,8 +148,8 @@ sed 's/.*= "\(.*\)".*/\1/')
 
     if [[ $MUTED =~ "no" ]] ; then
         SYMB=$AUDIO_HIGH_SYMBOL
-        [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMBOL=$AUDIO_MED_SYMBOL
-        [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMBOL=$AUDIO_LOW_SYMBOL
+        [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
+        [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
         COLOR=$DEFAULT_COLOR
     else
         SYMB=$AUDIO_MUTED_SYMBOL
