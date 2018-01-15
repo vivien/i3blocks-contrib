@@ -24,7 +24,7 @@ USE_DESCRIPTION=0
 
 SUBSCRIBE=0
 
-while getopts F:Sf:padH:M:L:X:T:t:C:c:i:h opt; do
+while getopts F:Sf:padH:M:L:X:T:t:C:c:i:m:s:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
@@ -41,9 +41,12 @@ while getopts F:Sf:padH:M:L:X:T:t:C:c:i:h opt; do
         C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
         i) AUDIO_INTERVAL="$OPTARG" ;;
+        m) MIXER="$OPTARG" ;;
+        s) SCONTROL="$OPTARG" ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] [-h]
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
+        [-m mixer] [-s scontrol] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, amongst:
 \t0\t symb vol [index:name]\t (default long)
@@ -63,17 +66,24 @@ Options:
 -C\tColor for non-muted audio. Default: $DEFAULT_COLOR
 -c\tColor for muted audio. Default: $MUTED_COLOR
 -i\tInterval size of volume increase/decrease. Default: $AUDIO_INTERVAL
+-m\tUse the given mixer.
+-s\tUse the given scontrol.
 -h\tShow this help text
 " && exit 0;;
     esac
 done
 
-MIXER="default"
-if [[ "$(amixer info | head -1 | cut -d ' ' -f 2)" == "pulse" ]] ; then
-    MIXER="pulse"
+if [[ -z "$MIXER" ]] ; then
+    MIXER="default"
+    if [[ "$(amixer info | head -1 | cut -d ' ' -f 2)" == "pulse" ]] ; then
+        MIXER="pulse"
+    fi
 fi
 
-SCONTROL=$(amixer -D "$MIXER" scontrols | sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" | head -n1)
+if [[ -z "$SCONTROL" ]] ; then
+    SCONTROL=$(amixer -D "$MIXER" scontrols | sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" | head -n1)
+fi
+
 CAPABILITY=$(amixer -D $MIXER get $SCONTROL | sed -n "s/  Capabilities:.*cvolume.*/Capture/p")
 
 
