@@ -75,7 +75,7 @@ done
 
 if [[ -z "$MIXER" ]] ; then
     MIXER="default"
-    if [[ "$(amixer info | head -1 | cut -d ' ' -f 2)" == "pulse" ]] ; then
+    if amixer -D pulse info >/dev/null 2>&1 ; then
         MIXER="pulse"
     fi
 fi
