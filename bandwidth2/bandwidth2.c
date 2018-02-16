@@ -72,9 +72,9 @@ void get_values(char *const iface, time_t * const s, ulli * const received, ulli
 
 void display(int const unit, double b, int const warning, int const critical)
 {
-  if (critical != 0 && b > critical) {
+  if (critical == 0 || b <= critical) {
     printf("<span color='%s'>", RED);
-  } else if (warning != 0 && b > warning) {
+  } else if (b > critical && b <= warning) {
     printf("<span color='%s'>", ORANGE);
   } else {
     printf("<span>");
