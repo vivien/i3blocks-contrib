@@ -3,6 +3,7 @@
 WIDTH=${WIDTH:-200}
 HEIGHT=${HEIGHT:-200}
 DATEFMT=${DATEFMT:-"+%a %d.%m.%Y %H:%M:%S"}
+SHORTFMT=${SHORTFMT:-"+%H:%M:%S"}
 
 OPTIND=1
 while getopts ":f:W:H:" opt; do
@@ -36,3 +37,4 @@ case "$BLOCK_BUTTON" in
 	    > /dev/null"
 esac
 date "$DATEFMT"
+date "$SHORTFMT"

@@ -25,6 +25,7 @@ command=$SCRIPT_DIR/calendar
 label=
 interval=1
 DATEFMT=+%H:%M:%S
+# SHORTFMT=+%H:%M:%S
 HEIGHT=180
 WIDTH=220
 ```
