@@ -1,0 +1,19 @@
+{
+  "name": "electron-hue-color-picker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },  
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "~1.8.2"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "node-hue-api": "^2.4.2",
+    "node-ipc": "^9.1.1"
+  }
+}

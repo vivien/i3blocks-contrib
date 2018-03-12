@@ -1,0 +1,30 @@
+html {
+
+}
+body {
+    background: transparent;
+    border-radius: 5px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.container {
+    margin: 20px auto;
+    text-align: justify;
+    width: 600px;
+}
+
+.colorpicker {
+    background-color: #222222;
+    color: #FFFFFF;
+    font-size: 12px;
+    position: absolute;
+}
+
+#picker {
+    cursor: crosshair;
+    float: left;
+    margin: 10px;
+    border: 0;
+}
