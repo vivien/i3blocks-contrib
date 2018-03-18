@@ -140,7 +140,7 @@ sub rhythmbox {
     print($data);
 }
 
-if ($player_arg eq '' or $player_arg =~ /mpd/) {
+if ($player_arg =~ /mpd/) {
     mpd;
 }
 elsif ($player_arg =~ /cmus/) {
