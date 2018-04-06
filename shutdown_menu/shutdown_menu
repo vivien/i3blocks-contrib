@@ -171,7 +171,10 @@ function ask_confirmation() {
   fi
 
   if [ "${confirmed}" == 0 ]; then
-    i3-msg -q "exec ${menu[${selection}]}"
+    output=$(${menu[${selection}]} 2>&1)
+    if [[ $? -ne 0 ]]; then
+      notify-send --urgency=critical "Failed to ${selection}" "$output"
+    fi
   fi
 }
 
@@ -180,6 +183,9 @@ if [[ $? -eq 0 && ! -z ${selection} ]]; then
         ${menu_confirm} =~ (^|[[:space:]])"${selection}"($|[[:space:]]) ]]; then
     ask_confirmation
   else
-    i3-msg -q "exec ${menu[${selection}]}"
+    output=$(${menu[${selection}]} 2>&1)
+    if [[ $? -ne 0 ]]; then
+      notify-send --urgency=critical "Failed to ${selection}" "$output"
+    fi
   fi
 fi
