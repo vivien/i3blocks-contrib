@@ -24,6 +24,11 @@ This is similar to the rofi-calendar blocklet, but without the rofi dependency a
 command=$SCRIPT_DIR/calendar
 label=
 interval=1
+DATEFMT=+%H:%M:%S
+# SHORTFMT=+%H:%M:%S
+HEIGHT=180
+WIDTH=220
+POSITION=bottom
 ```
 
 * Add `for_window [class="Yad"] floating enable` to your i3 config file.
@@ -32,11 +37,12 @@ You may skip this step if you want to open the calendar popup as a normal tile i
 
 # Configuration
 
-Parameters:
+Parameters _[deprecated!]_:
 
 * `-f FMT`: date/time format (default _+%a %d.%m.%Y %H:%M:%S_)
 * `-W WIDTH`: width of the window (default _200_)
 * `-H HEIGHT`: height of the window (default _200_)
+* `-p POSITION`: position of the window (default _bottom_)
 
 Additionally you may want to
 
