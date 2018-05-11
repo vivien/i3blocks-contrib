@@ -71,6 +71,12 @@ import argparse
 def pangoEscape(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
+def getRootDevicePaths():
+    lines = check_output(['lsblk', '-pndo', 'NAME'], universal_newlines=True)
+    lines = lines.split("\n")
+    lines = filter(None, lines)
+    return lines
+
 def getLeafDevicePaths():
     lines = check_output(['lsblk', '-spndo', 'NAME'], universal_newlines=True)
     lines = lines.split("\n")
@@ -333,7 +339,14 @@ def setParsedArgs(args):
         fastIgnore = newFastIgnore
 
 parseArguments()
+
+roots = getRootDevicePaths()
+roots = [path for path in roots if not fastIgnore(path)]
+attributeMaps = getAttributeMaps(roots)
+roots = [path for path in roots if attributeMaps[path]["ID_BUS"] == "usb"]
+
 leaves = getLeafDevicePaths()
+leaves = [path for path in leaves if path.startswith(tuple(roots))]
 leaves = [path for path in leaves if not fastIgnore(path)]
 attributeMaps = getAttributeMaps(leaves)
 leaves = (path for path in leaves if not ignore(path, attributeMaps[path]))
