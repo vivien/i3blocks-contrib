@@ -18,7 +18,7 @@ If an invalid interface is specified, nothing is printed.
 [iface]
 command=$SCRIPT_DIR/iface
 #label=wlan0:
-#instance=wlan0
+#IFACE=wlan0
 color=#00FF00
 interval=10
 ```
