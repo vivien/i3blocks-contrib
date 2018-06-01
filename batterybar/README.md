@@ -23,9 +23,21 @@ Left-clicking briefly shows the battery level in percent.
 
 ```ini
 [batterybar]
-command=$SCRIPT_DIR/batterybar #run batterybar -h for options
+command=$SCRIPT_DIR/batterybar
 label=bat:
 interval=5
 markup=pango
 min_width=bat: ■■■■■
+# Discharging colors low to high
+#C1=#FF0027
+#C2=#FF3B05
+#C3=#FFB923
+#C4=#FFD000
+#C5=#E4FF00
+#C6=#ADFF00
+#C7=#6DFF00
+#C8=#10BA00
+#CHARGING_COLOR=#00AFE3
+#FULL_COLOR=#FFFFFF
+#AC_COLOR=#535353
 ```
