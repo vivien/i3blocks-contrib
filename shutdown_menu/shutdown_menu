@@ -30,30 +30,30 @@
 #LOCKSCRIPT="i3lock-extra -m pixelize"
 
 # Colors: FG (foreground), BG (background), HL (highlighted)
-FG_COLOR="#bbbbbb"
-BG_COLOR="#111111"
-HLFG_COLOR="#111111"
-HLBG_COLOR="#bbbbbb"
-BORDER_COLOR="#222222"
+FG_COLOR="${FG_COLOR:-#bbbbbb}"
+BG_COLOR="${BG_COLOR:-#111111}"
+HLFG_COLOR="${HLFG_COLOR:-#111111}"
+HLBG_COLOR="${HLBG_COLOR:-#bbbbbb}"
+BORDER_COLOR="${BORDER_COLOR:-#222222}"
 
 # Options not related to colors
-ROFI_TEXT="Menu:"
-ROFI_OPTIONS=(-width -11 -location 3 -hide-scrollbar -bw 2)
+ROFI_TEXT="${ROFI_TEXT:-Menu:}"
+ROFI_OPTIONS=(${ROFI_OPTIONS:--width 11 -location 3 -hide-scrollbar -bw 2})
 
 # Zenity options
-ZENITY_TITLE="Menu"
-ZENITY_TEXT="Action:"
-ZENITY_OPTIONS=(--column= --hide-header)
+ZENITY_TITLE="${ZENITY_TITLE:-Menu}"
+ZENITY_TEXT="${ZENITY_TEXT:-Action:}"
+ZENITY_OPTIONS=(${ZENITY_OPTIONS:---column= --hide-header})
 
 #######################################################################
 #                             END CONFIG                              #
 #######################################################################
 
 # Whether to ask for user's confirmation
-enable_confirmation=false
+enable_confirmation=${ENABLE_CONFIRMATIONS:-false}
 
 # Preferred launcher if both are available
-preferred_launcher="rofi"
+preferred_launcher="${LAUNCHER:-rofi}"
 
 usage="$(basename "$0") [-h] [-c] [-p name] -- display a menu for shutdown, reboot, lock etc.
 
@@ -97,6 +97,7 @@ while getopts "hcp:" option; do
        ;;
   esac
 done
+check_launcher "${preferred_launcher}"
 
 # Check whether a command exists
 function command_exists() {
