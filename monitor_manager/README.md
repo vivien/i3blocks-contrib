@@ -19,9 +19,18 @@ Add the following to your i3blocks config:
 [monitors]
 command=$SCRIPT_DIR/monitor_manager
 interval=once
+#SHOW_ON_OFF=1
+#SHOW_NAMES=1
+#SHOW_PRIMARY=1
+#SHOW_MODE=1
+#SHOW_BLANKED=1
+#SHOW_DUPLICATE=1
+#SHOW_ROTATION=1
+#SHOW_REFLECTION=1
+#SHOW_BRIGHTNESS=1
+#SHOW_BRIGHTNESS_VALUE=0
+#SHOW_UP_DOWN=1
+#FONT_FAMILY=DejaVu Sans Mono
+#FONT_SIZE=11
+#CLOSE_TO_BOUNDARY_BUFFER=20
 ```
-
-There are also some options that can be tinkered with at the top of the file.
-The `SHOW_*` variables can be set to `False` in order to hide those components.
-E.g. if you don't care about reflection, set `SHOW_REFLECTION = False` and the
-button for reflection will not appear.
