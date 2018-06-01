@@ -40,30 +40,38 @@ CANCEL_SYMBOL = "\uf00d"
 ARANDR_SYMBOL = "\uf085"
 REFRESH_SYMBOL = "\uf021"
 
-SHOW_ON_OFF = True 
-SHOW_NAMES = True
-SHOW_PRIMARY = True 
-SHOW_MODE = True 
-SHOW_BLANKED = True
-SHOW_DUPLICATE = True
-SHOW_ROTATION = True 
-SHOW_REFLECTION = True 
-SHOW_BRIGHTNESS = True
-SHOW_BRIGHTNESS_VALUE = False
-SHOW_UP_DOWN = True
+strbool = lambda s: s.lower() in ['t', 'true', '1']
+def _default(name, default='', arg_type=strbool):
+    val = default
+    if name in os.environ:
+        val = os.environ[name]
+    return arg_type(val)
+
+
+SHOW_ON_OFF = _default("SHOW_ON_OFF","1") 
+SHOW_NAMES = _default("SHOW_NAMES", "1")
+SHOW_PRIMARY = _default("SHOW_PRIMARY", "1")
+SHOW_MODE = _default("SHOW_MODE", "1")
+SHOW_BLANKED = _default("SHOW_BLANKED", "1")
+SHOW_DUPLICATE = _default("SHOW_DUPLICATE", "1")
+SHOW_ROTATION = _default("SHOW_ROTATION", "1")
+SHOW_REFLECTION = _default("SHOW_REFLECTION", "1") 
+SHOW_BRIGHTNESS = _default("SHOW_BRIGHTNESS", "1")
+SHOW_BRIGHTNESS_VALUE = _default("SHOW_BRIGHTNESS_VALUE", "0")
+SHOW_UP_DOWN = _default("SHOW_UP_DOWN", "1")
 
 FONTAWESOME_FONT_FAMILY = "FontAwesome"
 FONTAWESOME_FONT_SIZE = 11
 FONTAWESOME_FONT = (FONTAWESOME_FONT_FAMILY, FONTAWESOME_FONT_SIZE)
-DEFAULT_FONT_FAMILY = "DejaVu Sans Mono"
-DEFAULT_FONT_SIZE = 11
+DEFAULT_FONT_FAMILY = _default("FONT_FAMILY","DejaVu Sans Mono", str)
+DEFAULT_FONT_SIZE = _default("FONT_SIZE", 11, int)
 DEFAULT_FONT = (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE)
 
 BRIGHTNESS_SLIDER_HANDLE_LENGTH = 20
 BRIGHTNESS_SLIDER_WIDTH = 15
 BRIGHTNESS_SLIDER_LENGTH = 50
 
-WINDOW_CLOSE_TO_BOUNDARY_BUFFER = 20
+WINDOW_CLOSE_TO_BOUNDARY_BUFFER = _default("CLOSE_TO_BOUNDARY_BUFFER", 20, int)
 
 class Output:
     def __init__(self, name=None, w=None, h=None, x=None, y=None, rate=None,
