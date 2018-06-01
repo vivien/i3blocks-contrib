@@ -22,12 +22,12 @@ use Getopt::Long;
 use File::Basename;
 
 # Default values
-my $indicator = $ENV{BLOCK_INSTANCE} || "CAPS";
-my $color_on  = "#00FF00";
-my $color_off = "#222222";
-my $bg_color_on;
-my $bg_color_off;
-my $hide      = 0;
+my $indicator = $ENV{BLOCK_INSTANCE} || $ENV{KEY} || "CAPS";
+my $color_on  = $ENV{COLOR_ON} || "#00FF00";
+my $color_off = $ENV{COLOR_OFF} || "#222222";
+my $bg_color_on = $ENV{BG_COLOR_ON};
+my $bg_color_off = $ENV{BG_COLOR_OFF};
+my $hide      = $ENV{HIDE_WHEN_OFF} || 0;
 
 sub help {
     my $program = basename($0);

@@ -20,17 +20,24 @@ Use the following in your i3blocks config file:
 ``` ini
 [keyindicator]
 command=$SCRIPT_DIR/keyindicator
-instance=CAPS
+#Allowed keys are CAPS and NUM
+KEY=CAPS
 markup=pango
 interval=once
 signal=11
+#COLOR_ON=#00FF00
+#COLOR_OFF=#222222
+#BG_COLOR_ON=
+#BG_COLOR_OFF=
  
 [keyindicator]
 command=$SCRIPT_DIR/keyindicator
-instance=NUM
+KEY=NUM
 markup=pango
 interval=once
 signal=11
+#COLOR_ON=#00FF00
+HIDE_WHEN_OFF=1
 ```
 
 # Options
@@ -43,6 +50,4 @@ Usage: keyindicator [-c <color on>] [-C <color off>] [-b <bg color on>] [-B <bg 
   -B <background color off>: hex color to use when indicator is off
   --hide: don't output anything when indicator is off
 
-Note: environment variable $BLOCK_INSTANCE should be one of:
-  CAPS, NUM (default is CAPS).
 ```
