@@ -1,8 +1,8 @@
 #! /bin/sh
 
 DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
-SHORTFTM="${SHORTFMT:-+%d.%m.%Y}"
-blockdate=$(date $DATEFTM)
+SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
+blockdate=$(date "$DATEFTM")
 
 case "$BLOCK_BUTTON" in
     1|2|3) date=$(date '+%A, %d. %B')
