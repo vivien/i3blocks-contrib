@@ -19,8 +19,8 @@ use utf8;
 use Getopt::Long;
 
 # default values
-my $t_warn = 70;
-my $t_crit = 90;
+my $t_warn = $ENV{T_WARN} || 70;
+my $t_crit = $ENV{T_CRIT} || 90;
 my $gpu_usage = -1;
 my $gpu_mem = -1;
 my $gpu_video = -1;
