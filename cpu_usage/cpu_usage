@@ -12,10 +12,10 @@ use utf8;
 use Getopt::Long;
 
 # default values
-my $t_warn = 50;
-my $t_crit = 80;
+my $t_warn = $ENV{T_WARN} || 50;
+my $t_crit = $ENV{T_CRIT} || 80;
 my $cpu_usage = -1;
-my $decimals = 2;
+my $decimals = $ENV{DECIMALS} || 2;
 
 sub help {
     print "Usage: cpu_usage [-w <warning>] [-c <critical>] [-d <decimals>]\n";
