@@ -10,6 +10,31 @@ Monitor disk reads and writes.
 
 iostat (sysstat package), fontawesome for the   hard disk icon (fonts-font-awesome package)
 
+# Usage
+
+```
+[disk-io]
+label=
+command=$SCRIPT_DIR/disk-io
+#command=$SCRIPT_DIR/disk-io -w 3 -M -P 0
+interval=persist
+markup=pango
+#instance=/^sda/
+#DT=5
+#MB_ONLY=0 #0 or 1
+#KB_ONLY=0 #0 or 1
+#WIDTH=4
+#MB_PRECISION=1
+#KB_PRECISION=0
+#REGEX=/^(s|h)d[a-zA-Z]+/
+#THRESHOLD=0
+#WARN_COLOR="#FF0000"
+#SEPARATOR=/
+#PREFIX=
+#SUFFIX="B/s"
+```
+
+
 # Options
 
 The default output is "read / write (k|M)B/s". 

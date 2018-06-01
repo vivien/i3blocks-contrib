@@ -5,18 +5,19 @@
 #
 # i3blocks blocklet script to monitor disk io
 
-label=""
-dt=5
-MB_only=0
-kB_only=0
-width=4
-MB_precision=1
-kB_precision=0
-regex="${BLOCK_INSTANCE:-/^(s|h)d[a-zA-Z]+/}"
-threshold=0
-warn_color="#FF0000"
-sep="/"
-unit_suffix="B/s"
+label="${PREFIX:-""}"
+dt="${DT:-5}"
+MB_only="${MB_ONLY:-0}"
+kB_only="${KB_ONLY:-0}"
+width="${WIDTH:-4}"
+MB_precision="${MB_PRECISION:-1}"
+kB_precision="${KB_PRECISION:-0}"
+regex="${REGEX:-$BLOCK_INSTANCE}"
+regex="${regex:-/^(s|h)d[a-zA-Z]+/}"
+threshold="${THRESHOLD:-0}"
+warn_color="${WARN_COLOR:-#FF0000}"
+sep="${SEPARATOR:-/}"
+unit_suffix="${SUFFIX:-B/s}"
 
 function list_devices {
     echo "Devices iostat reports that match our regex:"
