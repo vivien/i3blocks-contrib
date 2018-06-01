@@ -24,4 +24,6 @@ command=$SCRIPT_DIR/gpu-load
 label=GPU
 interval=10
 #min_width=GPU 100% 100% 100% 100%
+#T_WARN=70
+#T_CRIT=90
 ```
