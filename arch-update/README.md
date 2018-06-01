@@ -33,11 +33,18 @@ Another advanced example with fontawesome label, AUR updates included, watched p
 ```ini
 [pacman-updates]
 label=
-command=$SCRIPT_DIR/arch-update -a -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
+command=$SCRIPT_DIR/arch-update
 markup=pango
 interval= 3600
+QUIET=true
+WATCH=^linux.* ^pacman.*
+BASE_COLOR=#5fff5f
+UPDATE_COLOR=#FFFF85
+AUR=true
 ```
 # Configuration
+_Use the environment variables above instead of these deprecated command line options:_
+
 - `-q`/`--quiet`: do not produce output if system is up to date
 - `-w`/`--watch`: Explicitly watch for specified packages. Listed elements are treated as regular expressions for matching.
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
