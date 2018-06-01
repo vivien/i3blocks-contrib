@@ -138,7 +138,7 @@ sub print_output {
 
 sub check_opts {
     # Vars
-    my $pid_file_format='/run/openvpn/*.pid';
+    my $pid_file_format=$ENV{PID_FILE_FORMAT} || '/run/openvpn/*.pid';
 
     # Set options
     GetOptions( "help|h" => \&help,
