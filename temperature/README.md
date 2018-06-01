@@ -10,16 +10,12 @@ Show system temperatures.
 
 # Usage
 
-The script may be called with `-w` and `-c` switches to specify 
-thresholds, see the script for details.
-
-# Installation
-
-Add the following to your i3blocks config:
-
 ``` ini
 [temperature]
 command=$SCRIPT_DIR/temperature
 label=TEMP
 interval=10
+#T_WARN=70
+#T_CRIT=90
+#SENSOR_CHIP=""
 ```
