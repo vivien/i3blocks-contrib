@@ -21,15 +21,21 @@ import argparse
 import os
 import subprocess as sp
 
+def _default(name, default='', arg_type=str):
+    val = default
+    if name in os.environ:
+        val = os.environ[name]
+    return arg_type(val)
+
 parser = argparse.ArgumentParser(
     description='Get AFS quota and usage information.',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-parser.add_argument('-c', '--critical', type=int, default=90,
+parser.add_argument('-c', '--critical', type=int, default=_default('CRITICAL', 90, int),
                     help='Critical usage percentage.')
-parser.add_argument('-fg', '--fg-color', type=str, default="#FF0000",
+parser.add_argument('-fg', '--fg-color', type=str, default=_default('CRIT_FG_COLOR', "#FF0000"),
                     help='Foreground color for critical usage.')
-parser.add_argument('-bg', '--bg-color', type=str, default=None,
+parser.add_argument('-bg', '--bg-color', type=str, default=_default('CRIT_BG_COLOR', ''),
                     help='Background color for critical usage.')
 args = parser.parse_args()
 
@@ -45,6 +51,7 @@ directory = os.path.expanduser(directory)
 
 fs_output = sp.check_output(['fs', 'lq', '-human', directory],
                             universal_newlines=True)
+
 # second line contains the information
 fs_output = fs_output.split('\n')[1]
 quota, used, percentage = fs_output.split()[1:4]
