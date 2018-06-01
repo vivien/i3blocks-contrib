@@ -1,6 +1,8 @@
 #! /bin/sh
 
-blockdate=$(date '+%a. %d. %b. %Y')
+DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
+SHORTFTM="${SHORTFMT:-+%d.%m.%Y}"
+blockdate=$(date $DATEFTM)
 
 case "$BLOCK_BUTTON" in
     1|2|3) date=$(date '+%A, %d. %B')
@@ -23,5 +25,5 @@ cal --color=always \
         -no-custom \
         -p "$date" > /dev/null 
     esac
-echo $blockdate
-date '+%d.%m.%Y'
+echo "$blockdate"
+date "$SHORTFMT"
