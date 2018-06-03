@@ -1,6 +1,6 @@
 # arch-update
 
-Be always on top of your available updates with this blocklet. Optionally show AUR updates with the help of yaourt. Colorize the outputs for if your system is up to date or you got available updates.
+Be always on top of your available updates with this blocklet. Optionally show AUR updates with the help of yaourt or yay. Colorize the outputs for if your system is up to date or you got available updates.
 
 ![](screenshot.png)
 
@@ -13,7 +13,7 @@ Be always on top of your available updates with this blocklet. Optionally show A
 
 # Optional Dependencies
 
-* yaourt for aur updates
+* yaourt or yay for aur updates
 * fontawesome for awesome labels
 
 # Installation
@@ -29,11 +29,11 @@ label=Updates:
 interval=3600
 markup=pango
 ```
-Another advanced example with fontawesome label, AUR updates included, watched packages, and custom colors for both messages:
+Another advanced example with fontawesome label, AUR updates included using yaourt, watched packages, and custom colors for both messages:
 ```ini
 [pacman-updates]
 label=
-command=~/.config/i3blocks/scripts/arch-update.py -a -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
+command=~/.config/i3blocks/scripts/arch-update.py -a yaourt -b "#5fff5f" -u "#FFFF85" -w "^linux.*" "^pacman.*"
 markup=pango
 interval= 3600
 ```
@@ -42,5 +42,5 @@ interval= 3600
 - `-w`/`--watch`: Explicitly watch for specified packages. Listed elements are treated as regular expressions for matching.
 - `-b`/`--base_color`: set the base color of the output (when your system is up to date)
 - `-u`/`--updates_available_color`: set the color of the output when updates are available
-- `-a`/`--aur`: activate AUR update support  
+- `-a`/`--aur`: activate AUR update support and choose which AUR helper to use (yaourt or yay)
 For the latest options call `$SCRIPT_DIR/arch-update.py -h`.

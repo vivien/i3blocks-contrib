@@ -27,8 +27,9 @@ def create_argparse():
     parser.add_argument(
         '-a',
         '--aur',
-        action='store_true',
-        help='Include AUR packages. Attn: Yaourt must be installed'
+        default='yaourt',
+        help='Include AUR packages and specify which AUR helper you use. '
+        'Attn: Yaourt and yay are supported and must be installed'
     )
     parser.add_argument(
         '-q',
@@ -59,17 +60,29 @@ def get_updates():
     return updates
 
 
-def get_aur_updates():
+def get_aur_updates(aur_helper):
     output = ''
-    try:
-        output = check_output(['yaourt', '-Qua']).decode('utf-8')
-    except subprocess.CalledProcessError as exc:
-        # yaourt exits with 1 and no output if no updates are available.
-        # we ignore this case and go on
-        if not (exc.returncode == 1 and not exc.output):
-            raise exc
-    if not output:
-        return []
+
+    if aur_helper == 'yaourt':
+        try:
+            output = check_output(['yaourt', '-Qua']).decode('utf-8')
+        except subprocess.CalledProcessError as exc:
+            # yaourt exits with 1 and no output if no updates are available.
+            # we ignore this case and go on
+            if not (exc.returncode == 1 and not exc.output):
+                raise exc
+        if not output:
+            return []
+
+    elif aur_helper == 'yay':
+        try:
+            output = check_output(['yay', '-Qua']).decode('utf-8')
+        except subprocess.CalledProcessError as exc:
+            # yay also exits with 1 and no output if no updates are available
+            if not (exc.returncode == 1 and not exc.output):
+                raise exc
+        if not output:
+            return []
 
     aur_updates = [line.split(' ')[0]
                    for line in output.split('\n')
@@ -92,8 +105,8 @@ message = "<span color='{0}'>{1}</span>"
 args = create_argparse()
 
 updates = get_updates()
-if args.aur:
-    updates += get_aur_updates()
+if args.aur is not None:
+    updates += get_aur_updates(args.aur)
 
 update_count = len(updates)
 if update_count > 0:
