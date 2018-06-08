@@ -9,6 +9,8 @@ from subprocess import check_output
 import argparse
 import re
 
+class AURHelperNotSupportedError(Exception):
+    pass
 
 def create_argparse():
     parser = argparse.ArgumentParser(description='Check for pacman updates')
@@ -27,7 +29,6 @@ def create_argparse():
     parser.add_argument(
         '-a',
         '--aur',
-        default='yaourt',
         help='Include AUR packages and specify which AUR helper you use. '
         'Attn: Yaourt and yay are supported and must be installed'
     )
@@ -59,30 +60,31 @@ def get_updates():
 
     return updates
 
+def run_aur_helper(aur_helper):
+    # assume aur_helper is yaourt or yay
+    # both work in the same way (use same flags and
+    # exit with 1 if there are no updates available)
+
+    if aur_helper not in ['yaourt', 'yay']:
+        raise AURHelperNotSupportedError(aur_helper + ' is not a recognised or supported AUR helper!')
+    try:
+        output = check_output([aur_helper, '-Qua']).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # exits with 1 and no output if no updates are available.
+        # we ignore this case and go on
+        if not (exc.returncode == 1 and not exc.output):
+            raise exc
+    if output:
+        return output
+    else:
+        return []
+
 
 def get_aur_updates(aur_helper):
-    output = ''
+    output = run_aur_helper(aur_helper)
 
-    if aur_helper == 'yaourt':
-        try:
-            output = check_output(['yaourt', '-Qua']).decode('utf-8')
-        except subprocess.CalledProcessError as exc:
-            # yaourt exits with 1 and no output if no updates are available.
-            # we ignore this case and go on
-            if not (exc.returncode == 1 and not exc.output):
-                raise exc
-        if not output:
-            return []
-
-    elif aur_helper == 'yay':
-        try:
-            output = check_output(['yay', '-Qua']).decode('utf-8')
-        except subprocess.CalledProcessError as exc:
-            # yay also exits with 1 and no output if no updates are available
-            if not (exc.returncode == 1 and not exc.output):
-                raise exc
-        if not output:
-            return []
+    if output == []:
+        return output
 
     aur_updates = [line.split(' ')[0]
                    for line in output.split('\n')
