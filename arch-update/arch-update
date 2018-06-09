@@ -10,6 +10,8 @@ import argparse
 import os
 import re
 
+class AURHelperNotSupportedError(Exception):
+    pass
 
 def create_argparse():
     def _default(name, default='', arg_type=str):
@@ -37,10 +39,7 @@ def create_argparse():
     parser.add_argument(
         '-a',
         '--aur',
-        action = 'store_const',
-        const = True,
-        default = _default('AUR', 'False', strbool),
-        help='Include AUR packages. Attn: Yaourt must be installed'
+        help='Include AUR packages. Attn: Yaourt or yay must be installed'
     )
     parser.add_argument(
         '-q',
@@ -73,17 +72,30 @@ def get_updates():
     return updates
 
 
-def get_aur_updates():
-    output = ''
+def run_aur_helper(aur_helper):
+    # assume aur_helper is yaourt or yay
+    # both work in the same way (use same flags and
+    # exit with 1 if there are no updates available)
+
+    if aur_helper not in ['yaourt', 'yay']:
+        raise AURHelperNotSupportedError(aur_helper + ' is not a recognised or supported AUR helper!')
     try:
-        output = check_output(['yaourt', '-Qua']).decode('utf-8')
+        output = check_output([aur_helper, '-Qua']).decode('utf-8')
     except subprocess.CalledProcessError as exc:
-        # yaourt exits with 1 and no output if no updates are available.
+        # exits with 1 and no output if no updates are available.
         # we ignore this case and go on
         if not (exc.returncode == 1 and not exc.output):
             raise exc
-    if not output:
+    if output:
+        return output
+    else:
         return []
+
+def get_aur_updates(aur_helper):
+    output = run_aur_helper(aur_helper)
+
+    if output == []:
+        return output
 
     aur_updates = [line.split(' ')[0]
                    for line in output.split('\n')
@@ -106,8 +118,8 @@ message = "<span color='{0}'>{1}</span>"
 args = create_argparse()
 
 updates = get_updates()
-if args.aur:
-    updates += get_aur_updates()
+if args.aur is not None:
+    updates += get_aur_updates(args.aur)
 
 update_count = len(updates)
 if update_count > 0:

@@ -14,7 +14,7 @@ Be always on top of your available updates with this blocklet. Optionally show A
 
 # Optional Dependencies
 
-* yaourt for aur updates
+* yaourt or yay for aur updates
 * fontawesome for awesome labels
 
 # Installation
@@ -41,7 +41,7 @@ QUIET=true
 WATCH=^linux.* ^pacman.*
 BASE_COLOR=#5fff5f
 UPDATE_COLOR=#FFFF85
-AUR=true
+AUR=yaourt
 ```
 # Configuration
 _Use the environment variables above instead of these deprecated command line options:_
