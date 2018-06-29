@@ -1,0 +1,53 @@
+#!/bin/bash
+
+FILE_NAME='.netspeed'
+
+eth_iface=$(ls /sys/class/net | grep 'e')
+wifi_iface=$(ls /sys/class/net | grep 'w')
+
+read eth_rx < '/sys/class/net/'${eth_iface}'/statistics/rx_bytes'
+read eth_tx < '/sys/class/net/'${eth_iface}'/statistics/tx_bytes'
+read wifi_rx < '/sys/class/net/'${wifi_iface}'/statistics/rx_bytes'
+read wifi_tx < '/sys/class/net/'${wifi_iface}'/statistics/tx_bytes'
+
+tmp_rx=$((eth_rx + wifi_rx))
+tmp_tx=$((eth_tx + wifi_tx))
+
+if [ -f $FILE_NAME ]; then
+	read -a previous < $FILE_NAME
+	
+	kb_rx=$(( $((tmp_rx - previous[1])) >> 10 ))
+	kb_tx=$(( $((tmp_tx - previous[2])) >> 10 ))
+	previous=$((previous + kb_rx + kb_tx))
+	netusage=$((previous >> 10))
+
+	echo $previous $tmp_rx $tmp_tx > $FILE_NAME
+	
+	#netusage
+	if [ $netusage -gt 1024 ]; then
+		echo -n ':'${netusage: 0:-3}.${netusage: -3:-2} 'G'
+	else
+		echo -n ':0.'${netusage: 0:-2} 'G'
+	fi
+
+	#downspeed
+	if [ $kb_rx -gt 1024 ]; then
+		echo -n ' ('${kb_rx: 0:-3}.${kb_rx: -3:-2} 'M,'
+	else
+		echo -n ' ('$kb_rx 'K,'
+	fi
+
+	echo -n ' '
+
+	#upspeed
+	if [ $kb_tx -gt 1024 ]; then
+		echo -n ''${kb_tx: 0:-3}.${kb_tx: -3:-2} 'M)'
+	else
+		echo -n ''$kb_tx 'K)'
+	fi
+
+else
+	touch $FILE_NAME
+	echo 10500 $tmp_rx $tmp_tx > $FILE_NAME
+fi 
+
