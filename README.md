@@ -13,6 +13,7 @@ i3blocks (a.k.a. *core*).
 contrib | core
 ------- | ----
 master  | master
+next    | next
 
 You may want to take a look at the individual blocklet directories,
 which contain descriptions, screenshots, and installation/configuration 
@@ -26,5 +27,7 @@ Want to contribute?
 Great!
 Check the [contribution guidelines](https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md)
 in order to get started.
+
+**THIS BRANCH CURRENTLY FROZEN, SUBMIT ALL PULL REQUESTS AGAINST THE NEXT BRANCH**
 
 Happy crafting!
