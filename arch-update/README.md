@@ -10,6 +10,7 @@ Be always on top of your available updates with this blocklet. Optionally show A
 
 * Arch Linux or another arch based distro
 * python3
+* pacman-contrib for checkupdates
 
 # Optional Dependencies
 
