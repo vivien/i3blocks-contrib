@@ -5,14 +5,30 @@
 #
 # A battery indicator blocklet script for i3blocks
 
+# Copyright (C) 2018 Olof Sjödin <me@olofsjodin.se>
+# Edits are licensed under the GPL version 3
+#
+# Added support for colored icons.
+
+
 import re
 from subprocess import check_output
 
 status = check_output(['acpi'], universal_newlines=True)
 
+# Colors
+BATTERY_NO_FOUND_COLOR = "red"
+LIGHTNING_COLOR = "yellow"
+PLUG_COLOR = "cyan"
+BATTERY_COLOR = "cyan"
+UNKNOWN_STATUS_COLOR = "cyan"
+
+def add_color(color, body):
+    return "<span color='" + color + "'>" + body + "</span>"
+
 if not status:
     # stands for no battery found
-    fulltext = "<span color='red'><span font='FontAwesome'>\uf00d \uf240</span></span>"
+    fulltext = "<span color='" + BATTERY_NO_FOUND_COLOR + "'><span font='FontAwesome'>\uf00d \uf240</span></span>"
     percentleft = 100
 else:
     # if there is more than one battery in one laptop, the percentage left is 
@@ -48,17 +64,24 @@ else:
     else:
         percentleft = 0
 
+    
     # stands for charging
-    FA_LIGHTNING = "<span color='yellow'><span font='FontAwesome'>\uf0e7</span></span>"
+    FA_LIGHTNING = "<span color='" + LIGHTNING_COLOR + "'><span font='FontAwesome'>\uf0e7</span></span>"
 
     # stands for plugged in
     FA_PLUG = "<span font='FontAwesome'>\uf1e6</span>"
+    if "PLUG_COLOR" in locals():
+        FA_PLUG = "<span color='" + PLUG_COLOR + "'>" + FA_PLUG + "</span>"
 
     # stands for using battery
     FA_BATTERY = "<span font='FontAwesome'>\uf240</span>"
+    if "BATTERY_COLOR" in locals():
+        FA_BATTERY = "<span color='" + BATTERY_COLOR + "'>" + FA_BATTERY + "</span>"
 
     # stands for unknown status of battery
     FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
+    if "UNKNOWN_STATUS_COLOR" in locals():
+        FA_QUESTION = add_color(UNKNOWN_STATUS_COLOR, FA_QUESTION)
 
 
     if state == "Discharging":
