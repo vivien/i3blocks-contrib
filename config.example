@@ -34,13 +34,14 @@ markup=none
 # The first parameter sets the step (and units to display)
 # The second parameter overrides the mixer selection
 # See the script for details.
+
 [volume]
-label=VOL
+command=$SCRIPT_DIR/volume
 #label=♪
-instance=Master
-#instance=PCM
+label=VOL
 interval=once
 signal=10
+#STEP=5%
 
 # Memory usage
 #
@@ -63,7 +64,7 @@ interval=30
 # (defaults to 10 for 10%).
 [disk]
 label=HOME
-#instance=/mnt/data
+#DIR=/mnt/data
 interval=30
 
 # Network interface monitoring
@@ -71,19 +72,19 @@ interval=30
 # If the instance is not specified, use the interface used for default route.
 # The address can be forced to IPv4 or IPv6 with -4 or -6 switches.
 [iface]
-#instance=wlan0
+#IFACE=wlan0
 color=#00FF00
 interval=10
 separator=false
 
 [wifi]
-#instance=wlp3s0
+#INTERFACE=wlp3s0
 label=wifi:
 interval=10
 separator=false
 
 [bandwidth]
-#instance=eth0
+#INTERFACE=eth0
 interval=5
 
 # CPU usage
@@ -106,7 +107,6 @@ interval=10
 [battery]
 label=BAT
 #label=⚡
-#instance=1
 interval=30
 
 # Date Time
@@ -146,11 +146,13 @@ interval=5
 # bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
 # bindsym --release Num_Lock  exec pkill -SIGRTMIN+11 i3blocks
 #[keyindicator]
-#instance=CAPS
+#KEY=CAPS
+#markup=pango
 #interval=once
 #signal=11
 
 #[keyindicator]
-#instance=NUM
+#KEY=NUM
+#markup=pango
 #interval=once
 #signal=11
