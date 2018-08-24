@@ -14,35 +14,23 @@ To use with i3blocks, copy the below configuration into your i3blocks configurat
 
 ```INI
 [time]
-instance=%Y-%m-%d %H:%M
-command=$SCRIPT_DIR/time [/path/to/tz/file]
+command=$SCRIPT_DIR/time
 interval=1
+#TZ_FILE=~/.tz
+STRFTIME_FORMAT=%Y-%m-%d %H:%M
+TZONES=$DEFAULT_TZ,Brazil/East,Australia/Brisbane,Asia/Calcutta
+TZ_LABELS=,Brazil,AU,Hyderabad
 ```
 
-Instance is an optional time format string. See [strftime](https://linux.die.net/man/3/strftime).
-If `/path/to/tz/file` is omitted, the script uses `$HOME/.tz` by default.
+See [strftime](https://linux.die.net/man/3/strftime) for allowed strftime formats.
 
-# Configuration
+Here TZONES is a comma separated list of timeszones, see /usr/share/zoneinfo (Olson DB)
+for allowed timezones. One exception is that the string $DEFAULT_TZ
+is also allowed and represents whatever your current system timezone is.
 
-In the script there are two hashes that control the timezones used and the way they are displayed.
-
-This hash defines the timezones that are switched to when clicking (ie. clicking when displaying Europe/London switches to Brazil/East)
-```perl
-my %tzmap = (
-		""                   => $default_tz,
-		$default_tz          => "Brazil/East",
-		"Brazil/East"        => "Australia/Brisbane",
-		"Australia/Brisbane" => "Asia/Calcutta",
-		"Asia/Calcutta"      => $default_tz,
-	);
-```
-
-This hash defines how each timezone should be displayed (e.g. Australia/Brisbane displays as "AU")
-```perl
-my %display_map = (
-	$default_tz          => "Home",
-	"Brazil/East"        => "Brazil",
-	"Australia/Brisbane" => "AU",
-	"Asia/Calcutta"      => "Hyderabad",
-);
-```
+Also TZ_LABELS is a comma separated list of how to label each timezone in case you prefer
+not to see the full timezone as part of the label.
+E.g. you may want it to say "12:34 (US)" instead of "12:34 (America/Chicago)".
+Labels are allowed to be empty,
+in which case the script omits parentheses.
+For example, in the config above, the label for the default timezone is omitted.
