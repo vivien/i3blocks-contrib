@@ -4,7 +4,8 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for
 [i3blocks](https://github.com/vivien/i3blocks), contributed by the 
 community.
 
-It is officially maintained by a bench of active i3blocks crafters.
+It is officially maintained by @kb100 with the help of 
+a bench of active i3blocks crafters.
 
 Each release of this repository will be guaranteed to work against 
 a given [release](https://github.com/vivien/i3blocks/releases) of 
