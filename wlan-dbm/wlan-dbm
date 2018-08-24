@@ -2,8 +2,11 @@
 #
 # i3blocks blocklet script to display wifi signal in dBm
 
-IFACE="${BLOCK_INSTANCE:-wlan0}"
-USE_PERCENT=0
+if [[ -z "$IFACE" ]] ; then
+    IFACE="${BLOCK_INSTANCE:-wlan0}"
+fi
+
+USE_PERCENT=${USE_PERCENT:-0}
 
 IW=$(which iw || echo "/sbin/iw")
 
