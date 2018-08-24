@@ -22,27 +22,33 @@
 # For Jack/Jack2 users, use "jackplug"
 # For ALSA users, you may use "default" for your primary card
 # or you may use hw:# where # is the number of the card desired
-MIXER="default"
-if command -v pulseaudio >/dev/null 2>&1 && pulseaudio --check ; then
-    # pulseaudio is running, but not all installations use "pulse"
-    if amixer -D pulse info >/dev/null 2>&1 ; then
-        MIXER="pulse"
+if [[ -z "$MIXER" ]] ; then
+    MIXER="default"
+    if command -v pulseaudio >/dev/null 2>&1 && pulseaudio --check ; then
+        # pulseaudio is running, but not all installations use "pulse"
+        if amixer -D pulse info >/dev/null 2>&1 ; then
+            MIXER="pulse"
+        fi
     fi
+    [ -n "$(lsmod | grep jack)" ] && MIXER="jackplug"
+    MIXER="${2:-$MIXER}"
 fi
-[ -n "$(lsmod | grep jack)" ] && MIXER="jackplug"
-MIXER="${2:-$MIXER}"
 
 # The instance option sets the control to report and configure
 # This defaults to the first control of your selected mixer
 # For a list of the available, use `amixer -D $Your_Mixer scontrols`
-SCONTROL="${BLOCK_INSTANCE:-$(amixer -D $MIXER scontrols |
-                  sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" |
-                  head -n1
-                )}"
+if [[ -z "$SCONTROL" ]] ; then
+    SCONTROL="${BLOCK_INSTANCE:-$(amixer -D $MIXER scontrols |
+                      sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" |
+                      head -n1
+                    )}"
+fi
 
 # The first parameter sets the step to change the volume by (and units to display)
 # This may be in in % or dB (eg. 5% or 3dB)
-STEP="${1:-5%}"
+if [[ -z "$STEP" ]] ; then
+    STEP="${1:-5%}"
+fi
 
 #------------------------------------------------------------------------
 
