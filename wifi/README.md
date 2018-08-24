@@ -11,6 +11,6 @@ If no instance is specified, wlan0 is used.
 [wifi]
 command=$SCRIPT_DIR/wifi
 label=wifi:
-#instance=wlp3s0
+#INTERFACE=wlan0
 interval=60
 ```

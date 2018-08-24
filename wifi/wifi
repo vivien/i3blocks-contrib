@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #------------------------------------------------------------------------
-
-INTERFACE="${BLOCK_INSTANCE:-wlan0}"
-
+if [[ -z "$INTERFACE" ]] ; then
+    INTERFACE="${BLOCK_INSTANCE:-wlan0}"
+fi
 #------------------------------------------------------------------------
 
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
