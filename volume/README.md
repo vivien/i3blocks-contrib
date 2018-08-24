@@ -29,14 +29,17 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 ```
 [volume]
 command=$SCRIPT_DIR/volume
-label=VOL
 #label=♪
-instance=Master
-#instance=PCM
+label=VOL
 interval=once
 signal=10
+#STEP=5%
+#MIXER=[determined automatically]
+#SCONTROL=[determined automatically]
 ```
+For PulseAudio users, MIXER is usually "pulse" or "default".
+For Jack/Jack2 users, MIXER is usually "jackplug".
+For ALSA users, use "default" for your primary card, or "hw:#" 
+where # is the number of the card desired.
 
-The script takes two optional parameters: step size and mixer selection, e.g. `$SCRIPT_DIR/volume "5%" default`.
-By default the script tries to make a reasonable choice for the mixer. If it does not work for your setup (e.g. for (un)muting), try to figure out the parameter using `amixer info`.
-
+For a list of available SCONTROL options, use `amixer -D $MIXER scontrols`.
