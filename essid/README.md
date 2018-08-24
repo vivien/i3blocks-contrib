@@ -1,7 +1,8 @@
 # essid
 
 Shows the ESSID that you are connected to.
-If no instance is specified, wlan0 is used.
+If no interface is specified, wlan0 is used.
+Shows nothing if you are not connected.
 
 ![](essid.png)
 
@@ -10,6 +11,6 @@ If no instance is specified, wlan0 is used.
 ```
 [essid]
 command=$SCRIPT_DIR/essid
-#instance=wlp3s0
 interval=60
+#INTERFACE=wlan0
 ```
