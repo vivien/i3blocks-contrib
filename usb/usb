@@ -5,6 +5,14 @@
 #                                                                                  
 # i3blocks blocklet script to output connected usb storage device info. 
 
+import os
+
+def _default(name, default='', arg_type=str):
+    val = default
+    if name in os.environ:
+        val = os.environ[name]
+    return arg_type(val)
+
 ###############################################################################
 # BEGIN CONFIG
 # Most of these can be specified as command line options, run with --help for
@@ -14,29 +22,41 @@
 ###############################################################################
 
 # Color options, can be a color name or #RRGGBB
-INFO_TEXT_COLOR = "white"
-MOUNTED_COLOR = "green"
-PLUGGED_COLOR = "gray"
-LOCKED_COLOR = "gray"
-UNLOCKED_NOT_MOUNTED_COLOR = "yellow"
-PARTITIONLESS_COLOR = "red"
+INFO_TEXT_COLOR = _default("INFO_TEXT_COLOR", "white")
+MOUNTED_COLOR = _default("MOUNTED_COLOR", "green")
+PLUGGED_COLOR = _default("PLUGGED_COLOR", "gray")
+LOCKED_COLOR = _default("LOCKED_COLOR", "gray")
+UNLOCKED_NOT_MOUNTED_COLOR = _default("UNLOCKED_NOT_MOUNTED_COLOR", "yellow")
+PARTITIONLESS_COLOR = _default("PARTITIONLESS_COLOR", "red")
 
 # Default texts
-PARTITIONLESS_TEXT = "no partitions"
-SEPARATOR = "<span color='gray'> | </span>"
+PARTITIONLESS_TEXT = _default("PARTITIONLESS_TEXT", "no partitions")
+SEPARATOR = _default("SEPARATOR", "<span color='gray'> | </span>")
 
 # Indicate whether an encrypted partition is locked/unlocked, "" is allowed. 
-LOCKED_INDICATOR = "\uf023 "
-UNLOCKED_INDICATOR = "\uf09c "
+LOCKED_INDICATOR = _default("LOCKED_INDICATOR", "\uf023 ")
+UNLOCKED_INDICATOR = _default("UNLOCKED_INDICATOR", "\uf09c ")
 
 # Shows instead of space available when a partition is mounted readonly
-READONLY_INDICATOR = "ro"
+READONLY_INDICATOR = _default("READONLY_INDICATOR", "ro")
 
 # Maximum length of a filesystem label to display. Use None to disable
 # truncation, a positive integer to right truncate to that many characters, or
 # a negative integer to left truncate to that many characters. Setting this
 # option to 0 will disable the displaying of filesystem labels.
-TRUNCATE_FS_LABELS = None
+TRUNCATE_FS_LABELS = _default("TRUNCASE_FS_LABELS", None)
+
+# List of devices to ignore. Must be a valid python3 representation of a list
+# of strings
+IGNORE_LIST = _default("IGNORE_LIST", "[]")
+if IGNORE_LIST:
+    import ast
+    IGNORE_LIST = list(map(lambda p: 
+        p if p.startswith("/") 
+        else "/dev/{}".format(p),
+        ast.literal_eval(IGNORE_LIST)
+    ))
+
 
 # Edit this function to ignore certain devices (e.g. those that are always
 # plugged in).
@@ -51,6 +71,9 @@ def ignore(path, udev_attributes_dict):
 # Edit this function to ignore devices before the udev attributes are
 # computed in order to save time and memory.
 def fastIgnore(path):
+    if path in IGNORE_LIST:
+        return True
+
     # E.g. how to to ignore devices whose path begins with /dev/sda
     #if path.startswith("/dev/sda"):
     #    return True
