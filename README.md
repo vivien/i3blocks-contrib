@@ -14,7 +14,6 @@ i3blocks (a.k.a. *core*).
 contrib | core
 ------- | ----
 master  | master
-next    | next
 
 You may want to take a look at the individual blocklet directories,
 which contain descriptions, screenshots, and installation/configuration 
@@ -29,6 +28,7 @@ Great!
 Check the [contribution guidelines](https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md)
 in order to get started.
 
-**THIS BRANCH CURRENTLY FROZEN, SUBMIT ALL PULL REQUESTS AGAINST THE NEXT BRANCH**
+*Note: i3blocks now supports dynamics properties, and all scripts have been updated to do the same.
+i3blocks-contrib requires a version of i3blocks that supports dynamics properties, so upgrade as necessary.*
 
 Happy crafting!
