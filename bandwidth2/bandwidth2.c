@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
   char iface[BUFSIZ] = {0};
   int warningrx = 0, warningtx = 0, criticalrx = 0, criticaltx = 0;
   char *envvar = NULL;
+  char *label = "";
 
   envvar = getenv("USE_BITS");
   if (envvar && *envvar == '1')
@@ -126,6 +127,9 @@ int main(int argc, char *argv[])
   envvar = getenv("CRIT_TX");
   if (envvar)
       criticaltx = atoi(envvar);
+  envvar = getenv("LABEL");
+  if (envvar)
+      label = envvar;
 
   while (c = getopt(argc, argv, "bBht:i:w:c:"), c != -1) {
     switch (c) {
@@ -163,6 +167,7 @@ int main(int argc, char *argv[])
 
     rx = (received - received_old) / (float)(s - s_old);
     tx = (sent - sent_old) / (float)(s - s_old);
+    printf("%s", label);
     display(unit, rx, warningrx, criticalrx);
     printf(" ");
     display(unit, tx, warningtx, criticaltx);
