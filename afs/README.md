@@ -10,11 +10,11 @@ Suggested i3blocks configuration:
 
 ```
 [afs]
-command=$SCRIPT_DIR/afs -c 90
-label=AFS
+command=$SCRIPT_DIR/afs
 instance=~/afs/
 markup=pango
 interval=600
+LABEL=AFS 
 #CRITICAL=90
 #CRIT_FG_COLOR=#FF0000
 #CRIT_BG_COLOR=
