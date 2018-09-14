@@ -19,10 +19,10 @@ make
 ### Config
 ```ini
 [bandwidth]
-label=
 command=$SCRIPT_DIR/bandwidth2 
 interval=persist
 markup=pango
+LABEL=
 #INTERFACE=(checks all interfaces)
 #USE_BITS=0
 #USE_BYES=1
@@ -36,10 +36,10 @@ E.g.
 
 ```ini
 [bandwidth]
-label=
 command=$SCRIPT_DIR/bandwidth2 
 interval=persist
 markup=pango
+LABEL=
 WARN_RX=307200
 WARN_TX=30720
 CRIT_RX=512000
