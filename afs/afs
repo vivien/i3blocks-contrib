@@ -40,10 +40,8 @@ parser.add_argument('-bg', '--bg-color', type=str, default=_default('CRIT_BG_COL
 args = parser.parse_args()
 
 # set the afs directory to be checked
-if 'BLOCK_INSTANCE' in os.environ:
-    directory = os.environ['BLOCK_INSTANCE']
-else:
-    directory = '~/afs/'  # some default
+directory = os.environ.get('BLOCK_INSTANCE', '~/afs/')
+label = os.environ.get('LABEL', '')
 
 # expand environment variables etc.
 directory = os.path.expandvars(directory)
@@ -57,7 +55,7 @@ fs_output = fs_output.split('\n')[1]
 quota, used, percentage = fs_output.split()[1:4]
 percentage = int(percentage.split('%')[0])
 
-output = '%s/%s (%i%%)' % (used, quota, percentage)
+output = '%s%s/%s (%i%%)' % (label, used, quota, percentage)
 
 if percentage >= args.critical:
     if args.bg_color:
