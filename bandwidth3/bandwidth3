@@ -7,6 +7,7 @@
 
 iface="${BLOCK_INSTANCE}"
 iface="${IFACE:-$iface}"
+autoreload="${AUTORELOAD:-0}"
 dt="${DT:-3}"
 unit="${UNIT:-Mb}"
 label="<span font='FontAwesome'>  </span>" # down arrow up arrow
@@ -29,13 +30,14 @@ function list_interfaces {
     grep -o "^[^:]\\+:" /proc/net/dev | tr -d " :"
 }
 
-while getopts i:t:u:p:lh opt; do
+while getopts i:t:u:p:alh opt; do
     case "$opt" in
         i) iface="$OPTARG" ;;
         t) dt="$OPTARG" ;;
         u) unit="$OPTARG" ;;
         p) printf_command="$OPTARG" ;;
         l) list_interfaces && exit 0 ;;
+	a) autoreload=1 ;;
         h) printf \
 "Usage: bandwidth3 [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
 Options:
@@ -48,19 +50,13 @@ Options:
 \tDefault: printf \"<span font='FontAwesome'>  </span>%%-5.1f/%%5.1f %%s/s\\\\n\", rx, wx, unit;
 \tExposed variables: rx, wx, tx, unit, iface
 -l\tList available interfaces in /proc/net/dev
+-a\tAutomatically react to changes in default interface
 -h\tShow this help text
 " && exit 0;;
     esac
 done
 
 check_proc_net_dev
-
-iface="${iface:-$(default_interface)}"
-while [ -z "$iface" ]; do
-    echo No default interface
-    sleep "$dt"
-    iface=$(default_interface)
-done
 
 case "$unit" in
     Kb|Kbit|Kbits)   bytes_per_unit=$((1024 / 8));;
@@ -74,19 +70,29 @@ case "$unit" in
     *) echo Bad unit "$unit" && exit 1;;
 esac
 
-scalar=$((bytes_per_unit * dt))
-init_line=$(cat /proc/net/dev | grep "^[ ]*$iface:")
-if [ -z "$init_line" ]; then
-    echo Interface not found in /proc/net/dev: "$iface"
-    exit 1
-fi
+while true; do
+    iface="${iface:-$(default_interface)}"
+    while [ -z "$iface" ]; do
+        echo No default interface
+        sleep "$dt"
+        iface=$(default_interface)
+    done
 
-init_received=$(awk '{print $2}' <<< $init_line)
-init_sent=$(awk '{print $10}' <<< $init_line)
+    scalar=$((bytes_per_unit * dt))
+    init_line=$(cat /proc/net/dev | grep "^[ ]*$iface:")
+    if [ -z "$init_line" ]; then
+        echo Interface not found in /proc/net/dev: "$iface"
+        exit 1
+    fi
 
-(while true; do cat /proc/net/dev; sleep "$dt"; done) |\
-    stdbuf -oL grep "^[ ]*$iface:" |\
-    awk -v scalar="$scalar" -v unit="$unit" -v iface="$iface" '
+    init_received=$(awk '{print $2}' <<< $init_line)
+    init_sent=$(awk '{print $10}' <<< $init_line)
+
+    (while true; do \
+        cat /proc/net/dev; sleep "$dt"; if [ $autoreload -eq 1 -a $iface != $(default_interface) ]; then exit; fi; \
+     done) |\
+        stdbuf -oL grep "^[ ]*$iface:" |\
+        awk -v scalar="$scalar" -v unit="$unit" -v iface="$iface" '
 BEGIN{old_received='"$init_received"';old_sent='"$init_sent"'}
 {
     received=$2
@@ -102,3 +108,5 @@ BEGIN{old_received='"$init_received"';old_sent='"$init_sent"'}
     }
 }
 '
+    iface="" #We can only get here if autoreload is enabled.
+done

@@ -20,8 +20,6 @@ markup=pango
 
 Note that the interface will be guessed using `ip route` but it can also be specified 
 using the `$IFACE` property.
-On the fly interface switching is not supported, if you change
-your default interface, simply issue `i3-msg restart` and the script will pick
-up on the new default. However, the block will wait until a default interface
-is found upon starting, so no restart is needed if you start i3 and then connect 
-to wifi later.
+If you would like on the fly interface switching, pass `-a` or set `$AUTORELOAD` to 1.
+Even without AUTORELOAD, the block will wait until a default interface is found upon
+starting, so no restart is needed if you start i3 and then connect to wifi later.
