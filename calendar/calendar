@@ -36,5 +36,5 @@ case "$BLOCK_BUTTON" in
 	    --posx=$posX --posy=$posY \
 	    > /dev/null"
 esac
-date "$DATEFMT"
-date "$SHORTFMT"
+echo "$LABEL$(date "$DATEFMT")"
+echo "$LABEL$(date "$SHORTFMT")"
