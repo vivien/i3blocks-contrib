@@ -29,8 +29,8 @@ IF="${IF:-$(ip route | awk '/^default/ { print $5 ; exit }')}"
 
 #------------------------------------------------------------------------
 
-AF=inet6?
-LABEL=""
+AF=${ADDRESS_FAMILY:-inet6?}
+LABEL="${LABEL:-}"
 
 for flag in "$1" "$2"; do
   case "$flag" in
