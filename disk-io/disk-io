@@ -5,7 +5,7 @@
 #
 # i3blocks blocklet script to monitor disk io
 
-label="${PREFIX:-""}"
+label="${LABEL:-""}"
 dt="${DT:-5}"
 MB_only="${MB_ONLY:-0}"
 kB_only="${KB_ONLY:-0}"

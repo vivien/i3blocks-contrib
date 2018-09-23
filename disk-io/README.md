@@ -14,11 +14,11 @@ iostat (sysstat package), fontawesome for the   hard disk icon (fonts-font-aw
 
 ```
 [disk-io]
-label=
 command=$SCRIPT_DIR/disk-io
 #command=$SCRIPT_DIR/disk-io -w 3 -M -P 0
 interval=persist
 markup=pango
+LABEL=
 #instance=/^sda/
 #DT=5
 #MB_ONLY=0 #0 or 1
