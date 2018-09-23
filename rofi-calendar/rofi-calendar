@@ -2,7 +2,9 @@
 
 DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
 SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
+LABEL="${LABEL:-}"
 blockdate=$(date "$DATEFTM")
+shortblockdate=$(date "$SHORTFMT")
 
 case "$BLOCK_BUTTON" in
     1|2|3) date=$(date '+%A, %d. %B')
@@ -25,5 +27,5 @@ cal --color=always \
         -no-custom \
         -p "$date" > /dev/null 
     esac
-echo "$blockdate"
-date "$SHORTFMT"
+echo "$LABEL$blockdate"
+echo "$LABEL$shortblockdate"
