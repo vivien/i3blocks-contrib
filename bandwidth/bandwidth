@@ -41,7 +41,9 @@ elif [[ -z $INTERFACE ]]; then
 fi
 
 # Issue #36 compliant.
-if ! [ -e "/sys/class/net/${INTERFACE}/operstate" ] || ! [ "`cat /sys/class/net/${INTERFACE}/operstate`" = "up" ]
+if ! [ -e "/sys/class/net/${INTERFACE}/operstate" ] || \
+    (! [ "$TREAT_UNKNOWN_AS_UP" = "1" ] && 
+    ! [ "`cat /sys/class/net/${INTERFACE}/operstate`" = "up" ])
 then
     echo "$INTERFACE down"
     echo "$INTERFACE down"
