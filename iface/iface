@@ -30,7 +30,6 @@ IF="${IF:-$(ip route | awk '/^default/ { print $5 ; exit }')}"
 #------------------------------------------------------------------------
 
 AF=inet6?
-LABEL=""
 
 for flag in "$1" "$2"; do
   case "$flag" in
@@ -41,7 +40,7 @@ for flag in "$1" "$2"; do
     -L)
       if [[ "$IF" = "" ]]; then
         LABEL="iface "
-      else
+      elif [[ -z ${LABEL+x} ]]; then
         LABEL="$IF: "
       fi ;;
   esac
