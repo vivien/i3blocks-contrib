@@ -101,7 +101,13 @@ int main(int argc, char *argv[])
   char iface[BUFSIZ] = {0};
   int warningrx = 0, warningtx = 0, criticalrx = 0, criticaltx = 0;
   char *envvar = NULL;
+  char *envvar = NULL;
+  char *label = "";
 
+  envvar = getenv("LABEL");
+  if (envvar) {
+    label = envvar;
+  }
   envvar = getenv("USE_BITS");
   if (envvar && *envvar == '1')
     unit = 'b';
@@ -163,6 +169,7 @@ int main(int argc, char *argv[])
 
     rx = (received - received_old) / (float)(s - s_old);
     tx = (sent - sent_old) / (float)(s - s_old);
+    printf("%s", label);
     display(unit, rx, warningrx, criticalrx);
     printf(" ");
     display(unit, tx, warningtx, criticaltx);
