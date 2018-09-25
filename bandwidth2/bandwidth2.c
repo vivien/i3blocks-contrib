@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
     display(unit, rx, warningrx, criticalrx);
     printf(" ");
     display(unit, tx, warningtx, criticaltx);
+    printf("\n");
     fflush(stdout);
     s_old = s;
     received_old = received;
