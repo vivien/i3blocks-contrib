@@ -1,0 +1,27 @@
+= Community contributed blocklets
+
+This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://github.com/vivien/i3blocks[i3blocks], contributed by the community.
+
+It is officially maintained by @kb100 with the help of a bench of active i3blocks crafters.
+
+Each release of this repository will be guaranteed to work against a given link:https://github.com/vivien/i3blocks/releases[release] of i3blocks (a.k.a. *core*).
+
+|===
+| contrib | core
+| master | master
+| next | next
+|===
+
+You may want to take a look at the individual blocklet directories, which contain descriptions, screenshots, and installation/configuration instructions.
+
+NOTE: configurations reference `$SCRIPT_DIR`, meaning the directory that you put the script into. +
+You must change `$SCRIPT_DIR` appropriately to coincide with where you put your scripts, for more info see the link:https://github.com/vivien/i3blocks-contrib/wiki/FAQ#blocklets-refer-to-script_dir-what-does-that-mean-how-can-i-use-it[FAQ].
+
+Want to contribute?
+Great!
+Check the link:https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md[contribution guidelines] in order to get started.
+
+NOTE: i3blocks now supports dynamics properties, and all scripts have been updated to do the same. +
+i3blocks-contrib requires a version of i3blocks that supports dynamics properties, so upgrade as necessary.
+
+Happy crafting!
