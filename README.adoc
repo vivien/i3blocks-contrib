@@ -2,6 +2,51 @@
 
 This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://github.com/vivien/i3blocks[i3blocks], contributed by the community.
 
+|===
+| Blocklet | Description
+| link:afs[] | TODO: describe afs
+| link:apt-upgrades[] | TODO: describe apt-upgrades
+| link:arch-update[] | TODO: describe arch-update
+| link:aur-update[] | TODO: describe aur-update
+| link:bandwidth[] | TODO: describe bandwidth
+| link:bandwidth2[] | TODO: describe bandwidth2
+| link:bandwidth3[] | TODO: describe bandwidth3
+| link:battery[] | TODO: describe battery
+| link:battery2[] | TODO: describe battery2
+| link:battery2/images[] | TODO: describe battery2/images
+| link:batterybar[] | TODO: describe batterybar
+| link:calendar[] | TODO: describe calendar
+| link:cpu_usage[] | TODO: describe cpu_usage
+| link:disk[] | TODO: describe disk
+| link:disk-io[] | TODO: describe disk-io
+| link:docker[] | TODO: describe docker
+| link:email[] | TODO: describe email
+| link:essid[] | TODO: describe essid
+| link:gpu-load[] | TODO: describe gpu-load
+| link:iface[] | TODO: describe iface
+| link:kbdd_layout[] | TODO: describe kbdd_layout
+| link:keyindicator[] | TODO: describe keyindicator
+| link:key_layout[] | TODO: describe key_layout
+| link:kubernetes[] | TODO: describe kubernetes
+| link:load_average[] | TODO: describe load_average
+| link:mediaplayer[] | TODO: describe mediaplayer
+| link:memory[] | TODO: describe memory
+| link:monitor_manager[] | TODO: describe monitor_manager
+| link:openvpn[] | TODO: describe openvpn
+| link:rofi-calendar[] | TODO: describe rofi-calendar
+| link:shutdown_menu[] | TODO: describe shutdown_menu
+| link:tahoe-lafs[] | TODO: describe tahoe-lafs
+| link:temperature[] | TODO: describe temperature
+| link:time[] | TODO: describe time
+| link:usb[] | TODO: describe usb
+| link:usb/images[] | TODO: describe usb/images
+| link:volume[] | TODO: describe volume
+| link:volume-pulseaudio[] | TODO: describe volume-pulseaudio
+| link:wifi[] | TODO: describe wifi
+| link:wlan-dbm[] | TODO: describe wlan-dbm
+| link:ytdl-mpv[] | TODO: describe ytdl-mpv
+|===
+
 It is officially maintained by @kb100 with the help of a bench of active i3blocks crafters.
 
 Each release of this repository will be guaranteed to work against a given link:https://github.com/vivien/i3blocks/releases[release] of i3blocks (a.k.a. *core*).
