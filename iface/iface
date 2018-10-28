@@ -21,6 +21,9 @@
 IF="${IFACE:-$BLOCK_INSTANCE}"
 IF="${IF:-$(ip route | awk '/^default/ { print $5 ; exit }')}"
 
+# Exit if there is no default route
+[[ -z "$IF" ]] && exit
+
 #------------------------------------------------------------------------
 
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
