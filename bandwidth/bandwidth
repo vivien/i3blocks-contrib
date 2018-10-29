@@ -40,6 +40,9 @@ elif [[ -z $INTERFACE ]]; then
   INTERFACE=$(ip route | awk '/^default/ { print $5 ; exit }')
 fi
 
+# Exit if there is no default route
+[[ -z "$IF" ]] && exit
+
 # Issue #36 compliant.
 if ! [ -e "/sys/class/net/${INTERFACE}/operstate" ] || \
     (! [ "$TREAT_UNKNOWN_AS_UP" = "1" ] && 
