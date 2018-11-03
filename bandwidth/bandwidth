@@ -41,7 +41,7 @@ elif [[ -z $INTERFACE ]]; then
 fi
 
 # Exit if there is no default route
-[[ -z "$IF" ]] && exit
+[[ -z "$INTERFACE" ]] && exit
 
 # Issue #36 compliant.
 if ! [ -e "/sys/class/net/${INTERFACE}/operstate" ] || \
