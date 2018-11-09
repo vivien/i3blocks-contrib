@@ -65,6 +65,7 @@ Great!
 Check the link:https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md[contribution guidelines] in order to get started.
 
 NOTE: i3blocks now supports dynamics properties, and all scripts have been updated to do the same. +
-i3blocks-contrib requires a version of i3blocks that supports dynamics properties, so upgrade as necessary.
+i3blocks-contrib REQUIRES a version of i3blocks that supports dynamics properties, which is currently only +
+available in the git version since the last release (v1.4) was years ago.
 
 Happy crafting!
