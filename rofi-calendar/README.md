@@ -1,6 +1,6 @@
 # rofi-calendar
 
-Have a minimal calendar pop up in rofi when clicking the date blocklet
+Have a minimal calendar pop up in rofi when clicking the date blocklet (right click to show next month)
 
 ![](screenshot.png)
 
