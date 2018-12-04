@@ -36,7 +36,6 @@ markup=none
 # See the script for details.
 
 [volume]
-command=$SCRIPT_DIR/volume
 #label=♪
 label=VOL
 interval=once
