@@ -13,7 +13,7 @@ Show the number of running `Docker` containers and latest created container IP a
 ```
 [docker]
 command=$SCRIPT_DIR/docker
-label=🐳
 color=#0db7ed
 interval=10
+LABEL=🐳 
 ```
