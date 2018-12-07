@@ -26,14 +26,13 @@ Be always on top of your available updates with this blocklet. Optionally show A
 ```ini
 [arch-update]
 command=$SCRIPT_DIR/arch-update 
-label=Updates:
 interval=3600
 markup=pango
+LABEL=Updates: 
 ```
 Another advanced example with fontawesome label, AUR updates included, watched packages, and custom colors for both messages:
 ```ini
 [pacman-updates]
-label=
 command=$SCRIPT_DIR/arch-update
 markup=pango
 interval= 3600
@@ -42,6 +41,7 @@ WATCH=^linux.* ^pacman.*
 BASE_COLOR=#5fff5f
 UPDATE_COLOR=#FFFF85
 AUR=true
+LABEL= 
 ```
 # Configuration
 _Use the environment variables above instead of these deprecated command line options:_
