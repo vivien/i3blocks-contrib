@@ -1,0 +1,61 @@
+#!/bin/bash -
+#
+# Copyright (C) 2018 Enrico Maria De Angelis
+# Licensed under the terms of the GNU GPL v3 only.
+#
+# i3blocks blocklet script to see the available updates of pacman; click shows updates in rofi, if any
+
+ROFI_CONFIG="${ROFI_CONFIG:-~/.config/rofi/blue.rasi}"
+ROFI_HEADER="${ROFI_HEADER:-update(s) available}"
+UP_TO_DATE_COLOR="${UP_TO_DATE_COLOR:-#00FF00}"
+UPDATES_AVAIL_COLOR="${UPDATES_AVAIL_COLOR:-#FFFF00}"
+UP_TO_DATE_TEXT="${UP_TO_DATE_TEXT:-up to date}"
+ONE_UPDATE_TEXT="${ONE_UPDATE_TEXT:-update}"
+MORE_UPDATES_TEXT="${MORE_UPDATES_TEXT:-updates}"
+UP_TO_DATE_PRE_TEXT="${UP_TO_DATE_PRE_TEXT:-system}"
+UPDATES_AVAIL_POST_TEXT="${UPDATES_AVAIL_POST_TEXT:-available}"
+
+# determine the number of updates, and set text & color
+IFS=$'\n'
+updates=($(checkupdates))
+if [[ -z $updates ]]; then
+  pre_text=$UP_TO_DATE_PRE_TEXT
+  short_text=$UP_TO_DATE_TEXT
+  color=$UP_TO_DATE_COLOR
+else
+  if (( ${#updates[*]} == 1 )); then
+    short_text="1 $ONE_UPDATE_TEXT"
+  else
+    short_text="${#updates[*]} $MORE_UPDATES_TEXT"
+  fi
+  post_text=$UPDATES_AVAIL_POST_TEXT
+  color=$UPDATES_AVAIL_COLOR
+fi
+
+# open rofi with updates, if any
+if [[ -n $updates ]]; then
+  case "$BLOCK_BUTTON" in
+    1|2|3)
+      for s in ${updates[*]}; do
+        (( textwidth < ${#s} )) && textwidth=${#s}
+      done
+      a_bit_more=5
+      textwidth=$(( textwidth + a_bit_more ))
+      rofi -dmenu \
+           -font "Monospace 20" \
+           -m -3 \
+           -lines ${#updates[*]} \
+           -width -$textwidth \
+           -theme-str '#window {anchor: southeast; location: northwest; }' \
+           -theme "$ROFI_CONFIG" \
+           -p "$ROFI_HEADER" < <(echo "${updates[*]}")
+      ;;
+    *)
+      ;;
+  esac
+fi
+
+# print the colored text
+echo ${pre_text:+$pre_text }$short_text${post_text:+ $post_text}
+echo $short_text
+echo $color
