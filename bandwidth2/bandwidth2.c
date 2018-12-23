@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -24,14 +25,15 @@ void usage(char *argv[])
   printf("-b \t\tuse bits/s\n");
   printf("-B \t\tuse Bytes/s  (default)\n");
   printf("-t seconds\trefresh time (default is 1)\n");
-  printf("-i interface\tnetwork interface to monitor. If not specified, check all interfaces.\n");
+  printf("-i interfaces\tnetwork interfaces to monitor (comma separated).\n");
+  printf("             \tIf not specified, check all interfaces.\n");
   printf("-w Bytes:Bytes\tSet warning (color orange) for Rx:Tx bandwidth. (default: none)\n");
   printf("-c Bytes:Bytes\tSet critical (color red) for Rx:Tx bandwidth. (default: none)\n");
   printf("-h \t\tthis help\n");
   printf("\n");
 }
 
-void get_values(char *const iface, time_t * const s, ulli * const received, ulli * const sent)
+void get_values(char **const ifaces, int num_ifaces, time_t * const s, ulli * const received, ulli * const sent)
 {
   FILE *f;
 
@@ -42,18 +44,23 @@ void get_values(char *const iface, time_t * const s, ulli * const received, ulli
   }
 
   ulli temp_r, temp_s;
-  char line[BUFSIZ];
+  char line[BUFSIZ] = {0};
   char ifname[BUFSIZ];
 
   *received = 0;
   *sent = 0;
   while (fgets(line, BUFSIZ - 1, f) != NULL) {
-    if (sscanf(line, "%s %llu %*u %*u %*u %*u %*u %*u %*u %llu", ifname, &temp_r, &temp_s) == 3) {
-      if (iface && strcmp(iface, ifname) != 0) {
-        continue;
+    if (sscanf(line, "%[^:]: %llu %*u %*u %*u %*u %*u %*u %*u %llu", ifname, &temp_r, &temp_s) == 3) {
+      int i;
+      int iface_found = num_ifaces == 0;
+      for (i = 0; i < num_ifaces; i++) {
+        if (strcmp(ifaces[i], ifname) != 0) {
+          iface_found = 1;
+          break;
+        }
       }
 
-      if (strcmp(ifname, "lo:") == 0)
+      if (!iface_found || strcmp(ifname, "lo") == 0)
         continue;
 
       *received = *received + temp_r;
@@ -95,10 +102,26 @@ void display(int const unit, double b, int const warning, int const critical)
   printf("</span>");
 }
 
+void parse_ifaces(char *const str, char ***ifaces, int *num_ifaces)
+{
+  char *our_str = strdup(str);
+  int max_ifaces = strlen(str) / 2 + 1;
+
+  *ifaces = calloc(max_ifaces, sizeof (char *));
+  *num_ifaces = 0;
+  while (((*ifaces)[*num_ifaces] = strsep(&our_str, ","))) {
+    if ((*ifaces)[*num_ifaces] != NULL && (*ifaces)[*num_ifaces][0] != '\0') {
+      (*num_ifaces)++;
+    }
+  }
+}
+
 int main(int argc, char *argv[])
 {
   int c, unit = 'B', t = 1;
-  char iface[BUFSIZ] = {0};
+  char str_ifaces[BUFSIZ] = {0};
+  char **ifaces;
+  int num_ifaces;
   int warningrx = 0, warningtx = 0, criticalrx = 0, criticaltx = 0;
   char *envvar = NULL;
   char *label = "";
@@ -114,7 +137,10 @@ int main(int argc, char *argv[])
     t = atoi(envvar);
   envvar = getenv("INTERFACE");
   if (envvar)
-    snprintf(iface, BUFSIZ, "%s:", envvar);
+    snprintf(str_ifaces, BUFSIZ, "%s", envvar);
+  envvar = getenv("INTERFACES");
+  if (envvar)
+    snprintf(str_ifaces, BUFSIZ, "%s", envvar);
   envvar = getenv("WARN_RX");
   if (envvar)
       warningrx = atoi(envvar);
@@ -141,7 +167,7 @@ int main(int argc, char *argv[])
       t = atoi(optarg);
       break;
     case 'i':
-      snprintf(iface, BUFSIZ, "%s:", optarg);
+      snprintf(str_ifaces, BUFSIZ, "%s", optarg);
       break;
     case 'w':
       sscanf(optarg, "%d:%d", &warningrx, &warningtx);
@@ -155,15 +181,17 @@ int main(int argc, char *argv[])
     }
   }
 
+  parse_ifaces(str_ifaces, &ifaces, &num_ifaces);
+
   time_t s, s_old;
   ulli received, sent, received_old, sent_old;
   double rx, tx;
 
-  get_values(iface, &s_old, &received_old, &sent_old);
+  get_values(ifaces, num_ifaces, &s_old, &received_old, &sent_old);
 
   while (1) {
     sleep(t);
-    get_values(iface[0] ? iface : NULL, &s, &received, &sent);
+    get_values(ifaces, num_ifaces, &s, &received, &sent);
 
     rx = (received - received_old) / (float)(s - s_old);
     tx = (sent - sent_old) / (float)(s - s_old);
