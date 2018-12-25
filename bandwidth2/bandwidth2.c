@@ -102,14 +102,13 @@ void display(int const unit, double b, int const warning, int const critical)
   printf("</span>");
 }
 
-void parse_ifaces(char *const str, char ***ifaces, int *num_ifaces)
+void parse_ifaces(char *str, char ***ifaces, int *num_ifaces)
 {
-  char *our_str = strdup(str);
   int max_ifaces = strlen(str) / 2 + 1;
 
   *ifaces = calloc(max_ifaces, sizeof (char *));
   *num_ifaces = 0;
-  while (((*ifaces)[*num_ifaces] = strsep(&our_str, ","))) {
+  while (((*ifaces)[*num_ifaces] = strsep(&str, ","))) {
     if ((*ifaces)[*num_ifaces] != NULL && (*ifaces)[*num_ifaces][0] != '\0') {
       (*num_ifaces)++;
     }
@@ -206,5 +205,6 @@ int main(int argc, char *argv[])
     sent_old = sent;
   }
 
+  free(ifaces);
   return STATE_OK;
 }
