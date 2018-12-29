@@ -31,6 +31,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:mediaplayer[] | Generic media player status/controls using playerctl
 | link:memory[] | Show ram or swap usage
 | link:monitor_manager[] | Manage monitor on/off, resolution, extend, clone
+| link:nm-vpn[] | Show vpn status using network manager
 | link:openvpn[] | Show openvpn status
 | link:rofi-calendar[] | Current date/time and click for callendar using rofi
 | link:shutdown_menu[] | Shutdown menu using rofi or zenity
