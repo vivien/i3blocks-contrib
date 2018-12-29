@@ -21,6 +21,9 @@
 IF="${IFACE:-$BLOCK_INSTANCE}"
 IF="${IF:-$(ip route | awk '/^default/ { print $5 ; exit }')}"
 
+# Exit if there is no default route
+[[ -z "$IF" ]] && exit
+
 #------------------------------------------------------------------------
 
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
@@ -29,8 +32,8 @@ IF="${IF:-$(ip route | awk '/^default/ { print $5 ; exit }')}"
 
 #------------------------------------------------------------------------
 
-AF=inet6?
-LABEL=""
+AF=${ADDRESS_FAMILY:-inet6?}
+LABEL="${LABEL:-}"
 
 for flag in "$1" "$2"; do
   case "$flag" in
@@ -55,7 +58,7 @@ if [[ "$IF" = "" ]] || [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; the
 fi
 
 # if no interface is found, use the first device with a global scope
-IPADDR=$(ip addr show $IF | perl -n -e "/$AF ([^\/]+).* scope global/ && print \$1 and exit")
+IPADDR=$(ip addr show $IF | perl -n -e "/$AF ([^ \/]+).* scope global/ && print \$1 and exit")
 
 case $BLOCK_BUTTON in
   3) echo -n "$IPADDR" | xclip -q -se c ;;

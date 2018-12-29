@@ -23,20 +23,25 @@ my $ac_adapt;
 my $full_text;
 my $short_text;
 my $bat_number = $ENV{BAT_NUMBER} || 0;
+my $label = $ENV{LABEL} || "";
 
 # read the first line of the "acpi" command output
-open (ACPI, "acpi -b | grep 'Battery $bat_number' |") or die;
+open (ACPI, "acpi -b 2>/dev/null| grep 'Battery $bat_number' |") or die;
 $acpi = <ACPI>;
 close(ACPI);
 
 # fail on unexpected output
-if ($acpi !~ /: (\w+), (\d+)%/) {
+if (not defined($acpi)) {
+    # don't print anything to stderr if there is no battery
+    exit(0);
+}
+elsif ($acpi !~ /: ([\w\s]+), (\d+)%/) {
 	die "$acpi\n";
 }
 
 $status = $1;
 $percent = $2;
-$full_text = "$percent%";
+$full_text = "$label$percent%";
 
 if ($status eq 'Discharging') {
 	$full_text .= ' DIS';

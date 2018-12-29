@@ -102,7 +102,8 @@ def matching_updates(updates, watch_list):
     return matches
 
 
-message = "<span color='{0}'>{1}</span>"
+label = os.environ.get("LABEL","")
+message = "{0}<span color='{1}'>{2}</span>"
 args = create_argparse()
 
 updates = get_updates()
@@ -117,7 +118,7 @@ if update_count > 0:
     if matches:
         info += ' [{0}]'.format(', '.join(matches))
         short_info += '*'
-    print(message.format(args.updates_available_color, info))
-    print(message.format(args.updates_available_color, short_info))
+    print(message.format(label, args.updates_available_color, info))
+    print(message.format(label, args.updates_available_color, short_info))
 elif not args.quiet:
-    print(message.format(args.base_color, 'system up to date'))
+    print(message.format(label, args.base_color, 'system up to date'))
