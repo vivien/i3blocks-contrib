@@ -120,6 +120,7 @@ sub playerctl {
     buttons('playerctl');
 
     my $artist = qx(playerctl $player_arg metadata artist);
+    chomp $artist;
     # exit status will be nonzero when playerctl cannot find your player
     exit(0) if $? || $artist eq '(null)';
 

@@ -1,6 +1,6 @@
 # rofi-calendar
 
-Have a minimal calendar pop up in rofi when clicking the date blocklet
+Have a minimal calendar pop up in rofi when clicking the date blocklet (right click to show next month)
 
 ![](screenshot.png)
 
@@ -20,8 +20,8 @@ Have a minimal calendar pop up in rofi when clicking the date blocklet
 ```ini
 [rofi-calendar]
 command=$SCRIPT_DIR/rofi-calendar
-label=
 interval=3600
+LABEL= 
 #DATEFTM=+%a. %d. %b. %Y
 #SHORTFTM=+%d.%m.%Y
 ```

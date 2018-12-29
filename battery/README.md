@@ -13,8 +13,8 @@ Show battery info.
 ```
 [battery]
 command=$SCRIPT_DIR/battery
-label=BAT
-#label=⚡
 interval=30
+LABEL=BAT
+#LABEL=⚡
 #BAT_NUMBER=0
 ```

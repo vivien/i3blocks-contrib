@@ -22,8 +22,8 @@ This is similar to the rofi-calendar blocklet, but without the rofi dependency a
 ```ini
 [calendar]
 command=$SCRIPT_DIR/calendar
-label=
 interval=1
+LABEL= 
 DATEFMT=+%H:%M:%S
 # SHORTFMT=+%H:%M:%S
 HEIGHT=180

@@ -29,8 +29,8 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 ```
 [volume]
 command=$SCRIPT_DIR/volume
-#label=♪
-label=VOL
+#LABEL=♪ 
+LABEL=VOL 
 interval=once
 signal=10
 #STEP=5%
