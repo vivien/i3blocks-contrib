@@ -16,6 +16,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:batterybar[] | Show battery info graphically as a bar
 | link:calendar[] | Current date/time and click for calendar
 | link:cpu_usage[] | Show current CPU usage
+| link:cpu_usage2[] | Show current CPU usage (C version)
 | link:disk[] | Show disk usage (space used) for a given directory
 | link:disk-io[] | Monitor disk reads and writes
 | link:docker[] | Show the number of Docker containers and container IP
