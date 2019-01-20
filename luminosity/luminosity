@@ -1,0 +1,11 @@
+#!/bin/bash
+# luminosity.sh -- project : i3blocks blocklet luminosity
+# Created by Olivier Moreau 'm242' <m242@protonmail.com>
+# 01/20/19
+#
+
+brightness=$(cat /sys/class/backlight/intel_backlight/brightness)
+max_brightness=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+
+percentage=$(($(($brightness*100))/$max_brightness))
+echo "$LABEL$percentage%"
