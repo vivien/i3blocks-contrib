@@ -9,6 +9,7 @@ It comes with some other features though:
 * Automatically estimate what unit (K,M,G,T) to use depending on the value. You can still choose between bits and bytes.
 * By default sum all the network interfaces (except lo) instead of only default route interface.
 * Warning and critical colors as an option.
+* Choice for SI units or binary units.
 
 ## Build
 
@@ -25,11 +26,12 @@ markup=pango
 LABEL=
 #INTERFACE=(checks all interfaces)
 #USE_BITS=0
-#USE_BYES=1
+#USE_BYTES=1
 #WARN_RX=0
 #WARN_TX=0
 #CRIT_RX=0
 #CRIT_TX=0
+#USE_SI=0
 ```
 
 E.g.

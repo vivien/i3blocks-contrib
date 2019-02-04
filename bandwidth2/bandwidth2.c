@@ -20,7 +20,7 @@ enum {
 
 void usage(char *argv[])
 {
-  printf("Usage: %s [-b|B] [-t seconds] [-i interface] [-w Bytes:Bytes] [-c Bytes:Bytes] [-h]\n", argv[0]);
+  printf("Usage: %s [-b|B] [-t seconds] [-i interface] [-w Bytes:Bytes] [-c Bytes:Bytes] [-s] [-h]\n", argv[0]);
   printf("\n");
   printf("-b \t\tuse bits/s\n");
   printf("-B \t\tuse Bytes/s  (default)\n");
@@ -29,6 +29,7 @@ void usage(char *argv[])
   printf("             \tIf not specified, check all interfaces.\n");
   printf("-w Bytes:Bytes\tSet warning (color orange) for Rx:Tx bandwidth. (default: none)\n");
   printf("-c Bytes:Bytes\tSet critical (color red) for Rx:Tx bandwidth. (default: none)\n");
+  printf("-s \t\tuse SI units\n");
   printf("-h \t\tthis help\n");
   printf("\n");
 }
@@ -77,8 +78,11 @@ void get_values(char **const ifaces, int num_ifaces, time_t * const s, ulli * co
   }
 }
 
-void display(int const unit, double b, int const warning, int const critical)
+void display(int const unit, int const divisor,
+             double b, int const warning, int const critical)
 {
+  char fmtstr[7];
+
   if (critical != 0 && b > critical) {
     printf("<span fallback='true' color='%s'>", RED);
   } else if (warning != 0 && b > warning) {
@@ -90,14 +94,20 @@ void display(int const unit, double b, int const warning, int const critical)
   if (unit == 'b')
     b = b * 8;
 
-  if (b < 1024) {
-    printf("%5.1lf  %c/s", b, unit);
-  } else if (b < 1024 * 1024) {
-    printf("%5.1lf K%c/s", b / 1024, unit);
-  } else if (b < 1024 * 1024 * 1024) {
-    printf("%5.1lf M%c/s", b / (1024 * 1024), unit);
+  snprintf(fmtstr, sizeof (fmtstr), "%%%d.1lf ", divisor > 1000 ? 6 : 5);
+
+  if (b < divisor) {
+    printf(fmtstr, b);
+    printf(" %c/s", unit);
+  } else if (b < divisor * divisor) {
+    printf(fmtstr, b / divisor);
+    printf("K%c/s", unit);
+  } else if (b < divisor * divisor * divisor) {
+    printf(fmtstr, b / (divisor * divisor));
+    printf("M%c/s", unit);
   } else {
-    printf("%5.1lf G%c/s", b / (1024 * 1024 * 1024), unit);
+    printf(fmtstr, b / (divisor * divisor * divisor));
+    printf("G%c/s", unit);
   }
   printf("</span>");
 }
@@ -122,6 +132,7 @@ int main(int argc, char *argv[])
   char **ifaces;
   int num_ifaces;
   int warningrx = 0, warningtx = 0, criticalrx = 0, criticaltx = 0;
+  int divisor = 1024;
   char *envvar = NULL;
   char *label = "";
 
@@ -142,21 +153,24 @@ int main(int argc, char *argv[])
     snprintf(str_ifaces, BUFSIZ, "%s", envvar);
   envvar = getenv("WARN_RX");
   if (envvar)
-      warningrx = atoi(envvar);
+    warningrx = atoi(envvar);
   envvar = getenv("WARN_TX");
   if (envvar)
-      warningtx = atoi(envvar);
+    warningtx = atoi(envvar);
   envvar = getenv("CRIT_RX");
   if (envvar)
-      criticalrx = atoi(envvar);
+    criticalrx = atoi(envvar);
   envvar = getenv("CRIT_TX");
   if (envvar)
-      criticaltx = atoi(envvar);
+    criticaltx = atoi(envvar);
+  envvar = getenv("USE_SI");
+  if (envvar && *envvar == '1')
+    divisor = 1000;
   envvar = getenv("LABEL");
   if (envvar)
-      label = envvar;
+    label = envvar;
 
-  while (c = getopt(argc, argv, "bBht:i:w:c:"), c != -1) {
+  while (c = getopt(argc, argv, "bBsht:i:w:c:"), c != -1) {
     switch (c) {
     case 'b':
     case 'B':
@@ -173,6 +187,9 @@ int main(int argc, char *argv[])
       break;
     case 'c':
       sscanf(optarg, "%d:%d", &criticalrx, &criticaltx);
+      break;
+    case 's':
+      divisor = 1000;
       break;
     case 'h':
       usage(argv);
@@ -195,9 +212,9 @@ int main(int argc, char *argv[])
     rx = (received - received_old) / (float)(s - s_old);
     tx = (sent - sent_old) / (float)(s - s_old);
     printf("%s", label);
-    display(unit, rx, warningrx, criticalrx);
+    display(unit, divisor, rx, warningrx, criticalrx);
     printf(" ");
-    display(unit, tx, warningtx, criticaltx);
+    display(unit, divisor, tx, warningtx, criticaltx);
     printf("\n");
     fflush(stdout);
     s_old = s;
