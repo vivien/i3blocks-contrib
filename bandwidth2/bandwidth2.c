@@ -80,11 +80,11 @@ void get_values(char **const ifaces, int num_ifaces, time_t * const s, ulli * co
 void display(int const unit, double b, int const warning, int const critical)
 {
   if (critical != 0 && b > critical) {
-    printf("<span color='%s'>", RED);
+    printf("<span fallback='true' color='%s'>", RED);
   } else if (warning != 0 && b > warning) {
-    printf("<span color='%s'>", ORANGE);
+    printf("<span fallback='true' color='%s'>", ORANGE);
   } else {
-    printf("<span>");
+    printf("<span fallback='true'>");
   }
 
   if (unit == 'b')
