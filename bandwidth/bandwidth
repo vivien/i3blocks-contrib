@@ -30,8 +30,8 @@ while [[ $# -gt 1 ]]; do
     shift
 done
 
-[[ -z $INLABEL ]] && INLABEL="IN "
-[[ -z $OUTLABEL ]] && OUTLABEL="OUT "
+[[ -z "$INLABEL" ]] && INLABEL="IN "
+[[ -z "$OUTLABEL" ]] && OUTLABEL="OUT "
 
 # Use the provided interface, otherwise the device used for the default route.
 if [[ -z $INTERFACE ]] && [[ -n $BLOCK_INSTANCE ]]; then
@@ -71,6 +71,7 @@ if ! [[ -f "${path}" ]]; then
   chmod 0666 "${path}"
 fi
 
+
 # read previous state and update data storage
 read old < "${path}"
 echo "${time} ${rx} ${tx}" > "${path}"
@@ -106,7 +107,7 @@ echo -n " "
 echo -n "$OUTLABEL"
 tx_kib=$(( $tx_rate >> 10 ))
 if hash bc 2>/dev/null && [[ "$tx_rate" -gt 1048576 ]]; then
-  printf '%sM' "`echo "scale=1; $tx_kib / 1024" | bc`"
+  printf '%sM\n' "`echo "scale=1; $tx_kib / 1024" | bc`"
 else
-  echo -n "${tx_kib}K"
+  echo "${tx_kib}K"
 fi
