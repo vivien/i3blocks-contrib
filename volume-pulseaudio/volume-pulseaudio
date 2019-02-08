@@ -22,17 +22,19 @@ LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
 SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
 USE_ALSA_NAME=${USE_ALSA_NAME:-0}
 USE_DESCRIPTION=${USE_DESCRIPTION:-0}
+JSON_FORMAT=${JSON_FORMAT:-0}
 
 SUBSCRIBE=${SUBSCRIBE:-0}
 
 MIXER=${MIXER:-""}
 SCONTROL=${SCONTROL:-""}
 
-while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
+while getopts F:Sf:jadH:M:L:X:T:t:C:c:i:m:s:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
+        j) JSON_FORMAT=1 ;;
         a) USE_ALSA_NAME=1 ;;
         d) USE_DESCRIPTION=1 ;;
         H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
@@ -49,10 +51,11 @@ while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
-        [-m mixer] [-s scontrol] [-h]
+        [-m mixer] [-s scontrol] [-j] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
 \${SYMB}, \${VOL}, \${INDEX}, \${NAME}
+-j\tOutput in JSON format. Default: '$JSON_FORMAT'
 -S\tSubscribe to volume events (requires persistent block, always uses long format)
 -a\tUse ALSA name if possible
 -d\tUse device description instead of name if possible
@@ -117,6 +120,11 @@ function print_format {
     echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
 }
 
+function print_json {
+    echo "'{\"full_text\": \"$(print_format "$1")\", \"short_text\": \"$(print_format "$2")\", \"color\": \"$3\"}'"
+}
+
+
 function print_block {
     ACTIVE=$(pacmd list-sinks | grep "state\: RUNNING" -B4 -A7 | grep "index:\|name:\|volume: front\|muted:")
     [ -z "$ACTIVE" ] && ACTIVE=$(pacmd list-sinks | grep "index:\|name:\|volume: front\|muted:" | grep -A3 '*')
@@ -158,12 +166,16 @@ sed 's/.*= "\(.*\)".*/\1/')
         COLOR=$MUTED_COLOR
     fi
 
-    if [[ $SUBSCRIBE == 1 ]] ; then
-        print_format "$LONG_FORMAT"
+    if [[ $JSON_FORMAT == 1 ]] ; then
+        print_json "$LONG_FORMAT" "$SHORT_FORMAT" "$COLOR"
     else
-        print_format "$LONG_FORMAT"
-        print_format "$SHORT_FORMAT"
-        echo "$COLOR"
+        if [[ $SUBSCRIBE == 1 ]] ; then
+            print_format "$LONG_FORMAT"
+        else
+            print_format "$LONG_FORMAT"
+            print_format "$SHORT_FORMAT"
+            echo "$COLOR"
+        fi
     fi
 }
 
