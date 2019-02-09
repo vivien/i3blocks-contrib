@@ -136,7 +136,7 @@ sub playerctl {
 
 sub rhythmbox {
     buttons('rhythmbox');
-    
+
     my $data = qx(rhythmbox-client --print-playing --no-start);
     print($data);
 }
@@ -153,3 +153,4 @@ elsif ($player_arg =~ /rhythmbox/) {
 else {
     playerctl;
 }
+print("\n");
