@@ -22,19 +22,17 @@ LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
 SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
 USE_ALSA_NAME=${USE_ALSA_NAME:-0}
 USE_DESCRIPTION=${USE_DESCRIPTION:-0}
-JSON_FORMAT=${JSON_FORMAT:-0}
 
 SUBSCRIBE=${SUBSCRIBE:-0}
 
 MIXER=${MIXER:-""}
 SCONTROL=${SCONTROL:-""}
 
-while getopts F:Sf:jadH:M:L:X:T:t:C:c:i:m:s:h opt; do
+while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
         F) LONG_FORMAT="$OPTARG" ;;
         f) SHORT_FORMAT="$OPTARG" ;;
-        j) JSON_FORMAT=1 ;;
         a) USE_ALSA_NAME=1 ;;
         d) USE_DESCRIPTION=1 ;;
         H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
@@ -50,12 +48,11 @@ while getopts F:Sf:jadH:M:L:X:T:t:C:c:i:m:s:h opt; do
         s) SCONTROL="$OPTARG" ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter]
         [-m mixer] [-s scontrol] [-j] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
 \${SYMB}, \${VOL}, \${INDEX}, \${NAME}
--j\tOutput in JSON format. Default: '$JSON_FORMAT'
 -S\tSubscribe to volume events (requires persistent block, always uses long format)
 -a\tUse ALSA name if possible
 -d\tUse device description instead of name if possible
@@ -116,14 +113,16 @@ case "$BLOCK_BUTTON" in
     5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
 esac
 
+
 function print_format {
-    echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
-}
+    if [[ $markup == "pango" ]] ; then
+        output="<span color=\"$2\">$1</span>"
+    else
+        output=$1
+    fi
 
-function print_json {
-    echo "'{\"full_text\": \"$(print_format "$1")\", \"short_text\": \"$(print_format "$2")\", \"color\": \"$3\"}'"
+    echo "$output" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
 }
-
 
 function print_block {
     ACTIVE=$(pacmd list-sinks | grep "state\: RUNNING" -B4 -A7 | grep "index:\|name:\|volume: front\|muted:")
@@ -166,16 +165,10 @@ sed 's/.*= "\(.*\)".*/\1/')
         COLOR=$MUTED_COLOR
     fi
 
-    if [[ $JSON_FORMAT == 1 ]] ; then
-        print_json "$LONG_FORMAT" "$SHORT_FORMAT" "$COLOR"
-    else
-        if [[ $SUBSCRIBE == 1 ]] ; then
-            print_format "$LONG_FORMAT"
-        else
-            print_format "$LONG_FORMAT"
-            print_format "$SHORT_FORMAT"
-            echo "$COLOR"
-        fi
+    print_format "$LONG_FORMAT" $COLOR
+    if [[ $SUBSCRIBE != 1 ]] ; then
+        print_format "$SHORT_FORMAT" $COLOR
+        echo $COLOR
     fi
 }
 
