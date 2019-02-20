@@ -1,0 +1,260 @@
+#!/usr/bin/env python3
+
+# Required steps before running this scripts:
+# > sudo pip install python-metar
+# > sudo pacman -S libnotify
+# Possibly also:
+# > sudo pacman -S dunst
+
+import os
+import sys
+import datetime
+import subprocess
+import urllib.request
+from metar import Metar
+
+class MetarsEnablements:
+    temperature = True
+    dewpoint = False
+    feelsLike = True
+    wind = True
+    pressure = False
+    visibility = False
+    iconifyWindDir = True
+    useInverseDirIcons = False
+
+class MetarsConfig:
+    temperatureUnit = 'C'
+    temperatureSym = '°C'
+    pressureUnit = 'HPA'
+    pressureSym = 'hPa'
+    speedUnit = 'MPS'
+    speedSym = 'm/s'
+    distanceUnit = 'KM'
+    distanceSym = 'km'
+    precipitationUnit = 'CM'
+    precipitationSym = 'cm'
+
+# class MetarsConfig:  # Example of metric config
+#     temperatureUnit = 'C'
+#     temperatureSym = '°C'
+#     pressureUnit = 'HPA'
+#     pressureSym = 'hPa'
+#     speedUnit = 'MPS'
+#     speedSym = 'm/s'
+#     distanceUnit = 'KM'
+#     distanceSym = 'km'
+#     precipitationUnit = 'CM'
+#     precipitationSym = 'cm'
+#
+# class MetarsConfig:  # Example of imperial config
+#     temperatureUnit = 'F'
+#     temperatureSym = '°F'
+#     pressureUnit = 'HPA'
+#     pressureSym = 'hPa'
+#     speedUnit = 'MPH'
+#     speedSym = 'mph'
+#     distanceUnit = 'FT'
+#     distanceSym = 'feet'
+#     precipitationUnit = 'IN'
+#     precipitationSym = 'in'
+
+class Metars:
+    obs = {}
+    metrics = None
+    station = None
+    enablements = None
+    url = 'https://tgftp.nws.noaa.gov/data/observations/metar/stations/{}.TXT'
+    def __init__(self, metrics, enablements):
+        self.metrics = metrics
+        self.enablements = enablements
+    def runCommand(self, command):
+        retCode = 0
+        retText = ''
+        try:
+            retText = subprocess.check_output(command, shell=True).decode('UTF-8')
+        except subprocess.CalledProcessError as e:
+            retCode = e.returncode
+            retText = e.output.decode('UTF-8')
+        except:
+            retCode = -999
+            retText = 'ERROR: Unknown exception.'
+        return retCode, retText
+    def getChillMetric(self, temp, velocity):  # temp = C, velocity = km/h
+        if temp > 10.0 or velocity <= 4.8:
+            return None
+        expt = velocity ** 0.16
+        twc = 13.12 + (0.6215 * temp) - (11.37 * expt) + (0.3965 * temp * expt)
+        return twc
+    def convertCelciusTo(self, temp):
+        if self.metrics.temperatureUnit == 'C':
+            return temp
+        if self.metrics.temperatureUnit == 'F':
+            return (temp * 1.8) + 32
+        if self.metrics.temperatureUnit == 'K':
+            return temp + 273.15
+        return 0
+    def createWindDirection(self, obs):
+        if self.enablements.iconifyWindDir == False:
+            return obs.wind_dir.compass()
+        # https://www.wpc.ncep.noaa.gov/dailywxmap/plottedwx.html
+        # "The wind direction is plotted as the shaft of an arrow extending from the
+        # station circle toward the direction from which the wind is blowing"
+        # Here "inverse" may be more natural for modern users, showing the wind
+        # as "from-to" arrow
+        direction = obs.wind_dir.value()
+        if direction >= 337.5 and direction < 22.5:     # N
+            if self.enablements.useInverseDirIcons == True:
+                return '↓'
+            else:
+                return '↑'
+        elif direction >= 22.5 and direction < 67.5:    # NE
+            if self.enablements.useInverseDirIcons == True:
+                return '↙'
+            else:
+                return '↗'
+        elif direction >= 67.5 and direction < 112.5:   # E
+            if self.enablements.useInverseDirIcons == True:
+                return '←'
+            else:
+                return '→'
+        elif direction >= 112.5 and direction < 157.5:  # SE
+            if self.enablements.useInverseDirIcons == True:
+                return '↖'
+            else:
+                return '↘'
+        elif direction >= 157.5 and direction < 202.5:  # S
+            if self.enablements.useInverseDirIcons == True:
+                return '↑'
+            else:
+                return '↓'
+        elif direction >= 202.5 and direction < 247.5:  # SW
+            if self.enablements.useInverseDirIcons == True:
+                return '↗'
+            else:
+                return '↙'
+        elif direction >= 247.5 and direction < 292.5:  # W
+            if self.enablements.useInverseDirIcons == True:
+                return '→'
+            else:
+                return '←'
+        else:  # direction >= 292.5 and direction < 337.5  # NW
+            if self.enablements.useInverseDirIcons == True:
+                return '↘'
+            else:
+                return '↖'
+    def extractObservations(self, obs):
+        if obs.station_id:
+            self.obs['station_id'] = obs.station_id
+        if obs.time:
+            self.obs['time'] = obs.time.isoformat()
+        if obs.cycle:
+            self.obs['cycle'] = obs.cycle
+        if obs.wind_dir:
+            self.obs['wind_dir'] = self.createWindDirection(obs)
+        if obs.wind_speed:
+            speed = obs.wind_speed.value(self.metrics.speedUnit)
+            self.obs['wind_speed'] = '{} {}'.format(round(speed), self.metrics.speedSym)
+        if obs.wind_gust:
+            speedgust = obs.wind_gust.value(self.metrics.speedUnit)
+            self.obs['wind_gust'] = '{} {}'.format(round(speedgust), self.metrics.speedSym)
+        if obs.vis:
+            distance = obs.vis.value(self.metrics.distanceUnit)
+            self.obs['vis'] = '{} {}'.format(round(distance), self.metrics.distanceSym)
+        if obs.temp:
+            temp = obs.temp.value(self.metrics.temperatureUnit)
+            self.obs['temp'] = '{} {}'.format(round(temp,1), self.metrics.temperatureSym)
+        if obs.dewpt:
+            dewpt = obs.dewpt.value(self.metrics.temperatureUnit)
+            self.obs['dewpt'] = '{} {}'.format(round(dewpt,1), self.metrics.temperatureSym)
+        if obs.press:
+            pressure = obs.press.value(self.metrics.pressureUnit)
+            self.obs['press'] = '{} {}'.format(round(pressure), self.metrics.pressureSym)
+        if 'temp' in self.obs:
+            tempInCelsius = obs.temp.value('C')
+            if 'wind_speed' in self.obs:
+                speedInKmh = obs.wind_speed.value('KMH')
+                metricChill = self.getChillMetric(tempInCelsius, speedInKmh)
+                if metricChill != None:
+                    twc = self.convertCelciusTo(metricChill)
+                    self.obs['twc'] = '{} {}'.format(round(twc,1), self.metrics.temperatureSym)
+            if 'wind_gust' in self.obs:
+                speedInKmh = obs.wind_gust.value('KMH')
+                metricChill = self.getChillMetric(tempInCelsius, speedInKmh)
+                if metricChill != None:
+                    twc = self.convertCelciusTo(metricChill)
+                    self.obs['twcgust'] = '{} {}'.format(round(twc,1), self.metrics.temperatureSym)
+        # print(self.obs)
+    def getStationData(self, station):
+        url = self.url.format(station)
+        page = urllib.request.urlopen(url)
+        stationData = str(page.read()).split('\\n')
+        return stationData
+    def processMetars(self, station, blockSelect):
+        metars = self.getStationData(station)
+        for metar in metars:
+            self.obs.clear()
+            # metar = 'METAR KEWR 111851Z VRB03G19KT 2SM R04R/3000VP6000FT TSRA BR FEW015 BKN040CB BKN065 OVC200 22/22 A2987 RMK AO2 PK WND 29028/1817 WSHFT 1812 TSB05RAB22 SLP114 FRQ LTGICCCCG TS OHD AND NW -N-E MOV NE P0013 T02270215'
+            try:
+                obs = Metar.Metar(metar)
+                if blockSelect == True:
+                    cmd = 'notify-send -t 0 "{}"'.format(obs)
+                    self.runCommand(cmd)
+                self.extractObservations(obs)
+                weather = self.createWeatherString(obs)
+                print(weather)
+            except Metar.ParserError as e:
+                pass
+    def createWeatherString(self, obs):
+        weather = ''
+        if 'station_id' in self.obs:
+            weather += self.obs['station_id'] + ':'
+        else:
+            weather += '?:'
+        if self.enablements.temperature == True:
+            if 'temp' in self.obs:
+                weather += ' ' + self.obs['temp']
+        if self.enablements.dewpoint == True:
+            if 'dewpt' in self.obs:
+                weather += ' dewpt ' + self.obs['dewpt']
+        if self.enablements.feelsLike == True:
+            if 'twc' in self.obs:
+                weather += ' feels ' + self.obs['twc']
+            if 'twcgust' in self.obs:
+                weather += ' gustfeels ' + self.obs['twcgust']
+        if self.enablements.wind == True:
+            if 'wind_dir' in self.obs or 'wind_speed' in self.obs:
+                weather += ' wind'
+            if 'wind_dir' in self.obs:
+                weather += ' ' + self.obs['wind_dir']
+            if 'wind_dir' in self.obs and 'wind_speed' in self.obs:
+                weather += ' at'
+            if 'wind_speed' in self.obs:
+                weather += ' ' + self.obs['wind_speed']
+            if 'wind_gust' in self.obs:
+                weather += ' gusts ' + self.obs['wind_gust']
+        if self.enablements.pressure == True:
+            if 'press'  in self.obs:
+                weather += ' press ' + self.obs['press']
+        if self.enablements.visibility == True:
+            if 'vis' in self.obs:
+                weather += ' vis ' + self.obs['vis']
+        return weather
+    def run(self, station, blockSelect):
+        self.processMetars(station, blockSelect)
+
+if __name__ == '__main__':
+    station = os.environ.get('METARSTATION', 'EFHK')
+    # station = os.environ.get('METARSTATION', 'SGAS')
+    # station = os.environ.get('METARSTATION', 'PAEL')
+    metrics = MetarsConfig()
+    metars = Metars(metrics, MetarsEnablements())
+    if 'BLOCK_BUTTON' in os.environ:
+        buttonType = os.environ['BLOCK_BUTTON']
+        if buttonType == '1' or buttonType == '2' or buttonType == '3':
+            metars.run(station, True)
+        else:
+            metars.run(station, False)
+    else:
+        metars.run(station, False)
+
