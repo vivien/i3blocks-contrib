@@ -1,8 +1,21 @@
+# Introduction
+
 The purpose of *metars* script is to deliver reliable weather information. According to Wikipedia METAR weather report is "predominantly used by pilots in fulfillment of a part of a pre-flight weather briefing, and by meteorologists, who use aggregated METAR information to assist in weather forecasting." In addition to showing data directly from a METAR station this script also displays "feels like" (wind chill) temperature for static winds and gusts as explained in the [Wind chill](https://en.wikipedia.org/wiki/Wind_chill) Wikipedia article ("The standard wind chill formula").
 
 METAR stations are typically located at airports and defined by four-letter station codes. The four-letter METAR station data is based on ICAO codes and locations along with their codes can be found in the [ICAO airport code](https://en.wikipedia.org/wiki/ICAO_airport_code) Wikipedia article.
 
-# Configuration
+# i3blocks configuration
+
+The configuration is simply:
+
+```
+[metars]
+interval=600
+```
+
+Other related options are *command* and *separator_block_width* but these can be defined outside the blocklets. The *interval* setting can be any number of seconds but usually METAR stations are typically updated once every 30 or 60 minutes.
+
+# Generic configuration
 
 The shown weather is in *MetarsConfig* and examples are in commented out sections under "metric config" and "imperial config." Only *MetarsConfig* should be edited to match the "metric config" or "imperial config" sections, however any combination of custom configurations is possible.
 
