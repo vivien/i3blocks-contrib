@@ -27,6 +27,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:kbdd_layout[] | Show the keyboard layout using dbus and kbdd
 | link:keyindicator[] | Show the status of capslock or numlock
 | link:key_layout[] | Show the current keyboard layout using setxkbmap
+| link:key_light[] | Control the keyboard backlight
 | link:kubernetes[] | Show the kubernetes current context and namespace
 | link:load_average[] | Show the system 1 minute load average
 | link:mediaplayer[] | Generic media player status/controls using playerctl
