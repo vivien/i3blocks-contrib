@@ -1,8 +1,8 @@
 # airly
 
 Show air quality in your area
-TODO:
-left click opens the airly webpage
+
+![CAQI](airly.png)
 
 # Dependencies
 
