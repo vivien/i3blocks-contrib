@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 NODE_URL=${BLOCK_INSTANCE%/}
 DISK_AVAIL=$(curl -s "$NODE_URL/statistics?t=json" 2>/dev/null| jq -r '.stats."storage_server.disk_avail"')
