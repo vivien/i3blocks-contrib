@@ -41,6 +41,7 @@ args = Args()
 args.add_argument('UPDATE_COLOR', 'yellow')
 args.add_argument('QUIET', False, bool)
 args.add_argument('IGNORE', [], list)
+args.add_argument('LABEL', '')
 
 
 def version_in_aur(pkg):
@@ -95,10 +96,10 @@ for pkg in installed_version.keys():
 
 n_updates = len(updates)
 if n_updates > 0:
-    msg = "<span color='{0}'>{1} AUR updates</span>"
-    print(msg.format(args.update_color, n_updates))
+    msg = "{0}<span color='{1}'>{2} AUR updates</span>"
+    print(msg.format(args.label, args.update_color, n_updates))
 elif not args.quiet:
-    print('AUR up to date')
+    print(msg.format(args.label, 'AUR up to date'))
 
 if block_button in [2, 3]:
     sp.call(['notify-send', 'AUR updates', '\n'.join(updates)])
