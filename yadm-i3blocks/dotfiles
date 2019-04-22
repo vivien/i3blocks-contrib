@@ -1,0 +1,22 @@
+#!/bin/sh
+
+dotfiles=$(yadm status | sed '1,3d;
+                            5,$d;
+                            s/.$//g')
+
+if [[ ${dotfiles:0:1} == "n" ]]; then
+    color="#81b71a"
+    warn=""
+    dotfiles=$(yadm status | sed '1,3d;
+                                5,$d;
+                                s/.$//g;
+                                s/n/N/;
+                                s/(use -u to show untracked files//g')
+else
+	color="#990000"
+	warn=""
+fi
+
+
+
+printf "<span color='%s'>%s%s%s</span>" "$color" " $dotfiles " "$(echo "$warn")"
