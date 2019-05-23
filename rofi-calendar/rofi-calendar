@@ -1,10 +1,16 @@
 #! /bin/sh
 
-DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
+DATEFMT="${DATEFMT:-+%a. %d. %b. %Y}"
 SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
 LABEL="${LABEL:-}"
-blockdate=$(date "$DATEFTM")
+POSITION="${POSITION:-top}"
+blockdate=$(date "$DATEFMT")
 shortblockdate=$(date "$SHORTFMT")
+
+case "$POSITION" in
+    "top") anchor="southeast"; yoffset=-10 ;;
+    "bottom") anchor="northeast"; yoffset=10 ;;
+esac
 
 year=$(date '+%Y')
 month=$(date '+%m')
@@ -30,9 +36,10 @@ cal --color=always $month $year \
         -hide-scrollbar \
         -bw 2 \
         -m -3 \
-        -theme-str '#window {anchor:southeast; location: northwest;}' \
+        -theme-str "#window {anchor:$anchor; location: northwest;} " \
         -eh 1 \
-        -width -22 \
+        -width -$WIDTH \
+        -yoffset $yoffset \
         -no-custom \
         -p "$date" > /dev/null 
     esac
