@@ -102,6 +102,7 @@ sub cmus {
 
             # metadata found so we are done
             print(join ' - ', @metadata);
+            print("\n");
             exit 0;
         }
     }
