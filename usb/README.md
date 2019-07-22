@@ -1,8 +1,7 @@
-# i3blocks-usb
+# usb
 
-i3blocks-usb is an i3blocks blocket script to output connected usb storage 
-device info.
-It supports usb mass storage devices, including those with multiple partitions,
+Output connected usb storage device info.
+Supports usb mass storage devices, including those with multiple partitions,
 including LUKS partitions.
 
 ![](images/1.png)
@@ -18,22 +17,31 @@ including LUKS partitions.
 
 Dependencies: udev, python3, util-linux ( >= 2.23 )
 
-Suggested: i3 ( >= 4.3 ), i3blocks ( >= 1.4 ), fonts-font-awesome
+Suggested: fonts-font-awesome
 
 # Installation
-
-To use with i3blocks, put `usb.py` somewhere convenient.
-We will assume it is at `$SCRIPT_DIR/usb.py`.
-Copy the blocklet configuration in the given `i3blocks.conf` into your 
-i3blocks configuration file.
 The recommended i3blocks config is
 
 ```INI
 [usb]
-command=$SCRIPT_DIR/usb.py
+command=$SCRIPT_DIR/usb
 markup=pango
 signal=1
 interval=10
+#IGNORE_LIST=[]
+#IGNORE_LIST=["sdd1", "mapper/sda1_crypt"]
+#INFO_TEXT_COLOR=white
+#MOUNTED_COLOR=green
+#PLUGGED_COLOR=gray
+#LOCKED_COLOR=gray
+#UNLOCKED_NOT_MOUNTED_COLOR=yellow
+#PARTITIONLESS_COLOR=red
+#PARTITIONLESS_TEXT=no partitions
+#SEPARATOR=<span color='gray'> | </span>
+#LOCKED_INDICATOR= 
+#UNLOCKED_INDICATOR= 
+#READONLY_INDICATOR=ro
+#TRUNCATE_FS_LABELS=[not set by default, accepts +/- integers]
 ```
 
 To update the blocklet on plug/unplug device events you can add                 
@@ -63,32 +71,15 @@ Try plugging in a usb device to make sure everything works.
 
 # Configuration
 
-Configuration can be done either by editing the top portion of `usb.py`, or by
-specifying command line flags. 
-Run with `--help` for more information.
-You will find several options that you can configure.
-Probably the most useful to you will be the `-i` (ignore) flag or the `ignore` 
-and `fastIgnore` functions in `usb.py`.
-These allow you to ignore devices, e.g. those that are always plugged in.
-The `-i` flag can be specified multiple times and if a device does not begin 
-with "/" it is assumed to be in /dev/.
-E.g.
-`command=$SCRIPT_DIR/usb.py -i sda1 -i sda2 -i mapper/sda6_crypt`
-will ignore /dev/sda1, /dev/sda2, and /dev/mapper/sda6_crypt.
+The IGNORE_LIST variable, if set, must be a valid python representation of
+a list of strings, e.g. `["sdd1", "mapper/sda1_crypt"]`.
+Due to the way i3blocks parses config files, newlines are not allowed.
+The strings are full device paths, with "/dev" optionally omitted.
+For example, the previous "sdd1" is expanded to "/dev/sdd1" at runtime.
+The list is safely parsed using ast.literal_eval, NOT eval.
+
 If you decide not to install FontAwesome, 
 then you will probably want to change the `LOCKED_INDICATOR` and 
 `UNLOCKED_INDICATOR` variables, as these use unicode symbols provided by 
 FontAwesome (and not many other fonts).
 You do not need to restart i3 after making a change to the config.
-
-# Bugs
-
-Please report bugs and suggestions to the issues page.
-Contributions are always welcome.
-A common way a bug will manifest is that you will get no output in your bar.
-If this happens, try running `python3 $SCRIPT_DIR/usb.py` from the command 
-line to get some insight into why nothing is displayed.
-You will probably see a python stack trace.
-Make sure to include this in your bug report, along with the output of any 
-other commands that you may think are relevant (the stack trace may contain 
-the exact system call that failed).

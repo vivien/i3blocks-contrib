@@ -1,0 +1,50 @@
+#!/usr/bin/env perl
+#
+# Copyright (C) 2018 James Murphy
+# Licensed under the terms of the GNU GPL v2 only.
+#
+# i3blocks blocklet script to play youtube videos from your clipboard using mpv
+
+use strict;
+use warnings;
+use utf8;
+use Data::Validate::URI;
+
+my $cache_default = $ENV{CACHE_DEFAULT} || 1048576;
+my $signal = $ENV{signal} || 1;
+my $notify_i3bar = "pkill -RTMIN+$signal i3blocks";
+my $string = qx/xclip -out/;
+$string =~ s/[';\\]//g; # remove characters that can cause i3-msg to crash
+my $uriValidator = new Data::Validate::URI();
+my $BLOCK_BUTTON = $ENV{BLOCK_BUTTON} || 0;
+my $PLAYING_COLOR = $ENV{PLAYING_COLOR} || "red";
+my $NOT_PLAYING_COLOR = $ENV{PLAYING_COLOR} || "white";
+my $USER = $ENV{USER};
+my $i3cmd = "";
+my $i3cmdexitstatus = 0;
+
+if ($uriValidator->is_web_uri($string) or $BLOCK_BUTTON == 3) {
+    if ($BLOCK_BUTTON == 1) {
+        $i3cmd = "exec mpv --ytdl --cache-default=$cache_default --tls-verify '$string' && $notify_i3bar";
+    } elsif ($BLOCK_BUTTON == 2) {
+        $i3cmd = "exec mpv --ytdl --tls-verify --ytdl-format=bestaudio '$string' && $notify_i3bar";
+    } elsif ($BLOCK_BUTTON == 3) {
+        $i3cmd = "exec killall -u $USER mpv && $notify_i3bar";
+    }
+
+    system("i3-msg", "-q", $i3cmd);
+    # i3-msg may return before mpv has started
+    sleep(.1);
+}
+
+my $color;
+
+if (system("pgrep -x mpv 2>&1 1>/dev/null") == 0) {
+    $color = $PLAYING_COLOR;
+} else {
+    $color = $NOT_PLAYING_COLOR;
+}
+
+binmode(STDOUT, ":utf8");
+print("<span color='$color'>\x{f16a}</span>\n");
+print("<span color='$color'>\x{f16a}</span>\n");

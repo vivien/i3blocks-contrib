@@ -19,24 +19,31 @@
 #  MA 02110-1301, USA.
 #  
 #  
+readarray -t output <<< $(acpi battery)
+battery_count=${#output[@]}
 
+for line in "${output[@]}";
+do
+    percentages+=($(echo "$line" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%'))
+    statuses+=($(echo "$line" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown'))
+    remaining=$(echo "$line" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]')
+    if [[ -n $remaining ]]; then
+        remainings+=(" ($remaining)")
+    else 
+        remainings+=("")
+    fi
+done
 
-
-output=$(acpi battery)
-percentage=$(echo "$output" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%')
-status=$(echo "$output" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown')
-remaining=$( echo "$output" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]')
-[[ -n $remaining ]] && remaining_formatted=" ($remaining)"
 squares="■"
-
 
 #There are 8 colors that reflect the current battery percentage when 
 #discharging
-dis_colors=("#FF0027" "#FF3B05" "#FFB923" "#FFD000" "#E4FF00" "#ADFF00"
-			"#6DFF00" "#10BA00") 
-charging_color="#00AFE3"
-full_color="#FFFFFF"
-ac_color="#535353"
+dis_colors=("${C1:-#FF0027}" "${C2:-#FF3B05}" "${C3:-#FFB923}" 
+            "${C4:-#FFD000}" "${C5:-#E4FF00}" "${C6:-#ADFF00}"
+			"${C7:-#6DFF00}" "${C8:-#10BA00}") 
+charging_color="${CHARGING_COLOR:-#00AFE3}"
+full_color="${FULL_COLOR:-#FFFFFF}"
+ac_color="${AC_COLOR:-#535353}"
 
 
 while getopts 1:2:3:4:5:6:7:8:c:f:a:h opt; do
@@ -66,56 +73,65 @@ while getopts 1:2:3:4:5:6:7:8:c:f:a:h opt; do
     esac
 done
 
-
-
-if (( percentage > 0 && percentage < 20  )); then
-    squares="■"
-elif (( percentage >= 20 && percentage < 40 )); then
-    squares="■■"
-elif (( percentage >= 40 && percentage < 60 )); then
-    squares="■■■"
-elif (( percentage >= 60 && percentage < 80 )); then
-    squares="■■■■"
-elif (( percentage >=80 )); then
-    squares="■■■■■"
-fi
-
-if [[ "$status" = "Unknown" ]]; then
-    squares="<sup>?</sup>$squares"
-fi
-
-case "$status" in
-"Charging")
-    color="$charging_color"
-;;
-"Full")
-    color="$full_color"
-;;
-"AC")
-    color="$ac_color"
-;;
-"Discharging"|"Unknown")
-    if (( percentage >= 0 && percentage < 10 )); then
-        color="${dis_colors[0]}"
-    elif (( percentage >= 10 && percentage < 20 )); then
-        color="${dis_colors[1]}"
-    elif (( percentage >= 20 && percentage < 30 )); then
-        color="${dis_colors[2]}"
-    elif (( percentage >= 30 && percentage < 40 )); then
-        color="${dis_colors[3]}"
-    elif (( percentage >= 40 && percentage < 60 )); then
-        color="${dis_colors[4]}"
-    elif (( percentage >= 60 && percentage < 70 )); then
-        color="${dis_colors[5]}"
-    elif (( percentage >= 70 && percentage < 80 )); then
-        color="${dis_colors[6]}"
-    elif (( percentage >= 80 )); then
-        color="${dis_colors[7]}"
+end=$(($battery_count - 1))
+for i in $(seq 0 $end);
+do
+    if (( percentages[$i] > 0 && percentages[$i] < 20  )); then
+        squares="■"
+    elif (( percentages[$i] >= 20 && percentages[$i] < 40 )); then
+        squares="■■"
+    elif (( percentages[$i] >= 40 && percentages[$i] < 60 )); then
+        squares="■■■"
+    elif (( percentages[$i] >= 60 && percentages[$i] < 80 )); then
+        squares="■■■■"
+    elif (( percentages[$i] >=80 )); then
+        squares="■■■■■"
     fi
-;;
-esac
 
-if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
-    echo "$status <span foreground=\"$color\">$percentage%$remaining_formatted</span>"
-fi
-    echo "<span foreground=\"$color\">$squares</span>" 
+    if [[ "${statuses[$i]}" = "Unknown" ]]; then
+        squares="<sup>?</sup>$squares"
+    fi
+
+    case "${statuses[$i]}" in
+    "Charging")
+        color="$charging_color"
+    ;;
+    "Full")
+        color="$full_color"
+    ;;
+    "AC")
+        color="$ac_color"
+    ;;
+    "Discharging"|"Unknown")
+        if (( percentages[$i] >= 0 && percentages[$i] < 10 )); then
+            color="${dis_colors[0]}"
+        elif (( percentages[$i] >= 10 && percentages[$i] < 20 )); then
+            color="${dis_colors[1]}"
+        elif (( percentages[$i] >= 20 && percentages[$i] < 30 )); then
+            color="${dis_colors[2]}"
+        elif (( percentages[$i] >= 30 && percentages[$i] < 40 )); then
+            color="${dis_colors[3]}"
+        elif (( percentages[$i] >= 40 && percentages[$i] < 60 )); then
+            color="${dis_colors[4]}"
+        elif (( percentages[$i] >= 60 && percentages[$i] < 70 )); then
+            color="${dis_colors[5]}"
+        elif (( percentages[$i] >= 70 && percentages[$i] < 80 )); then
+            color="${dis_colors[6]}"
+        elif (( percentages[$i] >= 80 )); then
+            color="${dis_colors[7]}"
+        fi
+    ;;
+    esac
+
+    # Print Battery number if there is more than one
+    if (( $end > 0 )) ; then 
+        message="$message $(($i + 1)):" 
+    fi
+
+    if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
+        message="$message ${statuses[$i]} <span foreground=\"$color\">${percentages[$i]}%${remainings[i]}</span>"
+    fi
+        message="$message <span foreground=\"$color\">$squares</span>" 
+done
+
+echo $message

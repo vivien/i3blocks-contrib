@@ -1,0 +1,175 @@
+#!/bin/bash
+# Displays the default device, volume, and mute status for i3blocks
+
+set -a
+
+AUDIO_HIGH_SYMBOL=${AUDIO_HIGH_SYMBOL:-'  '}
+
+AUDIO_MED_THRESH=${AUDIO_MED_THRESH:-50}
+AUDIO_MED_SYMBOL=${AUDIO_MED_SYMBOL:-'  '}
+
+AUDIO_LOW_THRESH=${AUDIO_LOW_THRESH:-0}
+AUDIO_LOW_SYMBOL=${AUDIO_LOW_SYMBOL:-'  '}
+
+AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
+
+AUDIO_DELTA=${AUDIO_DELTA:-5}
+
+DEFAULT_COLOR=${DEFAULT_COLOR:-"#ffffff"}
+MUTED_COLOR=${MUTED_COLOR:-"#a0a0a0"}
+
+LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
+SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
+USE_ALSA_NAME=${USE_ALSA_NAME:-0}
+USE_DESCRIPTION=${USE_DESCRIPTION:-0}
+
+SUBSCRIBE=${SUBSCRIBE:-0}
+
+MIXER=${MIXER:-""}
+SCONTROL=${SCONTROL:-""}
+
+while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
+    case "$opt" in
+        S) SUBSCRIBE=1 ;;
+        F) LONG_FORMAT="$OPTARG" ;;
+        f) SHORT_FORMAT="$OPTARG" ;;
+        a) USE_ALSA_NAME=1 ;;
+        d) USE_DESCRIPTION=1 ;;
+        H) AUDIO_HIGH_SYMBOL="$OPTARG" ;;
+        M) AUDIO_MED_SYMBOL="$OPTARG" ;;
+        L) AUDIO_LOW_SYMBOL="$OPTARG" ;;
+        X) AUDIO_MUTED_SYMBOL="$OPTARG" ;;
+        T) AUDIO_MED_THRESH="$OPTARG" ;;
+        t) AUDIO_LOW_THRESH="$OPTARG" ;;
+        C) DEFAULT_COLOR="$OPTARG" ;;
+        c) MUTED_COLOR="$OPTARG" ;;
+        i) AUDIO_INTERVAL="$OPTARG" ;;
+        m) MIXER="$OPTARG" ;;
+        s) SCONTROL="$OPTARG" ;;
+        h) printf \
+"Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
+        [-m mixer] [-s scontrol] [-h]
+Options:
+-F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
+\${SYMB}, \${VOL}, \${INDEX}, \${NAME}
+-S\tSubscribe to volume events (requires persistent block, always uses long format)
+-a\tUse ALSA name if possible
+-d\tUse device description instead of name if possible
+-H\tSymbol to use when audio level is high. Default: '$AUDIO_HIGH_SYMBOL'
+-M\tSymbol to use when audio level is medium. Default: '$AUDIO_MED_SYMBOL'
+-L\tSymbol to use when audio level is low. Default: '$AUDIO_LOW_SYMBOL'
+-X\tSymbol to use when audio is muted. Default: '$AUDIO_MUTED_SYMBOL'
+-T\tThreshold for medium audio level. Default: $AUDIO_MED_THRESH
+-t\tThreshold for low audio level. Default: $AUDIO_LOW_THRESH
+-C\tColor for non-muted audio. Default: $DEFAULT_COLOR
+-c\tColor for muted audio. Default: $MUTED_COLOR
+-i\tInterval size of volume increase/decrease. Default: $AUDIO_DELTA
+-m\tUse the given mixer.
+-s\tUse the given scontrol.
+-h\tShow this help text
+" && exit 0;;
+    esac
+done
+
+if [[ -z "$MIXER" ]] ; then
+    MIXER="default"
+    if amixer -D pulse info >/dev/null 2>&1 ; then
+        MIXER="pulse"
+    fi
+fi
+
+if [[ -z "$SCONTROL" ]] ; then
+    SCONTROL=$(amixer -D "$MIXER" scontrols | sed -n "s/Simple mixer control '\([^']*\)',0/\1/p" | head -n1)
+fi
+
+CAPABILITY=$(amixer -D $MIXER get $SCONTROL | sed -n "s/  Capabilities:.*cvolume.*/Capture/p")
+
+
+function move_sinks_to_new_default {
+    DEFAULT_SINK=$1
+    pacmd list-sink-inputs | grep index: | grep -o '[0-9]\+' | while read SINK
+    do
+        pacmd move-sink-input $SINK $DEFAULT_SINK
+    done
+}
+
+function set_default_playback_device_next {
+    inc=${1:-1}
+    num_devices=$(pacmd list-sinks | grep -c index:)
+    sink_arr=($(pacmd list-sinks | grep index: | grep -o '[0-9]\+'))
+    default_sink_index=$(( $(pacmd list-sinks | grep index: | grep -no '*' | grep -o '^[0-9]\+') - 1 ))
+    default_sink_index=$(( ($default_sink_index + $num_devices + $inc) % $num_devices ))
+    default_sink=${sink_arr[$default_sink_index]}
+    pacmd set-default-sink $default_sink
+    move_sinks_to_new_default $default_sink
+}
+
+case "$BLOCK_BUTTON" in
+    1) set_default_playback_device_next ;;
+    2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
+    3) set_default_playback_device_next -1 ;;
+    4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
+    5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
+esac
+
+function print_format {
+    echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
+}
+
+function print_block {
+    ACTIVE=$(pacmd list-sinks | grep "state\: RUNNING" -B4 -A7 | grep "index:\|name:\|volume: front\|muted:")
+    [ -z "$ACTIVE" ] && ACTIVE=$(pacmd list-sinks | grep "index:\|name:\|volume: front\|muted:" | grep -A3 '*')
+    for name in INDEX NAME VOL MUTED; do
+        read $name
+    done < <(echo "$ACTIVE")
+    INDEX=$(echo "$INDEX" | grep -o '[0-9]\+')
+    VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
+    VOL="${VOL%?}"
+
+    NAME=$(echo "$NAME" | sed \
+'s/.*<.*\.\(.*\)>.*/\1/; t;'\
+'s/.*<\(.*\)>.*/\1/; t;'\
+'s/.*/unknown/')
+
+    if [[ $USE_ALSA_NAME == 1 ]] ; then
+        ALSA_NAME=$(pacmd list-sinks |\
+awk '/^\s*\*/{f=1}/^\s*index:/{f=0}f' |\
+grep "alsa.name\|alsa.mixer_name" |\
+head -n1 |\
+sed 's/.*= "\(.*\)".*/\1/')
+        NAME=${ALSA_NAME:-$NAME}
+    elif [[ $USE_DESCRIPTION == 1 ]] ; then
+        DESCRIPTION=$(pacmd list-sinks |\
+awk '/^\s*\*/{f=1}/^\s*index:/{f=0}f' |\
+grep "device.description" |\
+head -n1 |\
+sed 's/.*= "\(.*\)".*/\1/')
+        NAME=${DESCRIPTION:-$NAME}
+    fi
+
+    if [[ $MUTED =~ "no" ]] ; then
+        SYMB=$AUDIO_HIGH_SYMBOL
+        [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
+        [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
+        COLOR=$DEFAULT_COLOR
+    else
+        SYMB=$AUDIO_MUTED_SYMBOL
+        COLOR=$MUTED_COLOR
+    fi
+
+    if [[ $SUBSCRIBE == 1 ]] ; then
+        print_format "$LONG_FORMAT"
+    else
+        print_format "$LONG_FORMAT"
+        print_format "$SHORT_FORMAT"
+        echo "$COLOR"
+    fi
+}
+
+print_block
+if [[ $SUBSCRIBE == 1 ]] ; then
+    while read -r EVENT; do
+        print_block
+    done < <(pactl subscribe | stdbuf -oL grep change)
+fi

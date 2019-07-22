@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2017 Marcel Patzwahl
+# Licensed under the terms of the GNU GPL v3 only.
+#
+# i3blocks blocklet script to see the available updates of pacman and the AUR
+import subprocess
+from subprocess import check_output
+import argparse
+import os
+import re
+
+
+def create_argparse():
+    def _default(name, default='', arg_type=str):
+        val = default
+        if name in os.environ:
+            val = os.environ[name]
+        return arg_type(val)
+
+    strbool = lambda s: s.lower() in ['t', 'true', '1']
+    strlist = lambda s: s.split()
+
+    parser = argparse.ArgumentParser(description='Check for pacman updates')
+    parser.add_argument(
+        '-b',
+        '--base_color',
+        default = _default('BASE_COLOR', 'green'),
+        help='base color of the output(default=green)'
+    )
+    parser.add_argument(
+        '-u',
+        '--updates_available_color',
+        default = _default('UPDATE_COLOR', 'yellow'),
+        help='color of the output, when updates are available(default=yellow)'
+    )
+    parser.add_argument(
+        '-a',
+        '--aur',
+        action = 'store_const',
+        const = True,
+        default = _default('AUR', 'False', strbool),
+        help='Include AUR packages. Attn: Yaourt must be installed'
+    )
+    parser.add_argument(
+        '-q',
+        '--quiet',
+        action = 'store_const',
+        const = True,
+        default = _default('QUIET', 'False', strbool),
+        help = 'Do not produce output when system is up to date'
+    )
+    parser.add_argument(
+        '-w',
+        '--watch',
+        nargs='*',
+        default = _default('WATCH', arg_type=strlist),
+        help='Explicitly watch for specified packages. '
+        'Listed elements are treated as regular expressions for matching.'
+    )
+    return parser.parse_args()
+
+
+def get_updates():
+    output = check_output(['checkupdates']).decode('utf-8')
+    if not output:
+        return []
+
+    updates = [line.split(' ')[0]
+               for line in output.split('\n')
+               if line]
+
+    return updates
+
+
+def get_aur_updates():
+    output = ''
+    try:
+        output = check_output(['yaourt', '-Qua']).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # yaourt exits with 1 and no output if no updates are available.
+        # we ignore this case and go on
+        if not (exc.returncode == 1 and not exc.output):
+            raise exc
+    if not output:
+        return []
+
+    aur_updates = [line.split(' ')[0]
+                   for line in output.split('\n')
+                   if line.startswith('aur/')]
+
+    return aur_updates
+
+
+def matching_updates(updates, watch_list):
+    matches = set()
+    for u in updates:
+        for w in watch_list:
+            if re.match(w, u):
+                matches.add(u)
+
+    return matches
+
+
+label = os.environ.get("LABEL","")
+message = "{0}<span color='{1}'>{2}</span>"
+args = create_argparse()
+
+updates = get_updates()
+if args.aur:
+    updates += get_aur_updates()
+
+update_count = len(updates)
+if update_count > 0:
+    info = str(update_count) + ' updates available'
+    short_info = str(update_count) + ' updates'
+    matches = matching_updates(updates, args.watch)
+    if matches:
+        info += ' [{0}]'.format(', '.join(matches))
+        short_info += '*'
+    print(message.format(label, args.updates_available_color, info))
+    print(message.format(label, args.updates_available_color, short_info))
+elif not args.quiet:
+    print(message.format(label, args.base_color, 'system up to date'))

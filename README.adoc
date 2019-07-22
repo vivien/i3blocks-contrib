@@ -1,0 +1,73 @@
+= Community contributed blocklets
+
+This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://github.com/vivien/i3blocks[i3blocks], contributed by the community.
+
+|===
+| Blocklet | Description
+| link:afs[] | Show usage information for an AFS directory
+| link:apt-upgrades[] | Show system upgrades using aptitude
+| link:arch-update[] | Show AUR updates using yaourt
+| link:aur-update[] | Show AUR updates
+| link:bandwidth[] | Show bandwidth information (default bash version)
+| link:bandwidth2[] | Show bandwidth information (C version)
+| link:bandwidth3[] | Show bandwidth information (another bash version)
+| link:battery[] | Show battery info
+| link:battery2[] | Pretty battery info
+| link:batterybar[] | Show battery info graphically as a bar
+| link:calendar[] | Current date/time and click for calendar
+| link:cpu_usage[] | Show current CPU usage
+| link:cpu_usage2[] | Show current CPU usage (C version)
+| link:disk[] | Show disk usage (space used) for a given directory
+| link:disk-io[] | Monitor disk reads and writes
+| link:docker[] | Show the number of Docker containers and container IP
+| link:email[] | Show the number of unread IMAP messages
+| link:essid[] | Show the wifi ESSID you are connected to
+| link:gpu-load[] | Shows load of Nvidia GPUs
+| link:iface[] | Show network interface IP/status
+| link:kbdd_layout[] | Show the keyboard layout using dbus and kbdd
+| link:keyindicator[] | Show the status of capslock or numlock
+| link:key_layout[] | Show the current keyboard layout using setxkbmap
+| link:kubernetes[] | Show the kubernetes current context and namespace
+| link:load_average[] | Show the system 1 minute load average
+| link:mediaplayer[] | Generic media player status/controls using playerctl
+| link:memory[] | Show ram or swap usage
+| link:monitor_manager[] | Manage monitor on/off, resolution, extend, clone
+| link:nm-vpn[] | Show vpn status using network manager
+| link:openvpn[] | Show openvpn status
+| link:rofi-calendar[] | Current date/time and click for callendar using rofi
+| link:shutdown_menu[] | Shutdown menu using rofi or zenity
+| link:tahoe-lafs[] | Show status of your tahoe-lafs grid
+| link:temperature[] | Show system temperatures using lm-sensors
+| link:time[] | Show the current date/time and click to change timezones
+| link:usb[] | Show connected usb storage device info
+| link:volume[] | Show the current system volume (default)
+| link:volume-pulseaudio[] | Pretty print system volume for pulseaudio
+| link:wifi[] | Show the strength of your wifi connection in percent
+| link:wlan-dbm[] | Show wifi interface link quality in dBm or percent
+| link:ytdl-mpv[] | Play youtube videos from your clipboard using youtube-dl
+|===
+
+It is officially maintained by @kb100 with the help of a bench of active i3blocks crafters.
+
+Each release of this repository will be guaranteed to work against a given link:https://github.com/vivien/i3blocks/releases[release] of i3blocks (a.k.a. *core*).
+
+|===
+| contrib | core
+| master | master
+| next | next
+|===
+
+You may want to take a look at the individual blocklet directories, which contain descriptions, screenshots, and installation/configuration instructions.
+
+NOTE: configurations reference `$SCRIPT_DIR`, meaning the directory that you put the script into. +
+You must change `$SCRIPT_DIR` appropriately to coincide with where you put your scripts, for more info see the link:https://github.com/vivien/i3blocks-contrib/wiki/FAQ#blocklets-refer-to-script_dir-what-does-that-mean-how-can-i-use-it[FAQ].
+
+Want to contribute?
+Great!
+Check the link:https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md[contribution guidelines] in order to get started.
+
+NOTE: i3blocks now supports dynamics properties, and all scripts have been updated to do the same. +
+i3blocks-contrib REQUIRES a version of i3blocks that supports dynamics properties, which is currently only +
+available in the git version since the last release (v1.4) was years ago.
+
+Happy crafting!

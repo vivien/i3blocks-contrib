@@ -1,44 +1,19 @@
-# i3blocks-bandwidth
+# bandwidth
 
-i3blocks-bandwidth is an i3blocks blocklet script to monitor bandwidth usage
+Show bandwidth information. Some interfaces report unknown instead of up for
+their state. If you would like to treat unknowns as up, then set 
+`TREAT_UNKNOWN_AS_UP=1`.
 
 ![](bandwidth.png)
 
-# Usage
-
-The default configuration uses
+# Config
 
 ```
-printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;
-```
-
-as the default print command. The `%-5.1f` and `%5.1f` indicate that 
-the speeds will be accurate to one decimal, and right/left padded to be at least
-five characters.
-The reason this is the default is to prevent the length of the block from
-changing and shifting all of your blocklets.
-Modify the printf command using the `-p` option to fit your needs if this default
-is not acceptable to you.
-
-Note that the interface will be guessed using `ip route` but it can also be specified 
-using the `-i` switch or using `$BLOCK_INSTANCE`, with the former taking precedence 
-over the latter. On the fly interface switching is not supported, if you change
-your default interface, simply issue `i3-msg restart` and the script will pick
-up on the new default.
-
-# Options
-
-```
-Usage: bandwidth [-i interface] [-t time] [-u unit] [-p printf_command] [-l] [-h]
-Options:
--i  Network interface to measure. Default determined using `ip route`.
--t  Time interval in seconds between measurements. Default: 3
--u  Units to measure bytes in. Default: Mb
-    Allowed units: Kb, KB, Mb, MB, Gb, GB, Tb, TB
-    Units may have optional it/its/yte/ytes on the end, e.g. Mbits, KByte
--p  Awk command to be called after a measurement is made. 
-    Default: printf "%-5.1f/%5.1f %s/s\n", rx, wx, unit;
-    Exposed variables: rx, wx, tx, unit, iface
--l  List available interfaces in /proc/net/dev
--h  Show this help text
+[bandwidth]
+command=$SCRIPT_DIR/bandwidth
+interval=5
+#INTERFACE=eth0
+#INLABEL=IN 
+#OUTLABEL=OUT 
+#TREAT_UNKNOWN_AS_UP=0
 ```

@@ -1,6 +1,8 @@
-# i3blocks-apt-upgrades
+# apt-upgrades
 
-i3blocks-apt-upgrades is an i3blocks blocklet script to show the number of pending system upgrades.
+Show the number of pending system upgrades, as reported by aptitude.
+More specifically, show: packages upgraded, newly installed, to remove, and not upgraded.
+
 
 ![](apt-upgrades.png)
 
@@ -18,8 +20,8 @@ Create apt/dpkg hooks to signal the script.
 For example, create `/etc/apt/apt.conf.d/80i3blocks` with contents
 
 ```
-APT::Update::Post-Invoke { "pkill -RTMIN+1 i3blocks"; };
-DPkg::Post-Invoke { "pkill -RTMIN+1 i3blocks"; };
+APT::Update::Post-Invoke { "pkill -RTMIN+1 i3blocks || true"; };
+DPkg::Post-Invoke { "pkill -RTMIN+1 i3blocks || true"; };
 ```
 **Warning**: make sure to 
 ```ShellSession
@@ -39,15 +41,16 @@ Instead of using `signal=1` in the configuration, you can use `interval=3600`
 to have the script execute every hour.
 This method avoids the usage of apt/dpkg hooks.
 
-# Options
+# Config
 
-```
-Usage: apt-upgrades [-s pending_symbol] [-o] [-c pending_color] [-N|-n nonpending_color] [-h]
-Options:
--s  Specify a refresh symbol. Default: "\uf021 "
--o  Show refresh symbol only, but no numbers.
--c  Color when upgrade is pending. Default:  #00FF00
--n  Color when no upgrade is pending. Default: #FFFFFF
--N  Only display text if upgrade is pending (supercedes -n)
--h  Show this help text
+```INI
+[apt-upgrades]
+command=$SCRIPT_DIR/apt-upgrades
+signal=1
+interval=once
+#PENDING_SYMBOL="\uf021 "
+#SYMBOL_ONLY=0
+#ALWAYS_PRINT=1
+#PENDING_COLOR="#00FF00"
+#NONPENDING_COLOR="#FFFFFF"
 ```

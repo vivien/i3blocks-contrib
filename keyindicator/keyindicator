@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # Copyright 2014 Marcelo Cerri <mhcerri at gmail dot com>
 #
@@ -22,15 +22,21 @@ use Getopt::Long;
 use File::Basename;
 
 # Default values
-my $indicator = $ENV{BLOCK_INSTANCE} || "CAPS";
-my $color_on  = "#00FF00";
-my $color_off = "#222222";
+my $indicator = $ENV{BLOCK_INSTANCE} || $ENV{KEY} || "CAPS";
+my $color_on  = $ENV{COLOR_ON} || "#00FF00";
+my $color_off = $ENV{COLOR_OFF} || "#222222";
+my $bg_color_on = $ENV{BG_COLOR_ON};
+my $bg_color_off = $ENV{BG_COLOR_OFF};
+my $hide      = $ENV{HIDE_WHEN_OFF} || 0;
 
 sub help {
     my $program = basename($0);
-    printf "Usage: %s [-c <color on>] [-C <color off>]\n", $program;
+    printf "Usage: %s [-c <color on>] [-C <color off>] [-b <bg color on>] [-B <bg color off>] [--hide]\n", $program;
     printf "  -c <color on>: hex color to use when indicator is on\n";
     printf "  -C <color off>: hex color to use when indicator is off\n";
+    printf "  -b <background color on>: hex color to use when indicator is on\n";
+    printf "  -B <background color off>: hex color to use when indicator is off\n";
+    printf "  --hide: don't output anything when indicator is off\n";
     printf "\n";
     printf "Note: environment variable \$BLOCK_INSTANCE should be one of:\n";
     printf "  CAPS, NUM (default is CAPS).\n";
@@ -40,7 +46,10 @@ sub help {
 Getopt::Long::config qw(no_ignore_case);
 GetOptions("help|h" => \&help,
            "c=s"    => \$color_on,
-           "C=s"    => \$color_off) or exit 1;
+           "C=s"    => \$color_off,
+           "b=s"    => \$bg_color_on,
+           "B=s"    => \$bg_color_off,
+           "hide"   => \$hide) or exit 1;
 
 # Key mapping
 my %indicators = (
@@ -52,19 +61,29 @@ my %indicators = (
 my $mask = 0;
 open(XSET, "xset -q |") or die;
 while (<XSET>) {
-    if (/LED mask:\s*([0-9]+)/) {
-        $mask = $1;
+    if (/LED mask:\s*([0-9a-f]+)/) {
+        $mask = hex $1;
         last;
     }
 }
 close(XSET);
 
-# Output
-printf "%s\n", $indicator;
-printf "%s\n", $indicator;
-if (($indicators{$indicator} || 0) & $mask) {
-    printf "%s\n", $color_on;
-} else {
-    printf "%s\n", $color_off;
+# Determine if indicator is on or off
+my $indicator_status = ($indicators{$indicator} || 0) & $mask;
+
+# Exit if --hide and indicator is off
+if ($hide and !$indicator_status) {
+    exit 0
 }
+
+# Output
+my $fg_color = $indicator_status ? $color_on : $color_off;
+my $bg_color = $indicator_status ? $bg_color_on : $bg_color_off;
+
+if (defined $bg_color) {
+    printf "<span color='%s' bgcolor='%s'>%s</span>\n", $fg_color, $bg_color, $indicator;
+} else {
+    printf "<span color='%s'>%s</span>\n", $fg_color, $indicator;
+}
+
 exit 0

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Copyright (C) 2014 Tony Crisci <tony@dubstepdish.com>
 # Copyright (C) 2015 Thiago Perrotta <perrotta dot thiago at poli dot ufrj dot br>
 
@@ -45,6 +45,10 @@ sub buttons {
             system("mpc toggle");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("mpc next");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("mpc volume +10");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("mpc volume -10");
         }
     } elsif ($method eq 'cmus') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
@@ -63,6 +67,18 @@ sub buttons {
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
             system("playerctl $player_arg next");
             usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("playerctl $player_arg volume 0.01+");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("playerctl $player_arg volume 0.01-");
+        }
+    } elsif ($method eq 'rhythmbox') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("rhythmbox-client --previous");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("rhythmbox-client --play-pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("rhythmbox-client --next");
         }
     }
 }
@@ -104,6 +120,7 @@ sub playerctl {
     buttons('playerctl');
 
     my $artist = qx(playerctl $player_arg metadata artist);
+    chomp $artist;
     # exit status will be nonzero when playerctl cannot find your player
     exit(0) if $? || $artist eq '(null)';
 
@@ -117,10 +134,23 @@ sub playerctl {
     print(join(" - ", @metadata)) if @metadata;
 }
 
+sub rhythmbox {
+    buttons('rhythmbox');
+
+    my $data = qx(rhythmbox-client --print-playing --no-start);
+    print($data);
+}
+
 if ($player_arg eq '' or $player_arg =~ /mpd/) {
     mpd;
 }
-if ($player_arg =~ /cmus/) {
+elsif ($player_arg =~ /cmus/) {
     cmus;
 }
-playerctl;
+elsif ($player_arg =~ /rhythmbox/) {
+    rhythmbox;
+}
+else {
+    playerctl;
+}
+print("\n");

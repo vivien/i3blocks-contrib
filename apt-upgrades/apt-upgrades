@@ -6,17 +6,17 @@
 # i3blocks blocklet script to display pending system upgrades 
 
 # FontAwesome refresh symbol, change if you do not want to install FontAwesome
-PENDING_SYMBOL="\uf021 "
+PENDING_SYMBOL=${PENDING_SYMBOL:-"\uf021 "}
 
 # By default, show both the symbol and the numbers
-SYMBOL_ONLY=0
+SYMBOL_ONLY=${SYMBOL_ONLY:-0}
 
 # By default, show something when no upgrades are pending
-ALWAYS_PRINT=1
+ALWAYS_PRINT=${ALWAYS_PRINT:-1}
 
 # Colors for when there is/isn't a pending upgrade
-PENDING_COLOR="#00FF00"
-NONPENDING_COLOR="#FFFFFF"
+PENDING_COLOR=${PENDING_COLOR:-"#00FF00"}
+NONPENDING_COLOR=${NONPENDING_COLOR:-"#FFFFFF"}
 
 while getopts s:oc:n:Nh opt; do
     case "$opt" in

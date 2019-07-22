@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2016 Anton Karmanov <bergentroll@openmailbox.org>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import configparser
+import subprocess
+import argparse
+import imaplib
+from getpass import getpass
+import os
+try:
+    import keyring
+    keyring_loaded = True
+except ImportError:
+    keyring_loaded = False
+
+# _Settings____________________________________________________________________
+
+config = {
+    'HOST': 'imap.mail_server.com',
+    'PORT': 993,
+    'USER': 'my_mailbox@mail_server.com',
+    'PASS': '',
+    'URL': 'https://www.mail_server.com'
+}
+# _____________________________________________________________________________
+
+
+def get_args():
+    parser = argparse.ArgumentParser(
+        description='In interactive mode you able to manage your keys.'
+    )
+    parser.add_argument(
+        '-a', '--add', type=str, help='add key to keyring'
+    )
+    parser.add_argument(
+        '-r', '--remove', type=str, help='remove key from keyring'
+    )
+    args = parser.parse_args()
+    if args.add:
+        match = False
+        while not match:
+            pass_1 = getpass('Type password : ')
+            pass_2 = getpass('Type password again: ')
+            if pass_1 == pass_2:
+                match = True
+                keyring.set_password('i3blocks-email', args.add, pass_1)
+            else:
+                print('\nPasswords do not match!\n')
+        return(True)
+    elif args.remove:
+        ack = input(
+            'Are you sure want to delete key for {}? '.format(args.remove)
+        )
+        if ack.lower() in ('y', 'yes'):
+            keyring.delete_password('i3blocks-email', args.remove)
+        else:
+            print('Cancel.')
+        return(True)
+    return(False)
+
+
+def parse_instance():
+    INSTANCE = ''
+    try:
+        INSTANCE = os.environ['BLOCK_INSTANCE']
+    except KeyError:
+        pass
+    finally:
+        if len(INSTANCE):
+            parse_config(INSTANCE)
+
+
+def parse_config(INSTANCE):
+    global config
+    HOME = os.environ['HOME']
+    config_file = configparser.ConfigParser()
+    CONFIG_PATH = HOME + '/.config/i3blocks-email/' + INSTANCE
+    config_file.read(CONFIG_PATH)
+    for ITEM in config_file['MAIL']:
+        ITEM = ITEM.upper()
+        config[ITEM] = config_file['MAIL'][ITEM]
+
+
+def get_PASS():
+    return(keyring.get_password('i3blocks-email', config['USER']))
+
+
+def block_event():
+    try:
+        event = os.environ['BLOCK_BUTTON']
+    except KeyError:
+        event = '0'
+    if event == '1':
+        NULL = open(os.devnull, 'w')
+        subprocess.Popen(['xdg-open', config['URL']], stdout=NULL)
+
+
+def serf():
+    box = imaplib.IMAP4_SSL(host=config['HOST'], port=config['PORT'])
+    box.login(config['USER'], config['PASS'])
+    box.select()
+    result, ids = box.search(None, 'UNSEEN')
+    box.logout()
+    return(len(ids[0].split()))
+
+
+def printer(new_count):
+    print(new_count)
+    print(new_count)
+    if new_count > 0:
+        print('#00ff00')
+    else:
+        print('#ededed')
+
+if (keyring_loaded and not get_args()) or not keyring_loaded:
+    parse_instance()
+    block_event()
+    if not config['PASS']:
+        config['PASS'] = get_PASS()
+    printer(serf())

@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+# Show usage information for an AFS directory.
+
+# Copyright 2017 Johannes Lange
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import argparse
+import os
+import subprocess as sp
+
+def _default(name, default='', arg_type=str):
+    val = default
+    if name in os.environ:
+        val = os.environ[name]
+    return arg_type(val)
+
+parser = argparse.ArgumentParser(
+    description='Get AFS quota and usage information.',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+parser.add_argument('-c', '--critical', type=int, default=_default('CRITICAL', 90, int),
+                    help='Critical usage percentage.')
+parser.add_argument('-fg', '--fg-color', type=str, default=_default('CRIT_FG_COLOR', "#FF0000"),
+                    help='Foreground color for critical usage.')
+parser.add_argument('-bg', '--bg-color', type=str, default=_default('CRIT_BG_COLOR', ''),
+                    help='Background color for critical usage.')
+args = parser.parse_args()
+
+# set the afs directory to be checked
+directory = os.environ.get('BLOCK_INSTANCE', '~/afs/')
+label = os.environ.get('LABEL', '')
+
+# expand environment variables etc.
+directory = os.path.expandvars(directory)
+directory = os.path.expanduser(directory)
+
+fs_output = sp.check_output(['fs', 'lq', '-human', directory],
+                            universal_newlines=True)
+
+# second line contains the information
+fs_output = fs_output.split('\n')[1]
+quota, used, percentage = fs_output.split()[1:4]
+percentage = int(percentage.split('%')[0])
+
+output = '%s%s/%s (%i%%)' % (label, used, quota, percentage)
+
+if percentage >= args.critical:
+    if args.bg_color:
+        output = "<span color='%s' bgcolor='%s'>%s</span>" %\
+                 (args.fg_color, args.bg_color, output)
+    else:
+        output = "<span color='%s'>%s</span>" % (args.fg_color, output)
+
+print(output)

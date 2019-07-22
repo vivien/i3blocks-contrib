@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Copyright 2014 Pierre Mavro <deimos@deimos.fr>
 # Copyright 2014 Vivien Didelot <vivien@didelot.org>
 # Copyright 2014 Andreas Guldstrand <andreas.guldstrand@gmail.com>
@@ -25,9 +25,9 @@ use Getopt::Long;
 binmode(STDOUT, ":utf8");
 
 # default values
-my $t_warn = 70;
-my $t_crit = 90;
-my $chip = "";
+my $t_warn = $ENV{T_WARN} || 70;
+my $t_crit = $ENV{T_CRIT} || 90;
+my $chip = $ENV{SENSOR_CHIP} || "";
 my $temperature = -9999;
 
 sub help {
