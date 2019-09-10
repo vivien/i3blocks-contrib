@@ -18,6 +18,9 @@
 if [[ -z "$INTERFACE" ]] ; then
     INTERFACE="${BLOCK_INSTANCE:-wlan0}"
 fi
+if [[ -z "$QUIET" ]] ; then
+    QUIET="${QUIET:-false}"
+fi
 #------------------------------------------------------------------------
 
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
@@ -26,9 +29,12 @@ fi
 
 # If the wifi interface exists but no connection is active, "down" shall be displayed.
 if [[ "$(cat /sys/class/net/$INTERFACE/operstate)" = 'down' ]]; then
-    echo "down"
-    echo "down"
-    echo "#FF0000"
+    # ... Unless the QUIET variable was set to true.
+    if [ "$QUIET" != true ]; then
+        echo "down"
+        echo "down"
+        echo "#FF0000"
+    fi
     exit
 fi
 
