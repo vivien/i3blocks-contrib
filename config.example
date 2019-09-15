@@ -108,6 +108,13 @@ label=BAT
 #label=⚡
 interval=30
 
+# Backlight brightness
+[backlight]
+command=$SCRIPT_DIR/backlight 
+interval=10
+LABEL=BL 
+#LABEL=☀
+
 # Date Time
 #
 [time]
