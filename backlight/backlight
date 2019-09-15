@@ -2,7 +2,7 @@
 
 dircount=`find /sys/class/backlight -maxdepth 1 -type d | wc -l`
 
-if [ $dircount -eq 0 ]
+if [ $dircount -eq 1 ]
 then
     exit 0
 else
