@@ -101,7 +101,7 @@ def getLeafDevicePaths():
     return lines
 
 def getKernelName(path):
-    return check_output(['lsblk', '-ndso', 'KNAME', path],
+    return check_output(['lsblk', '-ndo', 'KNAME', path],
             universal_newlines=True).rstrip("\n")
 
 def getDeviceType(path):
@@ -357,7 +357,7 @@ def setParsedArgs(args):
 
 parseArguments()
 leaves = getLeafDevicePaths()
-leaves = [path for path in leaves if not fastIgnore(path)]
+leaves = [path for path in leaves if not fastIgnore(path) and "└─" not in path]
 attributeMaps = getAttributeMaps(leaves)
 leaves = (path for path in leaves if not ignore(path, attributeMaps[path]))
 outputs = filter(None, map(getOutput, leaves))
