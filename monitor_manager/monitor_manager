@@ -15,7 +15,7 @@ from subprocess import call, check_output, CalledProcessError
 import re
 import os
 
-DESKTOP_SYMBOL = "\uf108"
+DESKTOP_SYMBOL = "<span color='#b58900'>\uf108</span>"
 
 UP_ARROW = "\uf062"
 DOWN_ARROW = "\uf063"
