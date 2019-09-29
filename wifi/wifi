@@ -26,9 +26,9 @@ fi
 
 # If the wifi interface exists but no connection is active, "down" shall be displayed.
 if [[ "$(cat /sys/class/net/$INTERFACE/operstate)" = 'down' ]]; then
-    echo "down"
-    echo "down"
-    echo "#FF0000"
+#    echo "down"
+#    echo "down"
+#    echo "#FF0000"
     exit
 fi
 
@@ -42,12 +42,12 @@ echo $QUALITY% # full text
 echo $QUALITY% # short text
 
 # color
-if [[ $QUALITY -ge 80 ]]; then
-    echo "#00FF00"
-elif [[ $QUALITY -ge 60 ]]; then
-    echo "#FFF600"
-elif [[ $QUALITY -ge 40 ]]; then
-    echo "#FFAE00"
-else
-    echo "#FF0000"
-fi
+#if [[ $QUALITY -ge 80 ]]; then
+#    echo "#00FF00"
+#elif [[ $QUALITY -ge 60 ]]; then
+#    echo "#FFF600"
+#elif [[ $QUALITY -ge 40 ]]; then
+#    echo "#FFAE00"
+#else
+#    echo "#FF0000"
+#fi
