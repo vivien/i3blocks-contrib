@@ -106,6 +106,10 @@ label = os.environ.get("LABEL","")
 message = "{0}<span color='{1}'>{2}</span>"
 args = create_argparse()
 
+block_button = os.environ.get("BLOCK_BUTTON", "")
+if block_button and int(block_button) == 1:
+    subprocess.run(['urxvt', '-e', 'bash', '-c', 'sudo pacmatic -Syu'], capture_output=True)
+
 updates = get_updates()
 if args.aur:
     updates += get_aur_updates()
