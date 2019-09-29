@@ -96,7 +96,8 @@ else:
     fulltext += form.format(color(percentleft), percentleft)
     fulltext += timeleft
 
-print(fulltext)
-print(fulltext)
+if state != "Full":
+    print(fulltext)
+    print(fulltext)
 if percentleft < 10:
     exit(33)
