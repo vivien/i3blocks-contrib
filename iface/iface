@@ -51,9 +51,9 @@ for flag in "$1" "$2"; do
 done
 
 if [[ "$IF" = "" ]] || [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; then
-  echo "${LABEL}down" # full text
-  echo "${LABEL}down" # short text
-  echo \#FF0000 # color
+  #echo "${LABEL}down" # full text
+  #echo "${LABEL}down" # short text
+  #echo \#FF0000 # color
   exit
 fi
 
@@ -66,5 +66,5 @@ esac
 
 #------------------------------------------------------------------------
 
-echo "$LABEL$IPADDR" # full text
+echo "$LABEL$IF: $IPADDR" # full text
 echo "$LABEL$IPADDR" # short text
