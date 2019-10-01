@@ -34,3 +34,20 @@ instance=spotify
 interval=5
 signal=10
 ```
+
+
+Use more mpc's parameters
+
+``` ini
+[mediaplayer]
+command=$SCRIPT_DIR/mediaplayer
+instance=mpd
+interval=5
+signal=10
+# if mpd server is not localhost
+host=192.168.0.146
+#if port changed
+port=6600
+#if password exist
+password=yourpassword
+```

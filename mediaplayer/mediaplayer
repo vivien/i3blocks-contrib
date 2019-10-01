@@ -40,15 +40,15 @@ sub buttons {
 
     if($method eq 'mpd') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
-            system("mpc prev");
+            system("mpc $player_arg prev");
         } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
-            system("mpc toggle");
+            system("mpc $player_arg toggle");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
-            system("mpc next");
+            system("mpc $player_arg next");
         } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
-            system("mpc volume +10");
+            system("mpc $player_arg volume +10");
         } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
-            system("mpc volume -10");
+            system("mpc $player_arg volume -10");
         }
     } elsif ($method eq 'cmus') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
@@ -108,7 +108,18 @@ sub cmus {
 }
 
 sub mpd {
-    my $data = qx(mpc current);
+    $player_arg='';
+    if ($ENV{'host'})
+    {
+        $player_arg=$player_arg.' -h '.$ENV{'host'}
+    }
+    if ($ENV{'port'}){
+        $player_arg=$player_arg.' -p '.$ENV{'port'}
+    }
+    if ($ENV{'password'}){
+        $player_arg=$player_arg.' -P '.$ENV{'password'}
+    }
+    my $data = qx(mpc $player_arg current);
     if (not $data eq '') {
         buttons("mpd");
         print($data);
