@@ -10,7 +10,7 @@ font_weight=${font_weight:-bold}
 while :
 do
 # Output current layout:
-    xkb-switch -p | awk -v font="$font" -v font_weight="$font_weight" '{print "<span font_family=\""font"\"  font_weight=\""font_weight"\">"toupper($0)"</span>"}' || :
+    xkb-switch -p | awk -v font="$font" -v font_weight="$font_weight" '{print "<span font_family=\""font"\"  font_weight=\""font_weight"\">"toupper($0)"</span>"}' || sleep 1
 # Wait for layout change:
-	xkb-switch -w
+    xkb-switch -w
 done

@@ -29,6 +29,6 @@ interval=persist
 markup=pango
 ```
 
-`font` must be a [pango markup](https://developer.gnome.org/pygtk/stable/pango-markup-language.html) complient font name. If not set, 'monospace' is used as default.
+`font` must be a [pango markup](https://developer.gnome.org/pygtk/stable/pango-markup-language.html) compliant font name. If not set, 'monospace' is used as default.
 
-`font_weight` must be a [pango markup](https://developer.gnome.org/pygtk/stable/pango-markup-language.html) complient font weight. If not set, 'bold' is used as default.
+`font_weight` must be a [pango markup](https://developer.gnome.org/pygtk/stable/pango-markup-language.html) compliant font weight. If not set, 'bold' is used as default.
