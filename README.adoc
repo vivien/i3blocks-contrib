@@ -34,6 +34,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:monitor_manager[] | Manage monitor on/off, resolution, extend, clone
 | link:nm-vpn[] | Show vpn status using network manager
 | link:openvpn[] | Show openvpn status
+| link:ping[] | Show average RTT in ms and the current package loss in percent
 | link:rofi-calendar[] | Current date/time and click for callendar using rofi
 | link:shutdown_menu[] | Shutdown menu using rofi or zenity
 | link:tahoe-lafs[] | Show status of your tahoe-lafs grid
