@@ -25,5 +25,5 @@ interval=10
 
 # Button commands
 
-* Right click: Display the external IP of the default route and copy it into the clipboard
-* Middle click: Copy the network interface IP into the clipboard
+* Right click: Copy the network interface IP into the clipboard
+* Middle click: Display the external IP of the default route and copy it into the clipboard
