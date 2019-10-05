@@ -23,31 +23,31 @@ PING_CMD="${PING_CMD:-ping -f -w ${PING_DEADLINE} -i ${PING_INTERVAL} -c ${PING_
 r="$($PING_CMD)" || exit 1
 test -n "$r" || exit 1
 
-if [[ "$PING_NO_PL" == 0 ]]; then
-	pl="$(echo -n "$r" | tail -2 | head -1 | grep -o "[0-9\.,]\+% packet loss" | cut -d% -f1)"
+if [ "$PING_NO_PL" = 0 ]; then
+	pl="$(echo "$r" | tail -2 | head -1 | grep -o "[0-9\.,]\+% packet loss" | cut -d% -f1)"
 	test -n "$pl" || pl="???"
 fi
 
-avg="$(echo -n "$r" | tail -1 | cut -d/ -f5)"
+avg="$(echo "$r" | tail -1 | cut -d/ -f5)"
 test -n "$avg" && avg="$(printf "%.2f" "$avg")" || avg="??"
 
-if [[ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_WARNING" ]]; then
-	if [[ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_ERROR" ]]; then
+if [ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_WARNING" ]; then
+	if [ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_ERROR" ]; then
 		msOptions=" foreground=\"${PING_ERROR_COLOR}\""
 	else
 		msOptions=" foreground=\"${PING_WARNING_COLOR}\""
 	fi
 fi
 
-if [[ "$PING_NO_PL" == 0 ]] && [[ "$(printf "%.0f" "$pl")" -ge "$PING_PL_WARNING" ]]; then
-	if [[ "$(printf "%.0f" "$pl")" -ge "$PING_PL_ERROR" ]]; then
+if [ "$PING_NO_PL" = 0 ] && [ "$(printf "%.0f" "$pl")" -ge "$PING_PL_WARNING" ]; then
+	if [ "$(printf "%.0f" "$pl")" -ge "$PING_PL_ERROR" ]; then
 		plOptions=" foreground=\"${PING_ERROR_COLOR}\""
 	else
 		plOptions=" foreground=\"${PING_WARNING_COLOR}\""
 	fi
 fi
 
-if [[ "$PING_NO_PL" == 0 ]]; then
+if [ "$PING_NO_PL" = 0 ]; then
 	echo "<span${msOptions}>${avg}ms</span> <span${plOptions}>(${pl}% PL)</span>"
 else
 	echo "<span${msOptions}>${avg}ms</span>"
