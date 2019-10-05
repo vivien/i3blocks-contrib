@@ -49,8 +49,6 @@ fi
 
 if [ "$PING_NO_PL" = 0 ]; then
 	echo "<span${msOptions}>${avg}ms</span> <span${plOptions}>(${pl}% PL)</span>"
-else
-	echo "<span${msOptions}>${avg}ms</span>"
 fi
 
 echo "<span${msOptions}>${avg}ms</span>"
