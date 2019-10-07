@@ -62,7 +62,14 @@ def create_argparse():
 
 
 def get_updates():
-    output = check_output(['checkupdates']).decode('utf-8')
+    output = ''
+    try:
+        output = check_output(['checkupdates']).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # checkupdates exits with 1 and no output if no updates are available.
+        # we ignore this case and go on
+        if not (exc.returncode == 1 and not exc.output):
+            raise exc
     if not output:
         return []
 
