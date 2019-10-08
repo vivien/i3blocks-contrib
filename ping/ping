@@ -25,7 +25,7 @@ test -n "$r" || exit 1
 
 if [ "$PING_NO_PL" = 0 ]; then
 	pl="$(echo "$r" | tail -2 | head -1 | grep -o "[0-9\.,]\+% packet loss" | cut -d% -f1)"
-	test -n "$pl" || pl="???"
+	test -n "$pl" && pl="$(printf "%.0f" "$pl")" || pl="???"
 fi
 
 avg="$(echo "$r" | tail -1 | cut -d/ -f5)"
@@ -39,8 +39,8 @@ if [ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_WARNING" ]; then
 	fi
 fi
 
-if [ "$PING_NO_PL" = 0 ] && [ "$(printf "%.0f" "$pl")" -ge "$PING_PL_WARNING" ]; then
-	if [ "$(printf "%.0f" "$pl")" -ge "$PING_PL_ERROR" ]; then
+if [ "$PING_NO_PL" = 0 ] && [ "$pl" -ge "$PING_PL_WARNING" ]; then
+	if [ "$pl" -ge "$PING_PL_ERROR" ]; then
 		plOptions=" foreground=\"${PING_ERROR_COLOR}\""
 	else
 		plOptions=" foreground=\"${PING_WARNING_COLOR}\""
