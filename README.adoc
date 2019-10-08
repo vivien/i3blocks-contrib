@@ -8,6 +8,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:apt-upgrades[] | Show system upgrades using aptitude
 | link:arch-update[] | Show AUR updates using yaourt
 | link:aur-update[] | Show AUR updates
+| link:backlight[] | Show the screen brightness value given by `xbacklight`
 | link:bandwidth[] | Show bandwidth information (default bash version)
 | link:bandwidth2[] | Show bandwidth information (C version)
 | link:bandwidth3[] | Show bandwidth information (another bash version)
