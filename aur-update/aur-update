@@ -101,7 +101,7 @@ elif not args.quiet:
     print('AUR up to date')
 
 if block_button in [2, 3]:
-    sp.call(['notify-send', 'AUR updates', '\n'.join(updates)])
+    sp.call(['notify-send', 'AUR updates', '\n'.join(updates) or 'up to date'])
 
 if not 'BLOCK_NAME' in os.environ and n_updates > 0:
     # not called by i3blocks: show the complete list
