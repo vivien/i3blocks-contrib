@@ -38,7 +38,7 @@ Options:
 done
 
 read upgraded new removed held < <(
-aptitude full-upgrade --simulate --assume-yes |\
+LANGUAGE=en_US LANG=en_US.UTF-8 aptitude full-upgrade --simulate --assume-yes |\
     grep -m1 '^[0-9]\+ packages upgraded,' |\
     tr -cd '0-9 ' |\
     tr ' ' '\n' |\
