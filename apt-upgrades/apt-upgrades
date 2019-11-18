@@ -57,8 +57,13 @@ if [[ $upgraded != 0 ]] || [[ $new != 0 ]] || [[ $removed != 0 ]] || [[ $held !=
     echo $color
 elif [[ $ALWAYS_PRINT == 1 ]]; then
     color="$NONPENDING_COLOR"
-    echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
-    echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
+    if [[ $SYMBOL_ONLY == 1 ]]; then
+        echo -e "$PENDING_SYMBOL"
+        echo -e "$PENDING_SYMBOL"
+    else
+        echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
+        echo -e "$PENDING_SYMBOL$upgraded/$new/$removed/$held"
+    fi
     echo $color
 fi
 
