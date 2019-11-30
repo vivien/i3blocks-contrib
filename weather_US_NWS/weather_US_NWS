@@ -108,6 +108,8 @@ def get_color(data, config):
     if (data['wind_chill'] is not None):
         if (data['wind_chill'] <= config['COLOR_LOW_THRESHOLD']):
             color = config['COLOR_LOW']
+        else:
+            color = None
     elif (data['temperature'] <= config['COLOR_LOW_THRESHOLD']):
         color = config['COLOR_LOW']
     elif (data['temperature'] >= config['COLOR_HIGH_THRESHOLD']):
