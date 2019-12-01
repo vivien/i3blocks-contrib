@@ -43,7 +43,7 @@ def get_config():
         'COLOR_LOW': str,
         'COLOR_HIGH_THRESHOLD': int,
         'COLOR_HIGH': str,
-        'DISPLAY_WIND_CHILL': lambda string: string.lower == 'true',
+        'DISPLAY_WIND_CHILL': lambda string: string.lower() == 'true',
         }
     static_property_defaults = {
         'LOCATION': None,
