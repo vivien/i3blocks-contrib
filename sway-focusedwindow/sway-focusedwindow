@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+swaymsg -m -t SUBSCRIBE "['window']" | jq --unbuffered -r 'if .container.focused and (.change == "focus" or .change == "title") then .container.name else empty end'
