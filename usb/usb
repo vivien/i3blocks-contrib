@@ -288,49 +288,48 @@ def getAttributeMaps(paths):
 
 
 def parseArguments():
-    parser = argparse.ArgumentParser(prog="usb.py",
-        description="i3blocks blocklet script to output connected"
-        " usb storage device info")
-    parser.add_argument("--info-text-color", nargs=1, 
-        help="Set the info text color. "
-        "Default: {}".format(INFO_TEXT_COLOR))
-    parser.add_argument("--mounted-color", nargs=1, 
-        help="Set the color of mounted devices. "
-        "Default: {}".format(MOUNTED_COLOR))
-    parser.add_argument("--plugged-color", nargs=1, 
-        help="Set the color of plugged devices. "
-        "Default: {}".format(PLUGGED_COLOR))
-    parser.add_argument("--locked-color", nargs=1, 
-        help="Set the color of locked crypt devices. "
-        "Default: {}".format(LOCKED_COLOR))
-    parser.add_argument("--unlocked-not-mounted-color", nargs=1, 
-        help="Set the color of unlocked not mounted crypt devices. "
-        "Default: {}".format(UNLOCKED_NOT_MOUNTED_COLOR))
-    parser.add_argument("--partitionless-color", nargs=1, 
-        help="Set the color of devicees with no partitions. "
-        "Defaut: {}".format(PARTITIONLESS_COLOR))
-    parser.add_argument("--partitionless-text", nargs=1, 
-        help="Set the text to display for a device with no partitions. "
-        "Default: {}".format(PARTITIONLESS_TEXT))
-    parser.add_argument("--separator", nargs=1, 
-        help="Set the separator between devices. "
-        "Default: {}".format(SEPARATOR))
-    parser.add_argument("--locked-indicator", nargs=1, 
-        help="Set the indicator to use for a locked crypt device. "
-        "Default: {}".format(LOCKED_INDICATOR))
-    parser.add_argument("--unlocked-indicator", nargs=1, 
-        help="Set the indicator to use for an unlocked crypt device. "
-        "Default: {}".format(UNLOCKED_INDICATOR))
-    parser.add_argument("--readonly-indicator", nargs=1, 
-        help="Set the indicator to use for a readonly device. "
-        "Default: {}".format(READONLY_INDICATOR))
-    parser.add_argument("--truncate-fs-labels", type=int, nargs=1, 
-        help="Trucate device labels to a certain number of characters, must be"
-        "an integer."
-        "Default: {}".format(TRUNCATE_FS_LABELS))
-    parser.add_argument("-i", "--ignore", action="append", 
-        help="Ignore a device by path. "
-        "If path doesn't begin with / then it is assumed to be in /dev/")
+    dsc = " ".join(["i3blocks blocklet script",
+                    "to output connected usb storage device info"])
+    parser = argparse.ArgumentParser(prog="usb.py", description=dsc)
+
+    def unArg(flag, text, default, *args, **kwargs):
+        parser.add_argument(flag, nargs=1,
+                            help="{}. Default: {}"
+                            .format(text, default), *args, **kwargs)
+
+    def unArgs(flagTempl, textTempl, vals):
+        for flag, text, default in vals:
+            unArg(flagTempl.format(flag), textTempl.format(text), default)
+
+    unArgs("--{}-color", "Set the color of {}",
+           [("info-text", "info text", INFO_TEXT_COLOR),
+            ("mounted", "mounted devices", MOUNTED_COLOR),
+            ("plugged", "plugged devices", PLUGGED_COLOR),
+            ("locked", "locked crypt devices", LOCKED_COLOR),
+            ("unlocked-not-mounted", "unlocked not mounted crypt devices",
+             UNLOCKED_NOT_MOUNTED_COLOR),
+            ("partitionless", "devices with no partitions",
+             PARTITIONLESS_COLOR)
+            ])
+
+    unArg("--partitionless-text",
+          "Set the text to display for a device with no partitions",
+          PARTITIONLESS_TEXT)
+    unArg("--separator", "Set the separator between devices", SEPARATOR)
+
+    unArgs("--{}-indicator", "Set the indicator to use for {}",
+           [("locked", "a locked crypt device", LOCKED_INDICATOR),
+            ("unlocked", "an unlocked crypt device", UNLOCKED_INDICATOR),
+            ("readonly", "a readonly device", READONLY_INDICATOR)
+            ])
+
+    unArg("--truncate-fs-labels",
+          "(integer) Trucate device labels to a certain number of characters",
+          TRUNCATE_FS_LABELS, type=int)
+    ignoreText = " ".join([
+        "Ignore a device by path.",
+        "If path doesn't begin with / then it is assumed to be in /dev/"])
+    parser.add_argument("-i", "--ignore", action="append", help=ignoreText)
     args = parser.parse_args()
     setParsedArgs(args)
 
