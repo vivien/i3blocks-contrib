@@ -48,7 +48,7 @@ while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
         s) SCONTROL="$OPTARG" ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter]
         [-m mixer] [-s scontrol] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
@@ -105,13 +105,15 @@ function set_default_playback_device_next {
     move_sinks_to_new_default $default_sink
 }
 
-case "$BLOCK_BUTTON" in
-    1) set_default_playback_device_next ;;
-    2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
-    3) set_default_playback_device_next -1 ;;
-    4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
-    5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
-esac
+function handle_input {
+    case "$BLOCK_BUTTON" in
+        1) set_default_playback_device_next ;;
+        2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
+        3) set_default_playback_device_next -1 ;;
+        4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
+        5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
+    esac
+}
 
 function print_format {
     echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
@@ -167,9 +169,15 @@ sed 's/.*= "\(.*\)".*/\1/')
     fi
 }
 
-print_block
 if [[ $SUBSCRIBE == 1 ]] ; then
-    while read -r EVENT; do
+    print_block
+    pactl subscribe | stdbuf -oL grep change | while read -r EVENT; do
         print_block
-    done < <(pactl subscribe | stdbuf -oL grep change)
+    done &
+    while read BLOCK_BUTTON ; do
+        handle_input
+    done
+else
+    handle_input
+    print_block
 fi
