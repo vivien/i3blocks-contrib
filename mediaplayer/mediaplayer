@@ -119,9 +119,24 @@ sub mpd {
 sub playerctl {
     buttons('playerctl');
 
+    my $playerStatus = qx(playerctl $player_arg status);
+    chomp $playerStatus;
+    # exit status will be nonzero when playerctl cannot find your player
+    exit(0) if $? || (($playerStatus ne 'Playing') && ($playerStatus ne 'Paused'));
+
+    my $playPauseIcon = '  ';
+    if ($playerStatus) {
+        if ($playerStatus eq 'Playing') {
+            $playPauseIcon = '  ';
+        } elsif ($playerStatus eq 'Paused') {
+            $playPauseIcon = '  ';
+        } else {
+            $playPauseIcon = '  ';
+        }
+    }
+
     my $artist = qx(playerctl $player_arg metadata artist);
     chomp $artist;
-    # exit status will be nonzero when playerctl cannot find your player
     exit(0) if $? || $artist eq '(null)';
 
     push(@metadata, $artist) if $artist;
@@ -131,7 +146,7 @@ sub playerctl {
 
     push(@metadata, $title) if $title;
 
-    print(join(" - ", @metadata)) if @metadata;
+    print($playPauseIcon, join(" - ", @metadata)) if @metadata;
 }
 
 sub rhythmbox {
