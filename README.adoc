@@ -36,6 +36,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:openvpn[] | Show openvpn status
 | link:rofi-calendar[] | Current date/time and click for callendar using rofi
 | link:shutdown_menu[] | Shutdown menu using rofi or zenity
+| link:systemctl[] | Startup and Shutdown system services
 | link:tahoe-lafs[] | Show status of your tahoe-lafs grid
 | link:temperature[] | Show system temperatures using lm-sensors
 | link:time[] | Show the current date/time and click to change timezones
