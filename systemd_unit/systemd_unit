@@ -17,14 +17,14 @@ then
     INACTIVE_COLOR=orange
 fi
 
-if [[ ! -z $ACTIVE_COLOR ]]
+if [[ -n $ACTIVE_COLOR ]]
 then
     ACTIVE_COLOR=" color='$ACTIVE_COLOR'"
 fi
 # echo $FAILED_COLOR
 
-object_path=$(dbus-send $bus --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.GetUnit string:${UNIT_NAME} | grep -Po '"\K[^"]+')
-status=$(dbus-send $bus --dest=org.freedesktop.systemd1 --print-reply $object_path org.freedesktop.DBus.Properties.Get string:'org.freedesktop.systemd1.Unit' string:'ActiveState' | grep -oP 'string "\K[^"]+')
+object_path=$(dbus-send $bus --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.GetUnit string:"${UNIT_NAME}" | grep -Po '"\K[^"]+')
+status=$(dbus-send $bus --dest=org.freedesktop.systemd1 --print-reply "$object_path" org.freedesktop.DBus.Properties.Get string:'org.freedesktop.systemd1.Unit' string:'ActiveState' | grep -oP 'string "\K[^"]+')
 
 if [[ $status == "failed" ]]
 then
