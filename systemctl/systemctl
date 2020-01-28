@@ -6,27 +6,26 @@ SERVICE=$BLOCK_INSTANCE
 INACTIVE_COLOR=#888888
 ACTIVE_COLOR=#22BB22
 # Exact string to display
-ACTIVE='<span foreground="'$ACTIVE_COLOR'">'$SERVICE'</span>'
-INACTIVE='<span foreground="'$INACTIVE_COLOR'"><s>'$SERVICE'</s></span>'
+ACTIVE="<span foreground=\"$ACTIVE_COLOR\">$SERVICE</span>"
+INACTIVE="<span foreground=\"$INACTIVE_COLOR\"><s>$SERVICE</s></span>"
 
-if [ "`systemctl is-active $SERVICE`" != "active" ]
+if [ "$( systemctl is-active "$SERVICE" )" != "active" ]
 then
-  if [ $BLOCK_BUTTON == '1' ]
+  if [ "$BLOCK_BUTTON" == '1' ]
   then
-    if systemctl start $SERVICE
+    if systemctl start "$SERVICE"
     then
-      echo $ACTIVE
+      echo "$ACTIVE"
     fi
   fi
-  echo $INACTIVE
+  echo "$INACTIVE"
 else
-  if [ $BLOCK_BUTTON == '1' ]
+  if [ "$BLOCK_BUTTON" == '1' ]
   then
-	  if systemctl stop $SERVICE
+	  if systemctl stop "$SERVICE"
     then
-      echo $INACTIVE
+      echo "$INACTIVE"
     fi
   fi
-  echo $ACTIVE
+  echo "$ACTIVE"
 fi
-
