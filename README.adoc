@@ -24,6 +24,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:email[] | Show the number of unread IMAP messages
 | link:essid[] | Show the wifi ESSID you are connected to
 | link:gpu-load[] | Shows load of Nvidia GPUs
+| link:go[] | Show the currently installed Go version
 | link:iface[] | Show network interface IP/status
 | link:kbdd_layout[] | Show the keyboard layout using dbus and kbdd
 | link:keyindicator[] | Show the status of capslock or numlock
