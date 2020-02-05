@@ -18,7 +18,7 @@ while getopts t:T:w:c:nh opt; do
 		w) WARNINGCOLOR="$OPTARG";;
 		c) CRITICALCOLOR="$OPTARG";;
 		n) NOCOLOR=1;;
-		h) printf \
+		h|*) printf \
 "Usage: nvidia-temp [-t warning_temp] [-T critical_temp] [-w warning_color] [-c critical_color] [-h]
 Options:
 -t\tTemperature threshold to trigger warning color (Default 60)
@@ -30,18 +30,18 @@ Options:
 	esac
 done
 
-TEMP=`nvidia-settings -q [gpu:$GPU]/GPUCoreTemp  | grep "Attribute" | sed -e "s/.*: //g" -e "s/\.//g"`
-printf "$TEMP°C\n"
+TEMP=$(nvidia-settings -q [gpu:"$GPU"]/GPUCoreTemp  | grep "Attribute" | sed -e "s/.*: //g" -e "s/\.//g")
+printf "%s°C\n" "$TEMP"
 if [[ $TEMP -lt $WARNING ]]; then
-	printf "$TEMP°C\n"
+	printf "%s°C\n" "$TEMP"
 elif [[ $TEMP -lt $CRITICAL ]]; then
-	printf "$TEMP°C\n"
+	printf "%s°C\n" "$TEMP"
 	if [[ $NOCOLOR != 1 ]]; then
-		printf "$WARNINGCOLOR\n"
+		printf "%s\n" "$WARNINGCOLOR"
 	fi
 else
-	printf "$TEMP°C\n"
+	printf "%s°C\n" "$TEMP"
 	if [[ $NOCOLOR != 1 ]]; then
-		printf "$CRITICALCOLOR\n"
+		printf "%s\n" "$CRITICALCOLOR"
 	fi
 fi
