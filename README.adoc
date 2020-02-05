@@ -22,7 +22,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:disk-io[] | Monitor disk reads and writes
 | link:docker[] | Show the number of Docker containers and container IP
 | link:email[] | Show the number of unread IMAP messages
-| link:essid[] | Show the wifi ESSID you are connected to
+| link:essid[] | Show the wifi ESSID you are connected to (dep: iwconfig, perl)
 | link:gpu-load[] | Shows load of Nvidia GPUs
 | link:go[] | Show the currently installed Go version
 | link:iface[] | Show network interface IP/status
@@ -41,6 +41,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:tahoe-lafs[] | Show status of your tahoe-lafs grid
 | link:temperature[] | Show system temperatures using lm-sensors
 | link:time[] | Show the current date/time and click to change timezones
+| link:ssid[] | Show the wifi SSID you are connected to (dep: iw, awk)
 | link:usb[] | Show connected usb storage device info
 | link:volume[] | Show the current system volume (default)
 | link:volume-pulseaudio[] | Pretty print system volume for pulseaudio
