@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+if [[ $USER_UNIT == "true" ]]
+then
+    bus="--session"
+else
+    bus="--system"
+fi
+
+if [[ -z $FAILED_COLOR ]]
+then
+    FAILED_COLOR=red
+fi
+
+if [[ -z $INACTIVE_COLOR ]]
+then
+    INACTIVE_COLOR=orange
+fi
+
+if [[ -n $ACTIVE_COLOR ]]
+then
+    ACTIVE_COLOR=" color='$ACTIVE_COLOR'"
+fi
+# echo $FAILED_COLOR
+
+object_path=$(dbus-send $bus --print-reply --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager.GetUnit string:"${UNIT_NAME}" | grep -Po '"\K[^"]+')
+status=$(dbus-send $bus --dest=org.freedesktop.systemd1 --print-reply "$object_path" org.freedesktop.DBus.Properties.Get string:'org.freedesktop.systemd1.Unit' string:'ActiveState' | grep -oP 'string "\K[^"]+')
+
+if [[ $status == "failed" ]]
+then
+    echo "<span color='$FAILED_COLOR'>$status</span>"
+elif [[ $status == "inactive" ]]
+then
+    echo "<span color='$INACTIVE_COLOR'>$status</span>"
+else
+    echo "<span${ACTIVE_COLOR}>$status</span>"
+fi
