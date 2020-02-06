@@ -21,6 +21,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:disk[] | Show disk usage (space used) for a given directory
 | link:disk-io[] | Monitor disk reads and writes
 | link:docker[] | Show the number of Docker containers and container IP
+| link:dunst[] | Toggle Dunst notifications using a simple Do-Not-Disturb button
 | link:email[] | Show the number of unread IMAP messages
 | link:essid[] | Show the wifi ESSID you are connected to (dep: iwconfig, perl)
 | link:gpu-load[] | Shows load of Nvidia GPUs

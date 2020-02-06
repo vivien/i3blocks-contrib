@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+A do-not-disturb button for muting Dunst notifications in i3 using i3blocks
+
+Mute is handled by passing 'DUNST_COMMAND_PAUSE' and 'DUNST_COMMAND_RESUME' to
+the notify-send script and the 'DUNST_MUTE' environment variable is set to keep
+track of the toggle.
+"""
+
+__author__ = "Jessey White-Cinis <j@cin.is>"
+__copyright__ = "Copyright (c) 2019 Jessey White-Cinis"
+__license__ = "MIT"
+__version__ = "1.0.0"
+
+import os
+import subprocess
+import json
+
+def mute_on():
+    '''Turns off dunst notifications'''
+    subprocess.run(["notify-send", "DUNST_COMMAND_PAUSE"], check=True)
+    return {
+        "full_text":"<span font='Font Awesome 5 Free Solid' color='#BE616E'>\uf1f6</span>",
+        "DUNST_MUTE":"on"
+    }
+
+def mute_off():
+    '''Turns back on dunst notifications'''
+    subprocess.run(["notify-send", "DUNST_COMMAND_RESUME"], check=True)
+    return {
+        "full_text":"<span font='Font Awesome 5 Free Solid' color='#A4B98E'>\uf0f3</span>",
+        "DUNST_MUTE":"off"
+    }
+
+def clicked():
+    '''Returns True if the button was clicked'''
+    button = "BLOCK_BUTTON" in os.environ and os.environ["BLOCK_BUTTON"]
+    return bool(button)
+
+def muted():
+    '''Returns True if Dunst is muted'''
+    mute = "DUNST_MUTE" in os.environ and os.environ["DUNST_MUTE"]
+    return mute == 'on'
+
+if clicked():
+    # toggle button click to turn mute on and off
+    if muted():
+        RTN = mute_off()
+    else:
+        RTN = mute_on()
+
+else:
+    # Set default state using 'DUNST_MUTE' environment variable
+    if muted():
+        RTN = mute_on()
+    else:
+        RTN = mute_off()
+
+print(json.dumps(RTN))
