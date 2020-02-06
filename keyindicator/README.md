@@ -2,9 +2,7 @@
 
 Show the status of capslock or numlock.
 
-![](keyindicator-active.png)
-
-![](keyindicator-inactive.png)
+![](keyindicator-active-vs-inactive.png)
 
 # Installation
 
@@ -25,6 +23,8 @@ KEY=CAPS
 markup=pango
 interval=once
 signal=11
+#TEXT_ON=CapsLockOn
+#TEXT_OFF=CapsLockOff
 #COLOR_ON=#00FF00
 #COLOR_OFF=#222222
 #BG_COLOR_ON=
@@ -36,6 +36,8 @@ KEY=NUM
 markup=pango
 interval=once
 signal=11
+#TEXT_ON=NumLockOn
+#TEXT_OFF=NumLockOff
 #COLOR_ON=#00FF00
 HIDE_WHEN_OFF=1
 ```
