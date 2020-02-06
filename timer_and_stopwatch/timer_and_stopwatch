@@ -1,0 +1,167 @@
+#! /usr/bin/env bash
+###### Default environment variables ######
+STOPWATCH_LABEL=${STOPWATCH_LABEL:-stopwatch}
+TIMER_LABEL=${TIMER_LABEL:-timer}
+DEFAULT_MODE=${DEFAULT_MODE:-timer}
+DEFAULT_STOPWATCH=${DEFAULT_STOPWATCH:-0}
+DEFAULT_TIMER=${DEFAULT_TIMER:-60}
+PLAY_LABEL=${PLAY_LABEL:-(playing)}
+PAUSE_LABEL=${PAUSE_LABEL:-(paused)}
+TIMER_LOOP=${TIMER_LOOP:-false}
+###### Default environment variables ######
+
+###### Functions ######
+error() {
+  echo Error: "$@" 1>&2
+}
+
+next_mode() {
+  mode=$(( (mode + 1) % ${#modes[@]} ))
+  set_mode
+}
+
+play_pause() {
+  $running && pause || play
+}
+
+play() {
+  running=true
+  status_symbol=$PLAY_LABEL
+}
+
+pause() {
+  running=false
+  status_symbol=$PAUSE_LABEL
+}
+
+reset_times() {
+  unset time
+  set_mode
+}
+
+set_mode() {
+  case ${modes[$mode]} in
+    'timer' )
+      running=false
+      status_symbol=$PAUSE_LABEL
+      initial_time=${initial_time-$DEFAULT_TIMER}
+      time=$initial_time
+      incr=-1
+      ;;
+    'stopwatch' )
+      running=false
+      status_symbol=$PAUSE_LABEL
+      time=${time-$DEFAULT_STOPWATCH}
+      fgcolor='#FFFFFF'
+      bgcolor='#000000'
+      incr=1
+      ;;
+  esac
+}
+
+compute_color() {
+  t=$1
+  hue360=$(( 120*t/initial_time ))
+  tmp=$(( hue360 % 120 - 60 ))
+  tmp=$(( (60 - ${tmp#-})*255/60 ))
+  if (( hue360 < 60 && hue360 >= 0 )); then
+    R=255 G=$tmp B=0
+  elif (( hue360 <= 120 && hue360 >= 60 )); then
+    R=$tmp G=255 B=0
+  fi
+  printf '#%06X\n' $(( R*16*16*16*16 + G*16*16 + B ))
+}
+
+prettify_time() {
+  seconds=$time
+  if (( time >= 60 )); then
+    minutes=$(( time / 60 ))
+    seconds=$(( time % 60 ))
+    (( seconds < 10 )) && seconds=0$seconds
+  fi
+  if (( minutes >= 60 )); then
+    hours=$(( minutes / 60 ))
+    minutes=$(( minutes % 60 ))
+    (( minutes < 10 )) && minutes=0$minutes
+  fi
+  echo $hours${hours+:}$minutes${minutes+:}$seconds
+}
+###### Functions ######
+
+###### Internal variables ######
+modes=([0]='timer' [1]='stopwatch')
+labels=([0]="$TIMER_LABEL" [1]="$STOPWATCH_LABEL")
+###### Internal variables ######
+
+###### First run initialization ######
+if [[ ${time-xxx} == 'xxx' ]]; then
+  for i in "${!modes[@]}"; do
+    if [[ "${modes[$i]}" == "$DEFAULT_MODE" ]]; then
+      mode=$i
+    fi
+  done
+  set_mode
+fi
+###### First run initialization ######
+
+###### Click processing ######
+case $BLOCK_BUTTON in
+  1 )
+    play_pause
+    ;;
+  2 )
+    reset_times
+    ;;
+  3 )
+    next_mode
+    reset_times
+    pause
+    ;;
+  4 )
+    $running && pause
+    initial_time=$(( initial_time + 1 ))
+    time=$initial_time
+    ;;
+  5 )
+    $running && pause
+    initial_time=$(( initial_time - 1 ))
+    time=$initial_time
+    ;;
+esac
+###### Click processing ######
+
+###### Time increment ######
+$running && time=$(( time + incr ))
+if (( mode == 0 )); then
+  if (( time <= 0 )); then
+    bgcolor='#FF0000'
+    fgcolor='#000000'
+    time=0
+    pause
+  elif (( time > 0 )); then
+    fgcolor=$(compute_color $time)
+    bgcolor='#000000'
+  fi
+else
+  bgcolor='#000000'
+  fgcolor='#FFFFFF'
+fi
+full_text="${labels[$mode]} $status_symbol $(prettify_time)"
+if (( mode == 0 && time == 0 )); then
+    $TIMER_LOOP && reset_times && play
+fi
+###### Time increment ######
+
+###### Output ######
+cat << EOF
+{"full_text":"$full_text",\
+"status_symbol":"$status_symbol",\
+"time":"$time",\
+"initial_time":"$initial_time",\
+"incr":"$incr",\
+"running":"$running",\
+"mode":"$mode",\
+"color":"$fgcolor",\
+"background":"$bgcolor"}
+EOF
+###### Output ######
