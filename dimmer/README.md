@@ -1,5 +1,5 @@
-#dimmer
-##Description
+# dimmer
+## Description
 
 Without dimmer:
 
@@ -18,7 +18,7 @@ colored blocklets made for dark background.
 dimmer parses a blocket output, gets strings with hex color codes and reduces
 it values to make colors darker.
 
-##Usage
+## Usage
 
 To use dimmer you should add it through pipe, e.g. you may keep following in
 your i3blocks.conf:
@@ -31,7 +31,7 @@ command=(/usr/lib/i3blocks/$BLOCK_NAME ; echo) | $SCRIPT_DIR/dimmer
 echo is required for properly support of some scripts that does not produce new
 line symbol on the end of their output (like bandwidth blocklet).
 
-##Options
+## Options
 
 By default dimmer will reduce color values to 50%. Also dimmer supports custom
 brightness values in percents as an argument, e.g.:
