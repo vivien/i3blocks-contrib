@@ -2,7 +2,7 @@
 
 Report detailed CPU utilization statistics.
 
-Reports detailed CPU utilization as in man(1) mpstat, pango markup is used to distinguish values with colors. Written in bash and awk.
+Reports detailed CPU utilization as in man(1) mpstat, pango markup is used to distinguish values with colors, always prints total usage as short text. Written in bash and awk.
 
 ![block preview](cpu_util_detailed.png)
 
@@ -28,7 +28,6 @@ interval=-2
 #stats=usr nice sys iowait
 #format=%6.2f
 #warn=80
-#warn_color=#DD0000
 #usr_color=green
 #nice_color=yellow
 #sys_color=red
@@ -80,9 +79,7 @@ Colors of relevant stats:
 
  - ':%5.2f' will display every stat as `':12.34'`
 
-**warn** - warning threshold, default is '80'.
-
-**warn_color** - a color used when warning threshold is hit, works for short text and label. MUST be a hexadecimal value, not a word. Default is '#DD0000'.
+**warn** - warning threshold, when reached urgent flag is set, default is '80'.
 
 ## WARNING
-No sanity checks for values set in i3blocks.conf are made inside the script, except for **report_time** which is set to reasonable values as described above.
+No sanity checks for values set in i3blocks.conf are made inside the script.

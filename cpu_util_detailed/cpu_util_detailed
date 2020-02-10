@@ -10,7 +10,6 @@ interval=${interval:-0} # just in case it's started not by i3blocks
 stats=${stats:-usr nice sys iowait}
 format=${format:-%6.2f}
 warn=${warn:-80}
-warn_color=${warn_color:-#DD0000} # this one MUST be a hexadecimal value, not a word.
 declare -A colormap=(
                     [usr]=${usr_color:-green}
                     [nice]=${nice_color:-yellow}
@@ -97,5 +96,5 @@ echo # trailing newline
 # Short text
 # shellcheck disable=SC2059
 printf "$format\n" "$total"
-# Warn color, works for short text and label
-[[ $( bc <<<"$total >= $warn" ) == 1 ]] && printf '%s\n' "$warn_color"
+# Set urgent flag if over warn threshold
+(( $( bc <<<"$total >= $warn" ) )) && exit 33 || :
