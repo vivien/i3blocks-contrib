@@ -15,23 +15,32 @@ Parses output from `nmcli` to show the current connected VPN name/status
 
 # Usage
 
-`nm-vpn` gets active connection info from `nmcli` for interface `tun0`.
-A VPN connection in NetworkManager is established only when `tun0` is
-active, thus the blocklet’s response time depends on how long it takes
-to connect.
+`nm-vpn` gets active connection info from `nmcli`, looks for interface type `tun`, `tap`, `vpn`. A VPN connection is treated as established only when `tun`|`tap` is present, when it's not and a `vpn` connection is listed as active it is treated as initializing.
+
+# Tunables
+
+`init_color` - color used for marking a connection in initializing state, default is '#FFFF00'
+
+`on_color` - color used for marking a connection in established state, default is '#00FF00'
 
 ## Output
 
-When `tun0` is active, `nm-vpn` will print in the following form:
-  - Full: `VPN: "Name"`
+When `tun`|`tap` is active, `nm-vpn` will print in the following form:
+  - Full: `VPN Name`
   - Short: `ON`
+  - Color will be set to `on_color` value
 
-In addition, each form will be coloured green (“\#00FF00”).
+When `tun`|`tap` in not active, `nm-vpn` will print in the following form:
+  - Full: `VPN Name`
+  - Short: `INIT`
+  - Color will be set to `init_color` value
 
 # Config
 
 ``` ini
 [nm-vpn]
-label=VPN:
+#init_color=#FFFF00
+#on_color=#00FF00
+label=VPN: 
 interval=5
 ```
