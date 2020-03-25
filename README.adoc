@@ -12,6 +12,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:bandwidth[] | Show bandwidth information (default bash version)
 | link:bandwidth2[] | Show bandwidth information (C version)
 | link:bandwidth3[] | Show bandwidth information (another bash version)
+| link:battery-poly[] | Show multi-battery info
 | link:battery[] | Show battery info
 | link:battery2[] | Pretty battery info
 | link:batterybar[] | Show battery info graphically as a bar
