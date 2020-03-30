@@ -70,6 +70,8 @@ def get_updates():
         # we ignore this case and go on
         if not (exc.returncode == 2 and not exc.output):
             raise exc
+    except FileNotFoundError as exc:
+        os._exit(0)
     if not output:
         return []
 
@@ -89,6 +91,8 @@ def get_aur_updates():
         # we ignore this case and go on
         if not (exc.returncode == 1 and not exc.output):
             raise exc
+    except FileNotFoundError as exc:
+        os._exit(0)
     if not output:
         return []
 
