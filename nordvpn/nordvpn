@@ -1,0 +1,16 @@
+#!/bin/bash
+
+STATUS=$(nordvpn status)
+
+if [[ $STATUS == *"Disconnected"* ]]; then
+  echo "nordvpn down"
+  echo "down"
+  echo '#FFFFFF'
+else 
+  echo "nordvpn up"
+  echo "up"
+  echo '#FFFF00'
+fi
+
+
+exit 0
