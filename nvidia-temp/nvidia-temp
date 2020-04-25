@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# i3blocks blocklet script to display NVIDIA GPU temperature
+
+#-------------------------------------------------------------------------------
+GPU="${BLOCK_INSTANCE:-0}"
+#-------------------------------------------------------------------------------
+WARNING=${WARNING:-"60"}
+WARNINGCOLOR=${WARNINGCOLOR:-"#ffff00"}
+CRITICAL=${CRITICAL:-"80"}
+CRITICALCOLOR=${CRITICALCOLOR-"#ff0000"}
+NOCOLOR=${NOCOLOR-"0"}
+
+while getopts t:T:w:c:nh opt; do
+	case "$opt" in
+		t) WARNING="$OPTARG";;
+		T) CRITICAL="$OPTARG";;
+		w) WARNINGCOLOR="$OPTARG";;
+		c) CRITICALCOLOR="$OPTARG";;
+		n) NOCOLOR=1;;
+		h|*) printf \
+"Usage: nvidia-temp [-t warning_temp] [-T critical_temp] [-w warning_color] [-c critical_color] [-h]
+Options:
+-t\tTemperature threshold to trigger warning color (Default 60)
+-T\tTemperature threshold to trigger critical color (Default 80)
+-w\tColor for warning temperature (Default #ffff00)
+-c\tColor for critical temperature (Default #ff0000)
+-n\tDisable color printing
+-h\tDisplay usage information\n" && exit 0;;
+	esac
+done
+
+TEMP=$(nvidia-settings -q [gpu:"$GPU"]/GPUCoreTemp  | grep "Attribute" | sed -e "s/.*: //g" -e "s/\.//g")
+printf "%s°C\n" "$TEMP"
+if [[ $TEMP -lt $WARNING ]]; then
+	printf "%s°C\n" "$TEMP"
+elif [[ $TEMP -lt $CRITICAL ]]; then
+	printf "%s°C\n" "$TEMP"
+	if [[ $NOCOLOR != 1 ]]; then
+		printf "%s\n" "$WARNINGCOLOR"
+	fi
+else
+	printf "%s°C\n" "$TEMP"
+	if [[ $NOCOLOR != 1 ]]; then
+		printf "%s\n" "$CRITICALCOLOR"
+	fi
+fi
