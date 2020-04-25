@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+"""i3blocks module to display current weather using data from the US National Weather Service
+"""
 from enum import Enum, auto
 import json
 import os
@@ -10,17 +11,22 @@ import defusedxml.ElementTree
 
 
 class TempUnits(Enum):
+    """Enum for different temperature units (F, C)"""
     FAHRENHEIT = auto()
     CELSIUS = auto()
 
-    def get_abbr(self):
-        if (self == self.FAHRENHEIT):
-            return 'f'
-        if (self == self.CELSIUS):
-            return 'c'
+    @property
+    def abbreviation(self):
+        """Get one-character abbrevation of unit."""
+        abbreviations = {
+            TempUnits.FAHRENHEIT: 'f',
+            TempUnits.CELSIUS: 'c'
+        }
+        return abbreviations[self]
 
     @classmethod
     def from_string(cls, string):
+        """Get unit from string representation."""
         units_dict = {
             'f': cls.FAHRENHEIT,
             'fahrenheit': cls.CELSIUS,
@@ -30,11 +36,18 @@ class TempUnits(Enum):
             }
         return units_dict[string.lower()]
 
+class ConfigError(Exception):
+    """Exception class for configuration error."""
+
+def missing_config_property(name):
+    """Raise ConfigError for missing property."""
+    raise ConfigError('Missing required config property {}'.format(name))
 
 def get_config():
+    """Create configuration dict from environment variables."""
     property_factories = {
         'LOCATION': str,
-        'UNITS': lambda string: TempUnits.from_string(string),
+        'UNITS': TempUnits.from_string,
         'FORMAT': str,
         'FORMAT_WIND_CHILL': str,
         'SHORT_FORMAT': str,
@@ -46,7 +59,6 @@ def get_config():
         'DISPLAY_WIND_CHILL': lambda string: string.lower() == 'true',
         }
     static_property_defaults = {
-        'LOCATION': None,
         'UNITS': TempUnits.FAHRENHEIT,
         'FORMAT': '{temperature}{deg} - {weather}',
         'SHORT_FORMAT': '{temperature}{deg}',
@@ -54,8 +66,11 @@ def get_config():
         'COLOR_HIGH': '#FF5555',
         'DISPLAY_WIND_CHILL': True,
         }
-    # property defaults that are dependent on other properties
+    # property defaults that are dependent on static properties
     dynamic_property_defaults = {
+        'LOCATION':
+            lambda cfg:
+            missing_config_property('LOCATION'),
         'FORMAT_WIND_CHILL':
             lambda cfg:
             '{temperature}{deg} ({wind_chill}{deg}) - {weather}'
@@ -75,7 +90,7 @@ def get_config():
         }
     assert (property_factories.keys()
             == (static_property_defaults.keys() |
-                dynamic_property_defaults.keys()))
+                dynamic_property_defaults.keys())) # all properties must have default values
 
     config = dict()
     for key, default in static_property_defaults.items():
@@ -93,9 +108,10 @@ def get_config():
 
 
 def get_data(tree, config):
+    """Convert xml tree to dict of needed weather data."""
     data = dict()
     data['weather'] = tree.findtext("./weather")
-    units_abbr = config["UNITS"].get_abbr()
+    units_abbr = config["UNITS"].abbreviation
     data['temperature'] = int(float(tree.findtext(f'./temp_{units_abbr}')))
     wind_chill_str = tree.findtext(f'./windchill_{units_abbr}')
     data['wind_chill'] = int(float(wind_chill_str)) if wind_chill_str else None
@@ -105,14 +121,15 @@ def get_data(tree, config):
 
 
 def get_color(data, config):
-    if (data['wind_chill'] is not None):
-        if (data['wind_chill'] <= config['COLOR_LOW_THRESHOLD']):
+    """Get the color for message display from weather data."""
+    if data['wind_chill'] is not None:
+        if data['wind_chill'] <= config['COLOR_LOW_THRESHOLD']:
             color = config['COLOR_LOW']
         else:
             color = None
-    elif (data['temperature'] <= config['COLOR_LOW_THRESHOLD']):
+    elif data['temperature'] <= config['COLOR_LOW_THRESHOLD']:
         color = config['COLOR_LOW']
-    elif (data['temperature'] >= config['COLOR_HIGH_THRESHOLD']):
+    elif data['temperature'] >= config['COLOR_HIGH_THRESHOLD']:
         color = config['COLOR_HIGH']
     else:
         color = None
@@ -120,8 +137,9 @@ def get_color(data, config):
 
 
 def create_status_message(data, config):
+    """Create the full message to be displayed."""
     message = dict()
-    if (data['wind_chill'] is None):
+    if data['wind_chill'] is None:
         long_format = config['FORMAT']
         short_format = config['SHORT_FORMAT']
     else:
@@ -130,33 +148,42 @@ def create_status_message(data, config):
     message['full_text'] = long_format.format(**data)
     message['short_text'] = short_format.format(**data)
     color = get_color(data, config)
-    if (color is not None):
+    if color is not None:
         message['color'] = color
     return message
 
 
 def main():
-    config = get_config()
+    """i3blocks module to display current weather using data from the US National Weather Service"""
+    try:
+        config = get_config()
 
-    xml_url = 'https://w1.weather.gov/xml/current_obs/{0}.xml'.format(
-        config['LOCATION'])
-    response = urllib.request.urlopen(xml_url)
-    tree = defusedxml.ElementTree.fromstring(response.read())
+        # get XML response tree
+        xml_url = 'https://w1.weather.gov/xml/current_obs/{0}.xml'.format(
+            config['LOCATION'])
+        response = urllib.request.urlopen(xml_url)
+        tree = defusedxml.ElementTree.fromstring(response.read())
 
-    data = get_data(tree, config)
-    data['deg'] = '\u00b0'
+        # convert XML tree to data dict with keys referenced in output format string
+        data = get_data(tree, config)
+        data['deg'] = '\u00b0' # degree symbol for {deg} in format string
 
-    message = create_status_message(data, config)
+        # generate message JSON
+        message = create_status_message(data, config)
 
-    header = '{"version":1}\n'
-    print(header + json.dumps([message]))
+        # if clicked, open web browser
+        if os.environ.get('BLOCK_BUTTON') == '1':
+            forecast_url_format = \
+                'https://forecast.weather.gov/MapClick.php?lat={0}&lon={1}'
+            webbrowser.open(forecast_url_format.format(
+                data['latitude'], data['longitude']))
+    except Exception as exc:
+        message = {'full_text': str(exc)}
+        raise
+    finally:
+        header = '{"version":1}\n'
+        print(header + json.dumps([message]))
 
-    if (os.environ.get('BLOCK_BUTTON') == '1'):
-        forecast_url_format = \
-            'https://forecast.weather.gov/MapClick.php?lat={0}&lon={1}'
-        webbrowser.open(forecast_url_format.format(
-            data['latitude'], data['longitude']))
 
-
-if(__name__ == "__main__"):
+if __name__ == "__main__":
     main()
