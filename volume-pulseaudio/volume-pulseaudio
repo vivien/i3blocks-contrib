@@ -171,8 +171,12 @@ sed 's/.*= "\(.*\)".*/\1/')
 
 if [[ $SUBSCRIBE == 1 ]] ; then
     print_block
-    pactl subscribe | stdbuf -oL grep change | while read -r EVENT; do
-        print_block
+    # Handle restarts of Pulse: pactl terminates when it looses
+    # the connection.
+    while true; do
+        pactl subscribe | stdbuf -oL grep change | while read -r EVENT; do
+            print_block
+        done
     done &
     while read BLOCK_BUTTON ; do
         handle_input
