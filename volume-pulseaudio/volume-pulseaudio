@@ -170,6 +170,9 @@ sed 's/.*= "\(.*\)".*/\1/')
 }
 
 if [[ $SUBSCRIBE == 1 ]] ; then
+    # Kill all sub-processes on exit:
+    trap 'kill 0' EXIT
+
     print_block
     # Handle restarts of Pulse: pactl terminates when it looses
     # the connection.
