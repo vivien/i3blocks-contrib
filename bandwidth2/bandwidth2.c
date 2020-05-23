@@ -55,7 +55,7 @@ void get_values(char **const ifaces, int num_ifaces, time_t * const s, ulli * co
       int i;
       int iface_found = num_ifaces == 0;
       for (i = 0; i < num_ifaces; i++) {
-        if (strcmp(ifaces[i], ifname) != 0) {
+        if (strcmp(ifaces[i], ifname) == 0) {
           iface_found = 1;
           break;
         }
