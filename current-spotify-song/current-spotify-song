@@ -1,0 +1,263 @@
+#!/usr/bin/python3
+#
+# Copyright 2020 Andreas Palm <https://github.com/zapling/>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+# BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import os
+import sys
+import json
+import pathlib
+import urllib.parse
+import urllib.request
+import http.server
+
+REDIRECT_URI = 'http://localhost:8080/'
+
+""" HTTP request wrapper """
+def request(url, headers, body=None):
+  if body is not None:
+    body = urllib.parse.urlencode(body).encode()
+
+  req = urllib.request.Request(
+    url=url,
+    data=body,
+    headers=headers
+  )
+
+  try:
+    res = urllib.request.urlopen(req)
+    return {'code': res.status, 'data': json.loads(res.read())}
+
+  except urllib.error.HTTPError as e:
+    return {'code': e.status, 'data': e.reason}
+
+""" Get the path to the configuration folder """
+def getConfigurationFolder():
+  path = str(pathlib.Path.home()) + '/.config/current-spotify-song/'
+  pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+  return path
+
+""" Write data to specified config file """
+def writeConfigData(filename, data):
+  full_path = getConfigurationFolder() + filename
+
+  f = open(full_path, 'w')
+  with f as out:
+    out.write(data)
+
+""" Get data from specified config file """
+def getConfigData(filename):
+  full_path = getConfigurationFolder() + filename
+
+  f = open(full_path, 'r')
+  lines = f.readlines()
+
+  fixed_lines = []
+  for line in lines:
+    fixed_lines.append(line.strip('\n'))
+
+  return fixed_lines
+
+""" Setup helper """
+def setup():
+  print("Create and Spotify App (https://developer.spotify.com/dashboard/applications)\n")
+  client_id = input('client_id: ')
+  secret = input('secret: ')
+  writeConfigData('app', "{}\n{}".format(client_id, secret))
+
+  server = http.server.HTTPServer(('', 8080), OauthSetupHandler)
+
+  print(
+    "\nLocal setup almost done!\n"
+    "Open the following URL and accept your app to access your Spotify account.\n"
+  )
+
+  oauth_url = ("https://accounts.spotify.com/authorize"
+                 "?client_id={}"
+                 "&response_type=code"
+                 "&redirect_uri={}"
+                 "&scope=user-read-currently-playing"
+                ).format(client_id, REDIRECT_URI)
+
+  print(oauth_url)
+
+  try:
+    server.serve_forever()
+  except:
+    pass
+
+class OauthSetupHandler(http.server.BaseHTTPRequestHandler):
+
+  def do_GET(self):
+    params = self.getParams()
+
+    if (len(params) < 1 or 'code' not in params):
+      self.send_response(400)
+      self.end_headers()
+      self.wfile.write(b'Setup not completed, missing code query param!')
+      return
+
+    code = params['code'][0]
+    res = self.getTokens(code)
+
+    if res['code'] != 200:
+      self.send_response(res['code'])
+      self.end_headers()
+      self.wfile.write(res['data'].encode())
+      return
+
+    self.send_response(200)
+    self.end_headers()
+    self.wfile.write(b'Setup completed.')
+
+    writeConfigData('tokens', "{}\n{}".format(
+      res['data']['access_token'],
+      res['data']['refresh_token'])
+    )
+
+    print('\n\nSetup completed.\nClose wizard with CRTL + C')
+
+  def getTokens(self, code):
+    app = getConfigData('app')
+
+    body = {
+      'grant_type': 'authorization_code',
+      'code': code,
+      'redirect_uri': REDIRECT_URI,
+      'client_id': app[0],
+      'client_secret': app[1]
+    }
+
+    res = request(url='https://accounts.spotify.com/api/token', body=body, headers={
+      'Content-Type': 'application/x-www-form-urlencoded'
+    })
+
+    return res
+
+  def getParams(self):
+    parsed_url = urllib.parse.urlparse(self.path)
+    return urllib.parse.parse_qs(parsed_url.query)
+
+""" Refresh the token for a new one with refresh_token """
+def refreshToken():
+  app = getConfigData('app')
+  tokens = getConfigData('tokens')
+
+  body = {
+    'grant_type': 'refresh_token',
+    'refresh_token': tokens[1],
+    'client_id': app[0],
+    'client_secret': app[1]
+  }
+
+  res = request(
+    url="https://accounts.spotify.com/api/token",
+    body=body,
+    headers={
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  )
+
+  if res['code'] != 200:
+    print("[Error: Could not refresh token!]")
+    return
+
+  new_token_data = "{}\n{}".format(res['data']['access_token'], tokens[1])
+  writeConfigData('tokens', new_token_data)
+
+""" Get the song currently playing """
+def getCurrentSong(options):
+  tokens = getConfigData('tokens')
+  res = request(
+    url="https://api.spotify.com/v1/me/player/currently-playing",
+    headers={
+      'Authorization': 'Bearer ' + tokens[0]
+    }
+  )
+
+  if res['code'] == 429: # rate limit hit!
+    print("[Error: Rate limit hit!]")
+    return
+
+  if res['code'] == 401: # token expired
+    refreshToken()
+    return
+
+  if res['code'] == 200:
+    if res['data']['is_playing'] is False:
+      print("")
+      return
+
+    item = res['data']['item']
+    output(item, options)
+
+""" Output the text """
+def output(item, options):
+  song_info = getSongInfo(item, options['artists'], options['max_length'])
+  album = getAlbumInfo(item)
+
+  if options['button'] == "1":
+    text = album
+  else:
+    text = song_info
+
+  print("{}".format(text))
+
+""" Get the song name and artists """
+def getSongInfo(item, num_artists, max_length):
+  artists = []
+  for artist in item['artists']:
+    if num_artists == 'all':
+      artists.append(artist['name'])
+      continue
+
+    if len(artists) < int(num_artists):
+      artists.append(artist['name'])
+      continue
+
+  song = item['name']
+
+  # Cut if max_length is set and needed
+  if max_length != 'false' and len(song) > int(max_length):
+    song = song[:int(max_length)-3]
+    song += "..."
+
+  # Only add '-' if we have any artists
+  if len(artists) > 0:
+    artists = ', '.join(artists)
+    text = "{} - {}".format(song, artists)
+  else:
+    text = song
+
+  return text
+
+""" Get album name and release year """
+def getAlbumInfo(item):
+  album_year = item['album']['release_date'].split('-')[0]
+  return "{} ({})".format(item['album']['name'], album_year)
+
+if __name__ == '__main__':
+  if (len(sys.argv) > 1 and sys.argv[1] == 'setup'):
+    setup()
+
+  options = {
+    'button': os.environ.get('button', '0'),
+    'artists': os.environ.get('artists', 'all'),
+    'max_length': os.environ.get('max_length', 'false'),
+  }
+
+  getCurrentSong(options)
