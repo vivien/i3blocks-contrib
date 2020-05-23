@@ -14,7 +14,16 @@ Display the song currently playing in Spotify. When clicked, display the album n
 
 # Installation
 
-Spotifys API requires Oauth authentication. This script includes a setup wizard that will help you set this up.
+Spotifys API requires Oauth authentication. Therefore you most setup an [Spotify Developer App](https://developer.spotify.com/dashboard/applications).
+
+## Spotify Developer App Setup
+
+The only thing you need to configure is the `Redirect URI` in your app. The `Redirect URI` most be set to `http://localhost:8080/`, otherwise the setup wizard in the next step will fail.
+
+
+## Script setup wizard
+
+The script includes a setup wizard that will help you set it up.
 
 * Copy the script to your directory of choice, e.g. `~/.config/i3blocks/scripts/`
 * Run the setup wizard `current-spotify-song setup`
@@ -22,7 +31,7 @@ Spotifys API requires Oauth authentication. This script includes a setup wizard 
 * Open the promted link and the instructions to allow your app to access your Spotify account.
 * When promted with `Setup completed` close the wizard with `CTRL + C`
 
-The wizard will store some requierd data to `~/.config/current-spotify-song`.
+The wizard will save some requierd data to `~/.config/current-spotify-song/`.
 
 * The `app` file will include your `client_id` and `secret`.
 * The `tokens` file will include your current Spotify access token and a refresh token used to issue a new token when the previous has expired.
@@ -47,7 +56,7 @@ max_length=20
 MIT License
 
 ```
-Copyright 2020 Andreas Palm
+Copyright 2020 Andreas Palm <https://github.com/zapling>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
