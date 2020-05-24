@@ -1,0 +1,36 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $label = $ENV{LABEL} // "";
+my $decimals = $ENV{DECIMALS} // 1;
+my $high_temp = $ENV{HIGHTEMP} // 70;
+my $crit_temp = $ENV{CRITEMP} // 85;
+
+#
+my $cur_temp = 0;
+
+open (TEMP, 'nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader |') or die;
+    $cur_temp = <TEMP>;
+close(TEMP);
+
+# Remove newline
+chop($cur_temp);
+
+# Print full_text
+print $label, $cur_temp, "C\n";
+
+# Print short_text
+print $label, $cur_temp, "C\n";
+
+# Print colors if needed
+if($cur_temp >= $crit_temp){
+    print "#FF0000\n";
+} elsif ($cur_temp >= $high_temp){
+    print "#FFFC00\n";
+}
+
+exit 0;
