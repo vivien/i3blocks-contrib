@@ -1,0 +1,90 @@
+#! /usr/bin/perl
+sub print_short_text
+{
+    $label = $_[0];
+    $temp_total = $_[1];
+    $temp_count = $_[2];
+    $decimals = $_[3];
+    
+    printf "%s %.${decimals}fC\n", $label, $temp_total / $temp_count;
+}
+
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $label = $ENV{LABEL} // "";
+my $decimals = $ENV{DECIMALS} // 1;
+my $use_average = $ENV{USEAVERAGE} // 0;
+
+#
+my $any_high_temp = 0;
+my $any_crit_temp = 0;
+my @all_temps = ();
+my $temp_count = 0;
+my $temp_total = 0;
+my $is_in_coretemp = 0;
+
+open (TEMP, 'sensors |') or die;
+while (<TEMP>) {
+    if(/coretemp/){
+        $is_in_coretemp = 1;
+    } elsif(/^$/){
+        $is_in_coretemp = 0;
+    }
+    if($is_in_coretemp){
+        if (/^.*°C.*$/){
+            my $tmp_string = $&;
+            my $temp = "0";
+            if($tmp_string =~ /\d*\.\d*/){
+                $temp = $&;
+            }
+            
+            my $high_temp = "";
+            if($tmp_string =~ /(?<=high\ =\ [+-])\d*.\d*/){
+                $high_temp = $&;
+            }
+
+            my $crit_temp = "";
+            if($tmp_string =~ /(?<=crit\ =\ [+-])\d*.\d*/){
+                $crit_temp = $&;
+            }
+
+            if($high_temp && $temp >= $high_temp){
+                $any_high_temp = 1;
+            } elsif ($crit_temp && $temp >= $crit_temp) {
+                $any_crit_temp = 1;
+            } else {
+                @all_temps[$temp_count] = $temp;
+                $temp_count += 1;
+                $temp_total = $temp_total + $temp;
+            }
+        }
+    }
+}
+close(TEMP);
+
+# Print full_text
+if($use_average){
+    print_short_text($label, $temp_total, $temp_count, $decimals);
+} else {
+    print $label;
+    foreach(@all_temps){
+        print " (${_}C)";
+    }
+    print "\n";
+}
+
+# Print short_text
+print_short_text($label, $temp_total, $temp_count, $decimals);
+
+# Print colors if needed
+if($any_crit_temp){
+    print "#FF0000\n";
+} elsif ($any_high_temp){
+    print "#FFFC00\n";
+}
+
+exit 0;
