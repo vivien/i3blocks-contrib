@@ -127,9 +127,9 @@ sub playerctl {
     my $playPauseIcon = '  ';
     if ($playerStatus) {
         if ($playerStatus eq 'Playing') {
-            $playPauseIcon = '  ';
+            $playPauseIcon = '▶  ';
         } elsif ($playerStatus eq 'Paused') {
-            $playPauseIcon = '  ';
+            $playPauseIcon = '⏸  ';
         } else {
             $playPauseIcon = '  ';
         }
