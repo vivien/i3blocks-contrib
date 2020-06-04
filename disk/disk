@@ -24,13 +24,13 @@ if [ "$1" = "-n" ] || [ "$2" = "-n" ]; then
     LOCAL_FLAG=""
 fi
 
-df -h -P $LOCAL_FLAG "$DIR" | awk -v label="$LABEL" -v alert_low=$ALERT_LOW '
+df -h -P $LOCAL_FLAG "$DIR" | awk -v short_label="$SHORT_LABEL" -v alert_low=$ALERT_LOW '
 /\/.*/ {
 	# full text
-	print label $4
+	print $4
 
 	# short text
-	print label $4
+	print short_label $4
 
 	use=$5
 

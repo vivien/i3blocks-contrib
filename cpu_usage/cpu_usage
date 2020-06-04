@@ -12,11 +12,11 @@ use utf8;
 use Getopt::Long;
 
 # default values
+my $short_label = $ENV{SHORT_LABEL};
 my $t_warn = $ENV{T_WARN} // 50;
 my $t_crit = $ENV{T_CRIT} // 80;
 my $cpu_usage = -1;
 my $decimals = $ENV{DECIMALS} // 2;
-my $label = $ENV{LABEL} // "";
 
 sub help {
     print "Usage: cpu_usage [-w <warning>] [-c <critical>] [-d <decimals>]\n";
@@ -44,12 +44,14 @@ while (<MPSTAT>) {
 close(MPSTAT);
 
 $cpu_usage eq -1 and die 'Can\'t find CPU information';
+my $output_length = 3 + $decimals;
 
-# Print short_text, full_text
-print "${label}";
-printf "%.${decimals}f%%\n", $cpu_usage;
-print "${label}";
-printf "%.${decimals}f%%\n", $cpu_usage;
+# Print full_text
+print sprintf "\%${output_length}.${decimals}f%%\n", $cpu_usage;
+
+# Print short_text
+print "${short_label}";
+print sprintf "\%${output_length}.${decimals}f%%\n", $cpu_usage;
 
 # Print color, if needed
 if ($cpu_usage >= $t_crit) {
@@ -57,6 +59,8 @@ if ($cpu_usage >= $t_crit) {
     exit 33;
 } elsif ($cpu_usage >= $t_warn) {
     print "#FFFC00\n";
+} else {
+    print "#00A000\n";
 }
 
 exit 0;

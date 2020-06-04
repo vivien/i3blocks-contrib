@@ -62,7 +62,10 @@ def create_argparse():
 
 
 def get_updates():
-    output = check_output(['checkupdates']).decode('utf-8')
+    try:
+        output = check_output(['checkupdates']).decode('utf-8')
+    except subprocess.CalledProcessError:
+        output = None
     if not output:
         return []
 
@@ -121,4 +124,4 @@ if update_count > 0:
     print(message.format(label, args.updates_available_color, info))
     print(message.format(label, args.updates_available_color, short_info))
 elif not args.quiet:
-    print(message.format(label, args.base_color, 'system up to date'))
+    print(message.format(label, args.base_color, 'up to date'))

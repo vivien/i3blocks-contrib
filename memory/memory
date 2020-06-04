@@ -16,7 +16,7 @@
 
 TYPE="${BLOCK_INSTANCE:-mem}"
 
-awk -v type=$TYPE '
+awk -v type=$TYPE -v short_label=$SHORT_LABEL '
 /^MemTotal:/ {
 	mem_total=$2
 }
@@ -55,7 +55,7 @@ END {
 	printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
 
 	# short text
-	printf("%.f%%\n", pct)
+	printf("%s %.f%%\n", short_label, pct)
 
 	# color
 	if (pct > 90) {

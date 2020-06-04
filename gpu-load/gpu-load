@@ -19,6 +19,7 @@ use utf8;
 use Getopt::Long;
 
 # default values
+my $short_label = $ENV{SHORT_LABEL} || "";
 my $t_warn = $ENV{T_WARN} || 70;
 my $t_crit = $ENV{T_CRIT} || 90;
 my $gpu_usage = -1;
@@ -54,7 +55,7 @@ $gpu_usage eq -1 and die 'Can\'t find GPU information';
 
 # Print full_text, short_text
 printf "%.0f%% %.0f%% %.0f%% %.0f%%\n", $gpu_usage, $gpu_mem, $gpu_video, $gpu_pcie;
-printf "%.0f%%\n", $gpu_usage;
+printf "${short_label} %.0f%%\n", $gpu_usage;
 
 # Print color, if needed
 if ($gpu_usage >= $t_crit || $gpu_mem >= $t_crit || $gpu_video >= $t_crit || $gpu_pcie >= $t_crit) {

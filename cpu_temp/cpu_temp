@@ -1,12 +1,13 @@
 #! /usr/bin/perl
-sub print_short_text
+sub print_average
 {
-    $label = $_[0];
-    $temp_total = $_[1];
-    $temp_count = $_[2];
-    $decimals = $_[3];
+    $temp_total = $_[0];
+    $temp_count = $_[1];
+    $decimals = $_[2];
     
-    printf "%s %.${decimals}fC\n", $label, $temp_total / $temp_count;
+    my $length = 4 + $decimals;
+
+    printf "%${length}.${decimals}fC\n", $temp_total / $temp_count;
 }
 
 use strict;
@@ -15,7 +16,7 @@ use utf8;
 use Getopt::Long;
 
 # default values
-my $label = $ENV{LABEL} // "";
+my $short_label = $ENV{SHORT_LABEL} // "";
 my $decimals = $ENV{DECIMALS} // 1;
 my $use_average = $ENV{USEAVERAGE} // 0;
 
@@ -26,6 +27,7 @@ my @all_temps = ();
 my $temp_count = 0;
 my $temp_total = 0;
 my $is_in_coretemp = 0;
+my $full_text = "";
 
 open (TEMP, 'sensors |') or die;
 while (<TEMP>) {
@@ -52,15 +54,17 @@ while (<TEMP>) {
                 $crit_temp = $&;
             }
 
-            if($high_temp && $temp >= $high_temp){
-                $any_high_temp = 1;
-            } elsif ($crit_temp && $temp >= $crit_temp) {
+            if($crit_temp && $temp >= $crit_temp){
                 $any_crit_temp = 1;
+                $full_text = "${full_text}<span color='red'>(${temp}C)</span>";
+            } elsif ($high_temp && $temp >= $high_temp) {
+                $any_high_temp = 1;
+                $full_text = "${full_text}<span color='yellow'>(${temp}C)</span>";
             } else {
-                @all_temps[$temp_count] = $temp;
-                $temp_count += 1;
-                $temp_total = $temp_total + $temp;
+                $full_text = "${full_text}(${temp}C)";
             }
+            $temp_count += 1;
+            $temp_total = $temp_total + $temp;
         }
     }
 }
@@ -68,17 +72,14 @@ close(TEMP);
 
 # Print full_text
 if($use_average){
-    print_short_text($label, $temp_total, $temp_count, $decimals);
+    print_average($temp_total, $temp_count, $decimals);
 } else {
-    print $label;
-    foreach(@all_temps){
-        print " (${_}C)";
-    }
-    print "\n";
+    print $full_text, "\n";
 }
 
 # Print short_text
-print_short_text($label, $temp_total, $temp_count, $decimals);
+print $short_label;
+print_average($temp_total, $temp_count, $decimals);
 
 # Print colors if needed
 if($any_crit_temp){

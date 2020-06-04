@@ -1,0 +1,32 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $short_label = $ENV{SHORT_LABEL} // "";
+
+#
+my $local_ip = "";
+my $external_ip = "";
+
+open (IFCONFIG, 'ifconfig eno1 | grep -i "inet " | awk \'{print $2}\' |') or die;
+    $local_ip = <IFCONFIG>;
+close(IFCONFIG);
+
+open (DRILL, 'drill myip.opendns.com @resolver1.opendns.com | grep "^myip" | awk \'{print $5}\' |') or die;
+    $external_ip = <DRILL>;
+close(DRILL);
+
+# Remove newline
+chop($local_ip);
+chop($external_ip);
+
+# Print full_text
+print $local_ip, " / ", $external_ip, "\n";
+
+# Print short_text
+print $short_label, $local_ip, " / ", $external_ip, "\n";
+
+exit 0;

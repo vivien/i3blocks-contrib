@@ -1,0 +1,55 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+
+# default values
+my $label = $ENV{LABEL} // "";
+my $text = $ENV{TEXT} // " available";
+my $zero_text = $ENV{ZEROTEXT} // "No updates";
+
+my $high_updates = $ENV{HIGHUPDATES} // 1;
+my $crit_updates = $ENV{CRITUPDATES} // 10;
+
+#
+my $updates = 0;
+
+open (PAMAC, 'pamac checkupdates |') or die;
+while (<PAMAC>) {
+    if (/^\d* available update/){
+        my $tmp_string = $&;
+        if($tmp_string =~ /\d*/){
+            $updates = $&;
+            last;
+        }
+    } elsif (/^Your system is up-to-date/){
+        last;
+    }
+}
+close(PAMAC);
+
+# Print full_text
+if (not $updates){
+    print $label, $zero_text, "\n";
+} else {
+    print $label, $updates, $text, "\n"
+}
+
+# Print short_text
+if (not $updates){
+    print $label, $zero_text, "\n";
+} else { 
+    print $label, $updates, $text, "\n";
+}
+
+# Print colors if needed
+if (not $updates){
+    print "#00FF00\n";
+} elsif ($updates >= $crit_updates){
+    print "#FF0000\n";
+} elsif ($updates >= $high_updates){
+    print "#FFFC00\n";
+}
+
+exit 0;

@@ -5,10 +5,10 @@ use utf8;
 use Getopt::Long;
 
 # default values
-my $label = $ENV{LABEL} // "";
+my $short_label = $ENV{SHORT_LABEL} // "";
 my $decimals = $ENV{DECIMALS} // 1;
 my $high_temp = $ENV{HIGHTEMP} // 70;
-my $crit_temp = $ENV{CRITEMP} // 85;
+my $crit_temp = $ENV{CRITTEMP} // 85;
 
 #
 my $cur_temp = 0;
@@ -21,10 +21,10 @@ close(TEMP);
 chop($cur_temp);
 
 # Print full_text
-print $label, $cur_temp, "C\n";
+print $cur_temp, "C\n";
 
 # Print short_text
-print $label, $cur_temp, "C\n";
+print $short_label, $cur_temp, "C\n";
 
 # Print colors if needed
 if($cur_temp >= $crit_temp){
