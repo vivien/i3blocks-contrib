@@ -7,7 +7,7 @@ function join(array, end, result, i)
 {
     sep = " "
     result = array[0]
-    for (i = 1; i <= end; i++)
+    for (i = 1; i < end; i++)
         result = result sep array[i]
     return result
 }
