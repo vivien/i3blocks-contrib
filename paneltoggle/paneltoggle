@@ -1,0 +1,46 @@
+#!/usr/bin/sh
+
+CARDNUMBER=0
+HEADPHONES="  Item0: 'Stereo Headphones FP'"
+SPEAKERS="  Item0: 'Stereo Headphones'"
+
+setheadphones () {
+  amixer -c $CARDNUMBER set 'Analog Output' 'Stereo Headphones FP' > /dev/null
+}
+
+setspeakers () {
+amixer -c $CARDNUMBER set 'Analog Output' 'Stereo Headphones' > /dev/null
+ }
+
+check () {
+CURRENTOUTPUT="$(amixer -c $CARDNUMBER get 'Analog Output' | grep Item0:)"
+}
+
+print () {
+  case ${CURRENTOUTPUT} in
+    $HEADPHONES )
+		  echo "🎧"
+      ;;
+    $SPEAKERS )
+		  echo "🔉"
+      ;;
+  esac
+}
+
+check
+
+case $BLOCK_BUTTON in
+  1)   # left click
+    case ${CURRENTOUTPUT} in
+      $HEADPHONES )
+        setspeakers
+        ;;
+      $SPEAKERS )
+        setheadphones
+        ;;
+    esac
+esac
+
+check
+print
+
