@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#set -euo pipefail
+
+# Headphones on: amixer -c 0 set 'Analog Output' 'Stereo Headphones FP'
+# Headphones off: amixer -c 0 set 'Analog Output' 'Stereo Headphones'
+
+OUTPUT="$(amixer -c 0 get 'Analog Output' | grep Item0:)"
+
+if [[ ${OUTPUT} = "  Item0: 'Stereo Headphones'" ]] #two spaces in Front
+	then
+		echo "[+] Switching to Front-Panel/Headphones"
+        amixer -c 0 set 'Analog Output' 'Stereo Headphones FP' > /dev/null
+else
+		echo "[+] Switching to Back-Panel/Speakers"
+        amixer -c 0 set 'Analog Output' 'Stereo Headphones' > /dev/null
+fi
