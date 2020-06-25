@@ -11,7 +11,7 @@ import locale
 import os
 from pathlib import Path
 import subprocess
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import matplotlib.pyplot as plt  # type: ignore
 
@@ -29,20 +29,23 @@ def grab_json_with_curl(country: str) -> str:
     return curl_cmd.stdout.decode()
 
 
-def write_curl_to_file(data: str, path: Path) -> None:
+def write_data_to_file(data: str, path: Path) -> None:
     """Write the data from the curl command to a file."""
 
     with open(path, "w") as corona_file:
         corona_file.write(data)
 
 
-def read_json_from_file(path: Path) -> List[Dict[str, Any]]:
+def read_json_from_file(path: Path) -> Optional[List[Dict[str, Any]]]:
     """Read from the corona file and return a list given by json format."""
 
     with open(path, "r") as corona_file:
         content = corona_file.read()
 
-    data: List[Dict[str, Any]] = json.loads(content)
+    try:
+        data: List[Dict[str, Any]] = json.loads(content)
+    except json.decoder.JSONDecodeError:
+        return None
 
     return data
 
@@ -123,9 +126,14 @@ def main() -> None:
     if not is_up_to_date(corona_file):
         print(f"Downloading data from {country} to corona file")
         curl_data = grab_json_with_curl(country)
-        write_curl_to_file(curl_data, corona_file)
+        write_data_to_file(curl_data, corona_file)
 
     data = read_json_from_file(corona_file)
+    while data is None:
+        print(f"Downloading data from {country} to corona file")
+        curl_data = grab_json_with_curl(country)
+        write_data_to_file(curl_data, corona_file)
+        data = read_json_from_file(corona_file)
 
     data_dict = select_dict_by_province(data)
 
