@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env sh
 
 DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
 SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
