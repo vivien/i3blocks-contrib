@@ -51,7 +51,7 @@ void get_values(char **const ifaces, int num_ifaces, time_t * const s, ulli * co
   *received = 0;
   *sent = 0;
   while (fgets(line, BUFSIZ - 1, f) != NULL) {
-    if (sscanf(line, "%[^:]: %llu %*u %*u %*u %*u %*u %*u %*u %llu", ifname, &temp_r, &temp_s) == 3) {
+    if (sscanf(line, " %[^:]: %llu %*u %*u %*u %*u %*u %*u %*u %llu", ifname, &temp_r, &temp_s) == 3) {
       int i;
       int iface_found = num_ifaces == 0;
       for (i = 0; i < num_ifaces; i++) {
