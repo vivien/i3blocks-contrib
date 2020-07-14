@@ -34,7 +34,7 @@ do
     fi
 done
 
-squares="■"
+symbol="■"
 
 #There are 8 colors that reflect the current battery percentage when 
 #discharging
@@ -44,6 +44,7 @@ dis_colors=("${C1:-#FF0027}" "${C2:-#FF3B05}" "${C3:-#FFB923}"
 charging_color="${CHARGING_COLOR:-#00AFE3}"
 full_color="${FULL_COLOR:-#FFFFFF}"
 ac_color="${AC_COLOR:-#535353}"
+inactive_color="${INACTIVE_COLOR:-#333333}"
 
 
 while getopts 1:2:3:4:5:6:7:8:c:f:a:h opt; do
@@ -76,20 +77,22 @@ done
 end=$(($battery_count - 1))
 for i in $(seq 0 $end);
 do
-    if (( percentages[$i] > 0 && percentages[$i] < 20  )); then
-        squares="■"
-    elif (( percentages[$i] >= 20 && percentages[$i] < 40 )); then
-        squares="■■"
-    elif (( percentages[$i] >= 40 && percentages[$i] < 60 )); then
-        squares="■■■"
-    elif (( percentages[$i] >= 60 && percentages[$i] < 80 )); then
-        squares="■■■■"
-    elif (( percentages[$i] >=80 )); then
-        squares="■■■■■"
-    fi
+    max_num_squares=5
+    num_active_squares=$((percentages[$i]/(100/$max_num_squares) + 1))
 
+    active_squares=
+    for activeSquare in $(seq 1 $num_active_squares); do
+        active_squares="${active_squares}${symbol}"
+    done
+
+    inactive_squares=
+    for inactiveSquare in $(seq $((num_active_squares+1)) $max_num_squares); do
+        inactive_squares="${inactive_squares}${symbol}"
+    done
+
+    unknown_status=
     if [[ "${statuses[$i]}" = "Unknown" ]]; then
-        squares="<sup>?</sup>$squares"
+        unknown_status="<sup>?</sup>"
     fi
 
     case "${statuses[$i]}" in
@@ -125,13 +128,16 @@ do
 
     # Print Battery number if there is more than one
     if (( $end > 0 )) ; then 
-        message="$message $(($i + 1)):" 
+        message="$message $(($i + 1)):"
     fi
 
+    # Print extended info if clicked
     if [[ "$BLOCK_BUTTON" -eq 1 ]]; then 
         message="$message ${statuses[$i]} <span foreground=\"$color\">${percentages[$i]}%${remainings[i]}</span>"
     fi
-        message="$message <span foreground=\"$color\">$squares</span>" 
+
+    message="$message $unknown_status<span foreground=\"$color\">$active_squares</span>"
+    message="$message<span foreground=\"$inactive_color\">$inactive_squares</span>"
 done
 
 echo $message
