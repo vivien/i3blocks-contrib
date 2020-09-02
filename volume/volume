@@ -50,15 +50,23 @@ if [[ -z "$STEP" ]] ; then
     STEP="${1:-5%}"
 fi
 
+# AMIXER(1):
+# "Use the mapped volume for evaluating the percentage representation like alsamixer, to be
+# more natural for human ear."
+NATURAL_MAPPING=${NATURAL_MAPPING:-0}
+if [[ "$NATURAL_MAPPING" != "0" ]] ; then
+    AMIXER_PARAMS="-M"
+fi
+
 #------------------------------------------------------------------------
 
 capability() { # Return "Capture" if the device is a capture device
-  amixer -D $MIXER get $SCONTROL |
+  amixer $AMIXER_PARAMS -D $MIXER get $SCONTROL |
     sed -n "s/  Capabilities:.*cvolume.*/Capture/p"
 }
 
 volume() {
-  amixer -D $MIXER get $SCONTROL $(capability)
+  amixer $AMIXER_PARAMS -D $MIXER get $SCONTROL $(capability)
 }
 
 format() {
@@ -75,9 +83,9 @@ format() {
 #------------------------------------------------------------------------
 
 case $BLOCK_BUTTON in
-  3) amixer -q -D $MIXER sset $SCONTROL $(capability) toggle ;;  # right click, mute/unmute
-  4) amixer -q -D $MIXER sset $SCONTROL $(capability) ${STEP}+ unmute ;; # scroll up, increase
-  5) amixer -q -D $MIXER sset $SCONTROL $(capability) ${STEP}- unmute ;; # scroll down, decrease
+  3) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) toggle ;;  # right click, mute/unmute
+  4) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) ${STEP}+ unmute ;; # scroll up, increase
+  5) amixer $AMIXER_PARAMS -q -D $MIXER sset $SCONTROL $(capability) ${STEP}- unmute ;; # scroll down, decrease
 esac
 
 volume | format

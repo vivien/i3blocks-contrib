@@ -1,4 +1,19 @@
 #!/bin/sh
+init_color=${init_color:-#FFFF00}
+on_color=${on_color:-#00FF00}
+export init_color on_color
 nmcli -t connection show --active | awk -F ':' '
-/tun0/{vpn="ON"} /vpn/{name=$1}
-END{if(vpn) printf("%s\n%s\n%s\n", name, vpn, "#00FF00")}'
+BEGIN {
+    init_color=ENVIRON["init_color"]
+    on_color=ENVIRON["on_color"]
+}
+$3=="vpn" {
+    name=$1
+    status="INIT"
+    color=init_color
+}
+$3=="tun" || ($4~/^tap/ || $3~/^tap/) {
+    status="ON"
+    color=on_color
+}
+END {if(status) printf("%s\n%s\n%s\n", name, status, color)}'
