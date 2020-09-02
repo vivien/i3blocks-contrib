@@ -35,8 +35,9 @@ message	arch-update/arch-update	/^message = "{0}<span color='{1}'>{2}<\/span>"$/
 args	arch-update/arch-update	/^args = create_argparse()$/;"	v
 updates	arch-update/arch-update	/^updates = get_updates()$/;"	v
 update_count	arch-update/arch-update	/^update_count = len(updates)$/;"	v
-info	arch-update/arch-update	/^    info = str(update_count) + ' updates available'$/;"	v
-short_info	arch-update/arch-update	/^    short_info = str(update_count) + ' updates'$/;"	v
+info	arch-update/arch-update	/^      info = str(update_count) + ' update available'$/;"	v
+short_info	arch-update/arch-update	/^      short_info = str(update_count) + ' update'$/;"	v
+short_info	arch-update/arch-update	/^      short_info = str(update_count) + ' updates'$/;"	v
 matches	arch-update/arch-update	/^    matches = matching_updates(updates, args.watch)$/;"	v
 arch-update	arch-update/README.md	/^# arch-update$/;"	c
 Dependencies	arch-update/README.md	/^# Dependencies$/;"	c
@@ -55,8 +56,9 @@ message	arch-update/arch-update.py	/^message = "{0}<span color='{1}'>{2}<\/span>
 args	arch-update/arch-update.py	/^args = create_argparse()$/;"	v
 updates	arch-update/arch-update.py	/^updates = get_updates()$/;"	v
 update_count	arch-update/arch-update.py	/^update_count = len(updates)$/;"	v
-info	arch-update/arch-update.py	/^    info = str(update_count) + ' updates available'$/;"	v
-short_info	arch-update/arch-update.py	/^    short_info = str(update_count) + ' updates'$/;"	v
+info	arch-update/arch-update.py	/^      info = str(update_count) + ' update available'$/;"	v
+short_info	arch-update/arch-update.py	/^      short_info = str(update_count) + ' update'$/;"	v
+short_info	arch-update/arch-update.py	/^      short_info = str(update_count) + ' updates'$/;"	v
 matches	arch-update/arch-update.py	/^    matches = matching_updates(updates, args.watch)$/;"	v
 battery	battery/README.md	/^# battery$/;"	c
 Dependencies	battery/README.md	/^# Dependencies$/;"	c
@@ -453,6 +455,18 @@ calendar	calendar/README.md	/^# calendar$/;"	c
 Dependencies	calendar/README.md	/^# Dependencies$/;"	c
 Installation	calendar/README.md	/^# Installation$/;"	c
 Configuration	calendar/README.md	/^# Configuration$/;"	c
+PREFIX	Makefile	/^PREFIX = $(HOME)\/.local\/$/;"	m
+_INSTALLDIR	Makefile	/^_INSTALLDIR = $(DESTDIR)$(PREFIX)\/libexec\/i3blocks\/$/;"	m
+_MAKEBLOCKS	Makefile	/^_MAKEBLOCKS := $(dir $(wildcard *\/Makefile))$/;"	m
+all	Makefile	/^all: build$/;"	t
+build	Makefile	/^build: $(_MAKEBLOCKS)$/;"	t
+$(_MAKEBLOCKS)	Makefile	/^$(_MAKEBLOCKS):$/;"	t
+install	Makefile	/^install: all do-install$/;"	t
+installdirs	Makefile	/^installdirs: $/;"	t
+_BLOCKS	Makefile	/^_BLOCKS := $(shell find . -type f -executable -not -path '.\/.*')$/;"	m
+do-install	Makefile	/^do-install: installdirs $(_BLOCKS)$/;"	t
+$(_BLOCKS)	Makefile	/^$(_BLOCKS):$/;"	t
+uninstall	Makefile	/^uninstall:$/;"	t
 help	cpu_usage/cpu_usage	/^sub help {$/;"	s
 cpu_usage	cpu_usage/README.md	/^# cpu_usage$/;"	c
 Dependencies	cpu_usage/README.md	/^# Dependencies$/;"	c
@@ -485,10 +499,11 @@ process	sway-focusedwindow/sway-focusedwindow	/^process() {$/;"	f
 nm-vpn	nm-vpn/README.md	/^# nm-vpn$/;"	c
 Requirements	nm-vpn/README.md	/^# Requirements$/;"	c
 Usage	nm-vpn/README.md	/^# Usage$/;"	c
+Tunables	nm-vpn/README.md	/^# Tunables$/;"	c
 Output	nm-vpn/README.md	/^## Output$/;"	s
 Config	nm-vpn/README.md	/^# Config$/;"	c
 nm-vpn	nm-vpn/i3blocks.conf	/^[nm-vpn]$/;"	s
-label	nm-vpn/i3blocks.conf	/^label=VPN:$/;"	k	section:nm-vpn
+label	nm-vpn/i3blocks.conf	/^label=VPN: $/;"	k	section:nm-vpn
 interval	nm-vpn/i3blocks.conf	/^interval=5$/;"	k	section:nm-vpn
 How to contribute	CONTRIBUTING.md	/^# How to contribute$/;"	c
 Directory guidelines	CONTRIBUTING.md	/^# Directory guidelines$/;"	c
@@ -523,6 +538,35 @@ Config	load_average/README.md	/^# Config$/;"	c
 load_average	load_average/i3blocks.conf	/^[load_average]$/;"	s
 command	load_average/i3blocks.conf	/^command=$SCRIPT_DIR\/load_average$/;"	k	section:load_average
 interval	load_average/i3blocks.conf	/^interval=10$/;"	k	section:load_average
+battery-poly	battery-poly/README.md	/^# battery-poly$/;"	c
+Features	battery-poly/README.md	/^## Features$/;"	s
+Dependencies	battery-poly/README.md	/^## Dependencies$/;"	s
+Config	battery-poly/README.md	/^## Config$/;"	s
+PSEUDO_FS_PATH	battery-poly/battery-poly	/^PSEUDO_FS_PATH = "\/sys\/class\/power_supply\/"$/;"	v
+CURRENT_CHARGE_FILENAME	battery-poly/battery-poly	/^CURRENT_CHARGE_FILENAME = "energy_now"$/;"	v
+MAX_CHARGE_FILENAME	battery-poly/battery-poly	/^MAX_CHARGE_FILENAME = "energy_full"$/;"	v
+POWER_DRAW_FILENAME	battery-poly/battery-poly	/^POWER_DRAW_FILENAME = "power_now"$/;"	v
+TLP_THRESHOLD_PERCENTAGE	battery-poly/battery-poly	/^TLP_THRESHOLD_PERCENTAGE = 1.0$/;"	v
+PERCENTAGE_FORMAT	battery-poly/battery-poly	/^PERCENTAGE_FORMAT = ".2%"$/;"	v
+PERCENTAGE_FORMAT	battery-poly/battery-poly	/^        PERCENTAGE_FORMAT = sys.argv[2]$/;"	v
+Status	battery-poly/battery-poly	/^class Status(Enum):$/;"	c
+CHARGING	battery-poly/battery-poly	/^    CHARGING = 1$/;"	v	class:Status
+DISCHARGING	battery-poly/battery-poly	/^    DISCHARGING = 2$/;"	v	class:Status
+PASSIVE	battery-poly/battery-poly	/^    PASSIVE = 3$/;"	v	class:Status
+Configuration	battery-poly/battery-poly	/^class Configuration:$/;"	c
+__init__	battery-poly/battery-poly	/^    def __init__(self, time_to_completion, percentage, status):$/;"	m	class:Configuration
+Battery	battery-poly/battery-poly	/^class Battery:$/;"	c
+__init__	battery-poly/battery-poly	/^    def __init__(self, status, current_charge, max_charge, power_draw):$/;"	m	class:Battery
+get_configuration	battery-poly/battery-poly	/^def get_configuration() -> Configuration:$/;"	f
+get_status	battery-poly/battery-poly	/^def get_status(bat_name: str) -> Status:$/;"	f
+get_current_charge	battery-poly/battery-poly	/^def get_current_charge(bat_name: str) -> int:$/;"	f
+get_max_charge	battery-poly/battery-poly	/^def get_max_charge(bat_name: str) -> int:$/;"	f
+get_power_draw	battery-poly/battery-poly	/^def get_power_draw(bat_name: str) -> int:$/;"	f
+calc_time	battery-poly/battery-poly	/^def calc_time(batteries: list, status: Status) -> int:$/;"	f
+calc_percentage	battery-poly/battery-poly	/^def calc_percentage(batteries: list) -> float:$/;"	f
+calc_display_time	battery-poly/battery-poly	/^def calc_display_time(status: Status, seconds: int) -> str:$/;"	f
+print_status	battery-poly/battery-poly	/^def print_status(config: Configuration):$/;"	f
+main	battery-poly/battery-poly	/^def main():$/;"	f
 battery2	battery2/README.md	/^# battery2$/;"	c
 Dependencies	battery2/README.md	/^# Dependencies$/;"	c
 Installation	battery2/README.md	/^# Installation$/;"	c
