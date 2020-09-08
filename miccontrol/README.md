@@ -11,9 +11,9 @@ signal, it is recommended to add the following to your i3 config.
 
 ```
 # toggle mute
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 1 toggle && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute "alsa_input.pci-0000_00_1f.3.analog-stereo" toggle && pkill -RTMIN+10 i3blocks
 ```
-where the number `1` after `set-source-mute` can be replaced to another source
+where the `alsa_input.pci-0000_00_1f.3.analog-stereo` after `set-source-mute` can be changed to another source name
 and `10` in `-RTMIN+10` can be replaced to another signal number,
 as long as it agrees what you put for `signal=` in your i3blocks config.
 
@@ -23,7 +23,7 @@ as long as it agrees what you put for `signal=` in your i3blocks config.
 [miccontrol]
 command=$SCRIPT_DIR/miccontrol
 #label=MIC
-SOURCE=1
+SOURCE=alsa_input.pci-0000_00_1f.3.analog-stereo
 interval=10
 signal=10
 ```
