@@ -29,8 +29,8 @@ for line in "${output[@]}";
 do
     percentages+=($(echo "$line" | grep -o -m1 '[0-9]\{1,3\}%' | tr -d '%'))
     statuses+=($(echo "$line" | egrep -o -m1 'Discharging|Charging|AC|Full|Unknown'))
-    remainings=$(echo "$line" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]')
-    if [[ -n $remainings ]]; then
+    remainings=$(echo "$line" | egrep -o -m1 '[0-9][0-9]:[0-9][0-9]' || echo "")
+    if [[ -n "$remainings" ]]; then
         remainings+=(" ($remainings)")
     else 
         remainings+=("")
