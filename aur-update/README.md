@@ -16,10 +16,15 @@ interval=43200
 UPDATE_COLOR=red
 QUIET=1
 IGNORE=root vidyodesktop
+#CACHE_UPDATES=0
+#CACHE_PATH=/tmp/i3_blocks_aur-update_list.txt
 ```
 
 Right or middle click sends a notification (via notify-send) with a list of outdated packages
 and the corresponding version information.
+If you enable caching (`CACHE_UPDATES=1`), the update list will be written to a file
+(given by `CACHE_PATH`). This will be read on a click to directly show the notification
+without the delay caused by updating the list.
 
 
 ## Dependencies

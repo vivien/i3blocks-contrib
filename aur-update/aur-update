@@ -41,6 +41,8 @@ args = Args()
 args.add_argument('UPDATE_COLOR', 'yellow')
 args.add_argument('QUIET', False, bool)
 args.add_argument('IGNORE', [], list)
+args.add_argument('CACHE_UPDATES', False, bool)
+args.add_argument('CACHE_PATH', '/tmp/i3_blocks_aur-update_list.txt')
 
 
 def version_in_aur(pkg):
@@ -74,6 +76,15 @@ def vcs_version(pkg, ver):
     return None
 
 
+# show the list of updates already cached
+if args.cache_updates and block_button in [2, 3]:
+    try:
+        with open(args.cache_path, 'r') as f:
+            updates = f.read()
+    except FileNotFoundError:
+        updates = 'no updates cached'
+    sp.call(['notify-send', 'AUR updates', updates or 'up to date'])
+
 # get list of foreign packages -- assumed to be from the AUR
 packages = sp.check_output(['pacman', '-Qm']).decode('utf8')
 
@@ -100,8 +111,14 @@ if n_updates > 0:
 elif not args.quiet:
     print('AUR up to date')
 
-if block_button in [2, 3]:
-    sp.call(['notify-send', 'AUR updates', '\n'.join(updates)])
+# cache the new updates list
+if args.cache_updates:
+    with open(args.cache_path, 'w') as f:
+        f.write('\n'.join(updates))
+
+# if you don't use caching, show the new list of updates
+if not args.cache_updates and block_button in [2, 3]:
+    sp.call(['notify-send', 'AUR updates', '\n'.join(updates) or 'up to date'])
 
 if not 'BLOCK_NAME' in os.environ and n_updates > 0:
     # not called by i3blocks: show the complete list
