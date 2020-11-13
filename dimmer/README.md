@@ -23,7 +23,8 @@ it values to make colors darker.
 To use dimmer you should add it through pipe, e.g. you may keep following in
 your i3blocks.conf:
 
-```[ini]
+```ini
+[dimmer]
 # Global properties
 command=(/usr/lib/i3blocks/$BLOCK_NAME ; echo) | $SCRIPT_DIR/dimmer
 ```
