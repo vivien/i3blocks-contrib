@@ -1,40 +1,134 @@
-#!/usr/bin/env sh
+#! /usr/bin/env bash
 
-DATEFTM="${DATEFTM:-+%a. %d. %b. %Y}"
-SHORTFMT="${SHORTFMT:-+%d.%m.%Y}"
-LABEL="${LABEL:-}"
-blockdate=$(date "$DATEFTM")
-shortblockdate=$(date "$SHORTFMT")
+###### Variables ######
+DATEFTM="${DATEFTM:-+%a %d %b %Y}"
+SHORTFMT="${SHORTFMT:-+%d/%m/%Y}"
+LABEL="${LABEL:- }"
+FONT="${FONT:-Monospace 10}"
+LEFTCLICK_PREV_MONTH=${LEFTCLICK_PREV_MONTH:-false}
+PREV_MONTH_TEXT="${PREV_MONTH_TEXT:-« previous month «}"
+NEXT_MONTH_TEXT="${NEXT_MONTH_TEXT:-» next month »}"
+ROFI_CONFIG_FILE="${ROFI_CONFIG_FILE:-/dev/null}"
+###### Variables ######
 
-year=$(date '+%Y')
-month=$(date '+%m')
+
+###### Functions ######
+# get current date and set today header
+get_current_date() {
+  year=$(date '+%Y')
+  month=$(date '+%m')
+  day=$(date '+%d')
+}
+# print the selected month
+print_month() {
+  mnt=$1
+  yr=$2
+  cal --color=always --monday $mnt $yr \
+    | sed -e 's/\x1b\[[7;]*m/\<b\>\<u\>/g' \
+          -e 's/\x1b\[[27;]*m/\<\/u\>\<\/b\>/g' \
+          -e '/^ *$/d' \
+    | tail -n +2
+  echo $PREV_MONTH_TEXT$'\n'$NEXT_MONTH_TEXT
+}
+# increment year and/or month appropriately based on month increment
+increment_month() {
+  # pick increment and define/update delta
+  incr=$1
+  (( delta += incr ))
+  # for non-current month
+  if (( incr != 0 )); then
+    # add the increment
+    month=$(( 10#$month + incr ))
+    # normalize month and compute year
+    if (( month > 0 )); then
+      (( month -= 1 ))
+      (( year += month/12 ))
+      (( month %= 12 ))
+      (( month += 1 ))
+    else
+      (( year += month/12 - 1 ))
+      (( month %= 12 ))
+      (( month += 12 ))
+    fi
+  fi
+  # adjust header
+  if (( delta == 0 )); then
+    # today's month => show dd/mm/yyyy
+    header=$(date "$DATEFTM")
+  else
+    # not today's month => show mm/yyyy
+    header=$(cal $month $year | sed -n '1s/^ *\(.*[^ ]\) *$/\1/p')
+  fi
+}
+###### Functions ######
+
+
+###### Main body ######
+get_current_date
+
+# handle the click
+# variables:
+#   current_row: set means today row is highlighted
+#   current_row: not set means...
+#     bias_row ==  0: `next month` row is highlighted
+#     bias_row == -1: `prev month` row is highlighted
+#   selected: contains the selected row (next or prev month)
+#   month_page: the month to be printed
 case "$BLOCK_BUTTON" in
-    1|2)
-        date=$(date '+%A, %d. %B');;
-    3)
-        (( month == 12 )) && month=1 && year=$((year + 1)) || month=$((month + 1))
-        date=$(cal $month $year | sed -n '1s/^  *//;1s/  *$//p')
+  1)
+    if [[ $LEFTCLICK_PREV_MONTH == true ]]; then
+      increment_month -1
+      bias_row=-1
+    else
+      increment_month 0
+      current_row=
+    fi
+    ;;
+  2)
+    increment_month 0
+    current_row=
+    ;;
+  3)
+    increment_month +1
+    bias_row=0
+    ;;
 esac
+
+# rofi pop up
 case "$BLOCK_BUTTON" in
-    1|2|3)
-export TERM=xterm
-cal --color=always $month $year \
-    | sed 's/\x1b\[[7;]*m/\<b\>\<u\>/g' \
-    | sed 's/\x1b\[[27;]*m/\<\/u\>\<\/b\>/g' \
-    | tail -n +2 \
-    | rofi \
-        -dmenu \
-        -markup-rows \
-        -no-fullscreen \
-        -font "Monospace 6" \
-        -hide-scrollbar \
-        -bw 2 \
-        -m -3 \
-        -theme-str '#window {anchor:southeast; location: northwest;}' \
-        -eh 1 \
-        -width -22 \
-        -no-custom \
-        -p "$date" > /dev/null 
-    esac
-echo "$LABEL$blockdate"
-echo "$LABEL$shortblockdate"
+  1|2|3)
+    # as long as prev/next is selected (and the first time also)
+    while [[ "${selected+xxx}" != "xxx" ]] || [[ $selected =~ ($PREV_MONTH_TEXT|$NEXT_MONTH_TEXT) ]]; do
+      IFS=
+      month_page=$(print_month $month $year)
+      if [[ "${current_row+xxx}" = "xxx" ]]; then
+        current_row=$(( $(echo $month_page | grep -n ${day#0} | head -n 1 | cut -d: -f1) - 1 ))
+      else
+        current_row=$(( $(echo $month_page | wc -l) - 1))
+      fi
+      # open rofi and read the selected row
+      # (add the following option to rofi command with proper config file, if needed)
+      selected="$(echo $month_page \
+        | rofi \
+            -dmenu \
+            -markup-rows \
+            -font $FONT \
+            -m -3 \
+            -lines $(echo $month_page | wc -l) \
+            -width -25 \
+            -theme-str '#window {anchor: southeast; location: northwest; }' \
+            -theme $ROFI_CONFIG_FILE \
+            -selected-row $(( current_row + bias_row )) \
+            -p "$header")"
+      # select next/prev month if necessary and prepare row to be highlighted
+      [[ $selected =~ $PREV_MONTH_TEXT ]] && { increment_month -1; bias_row=-1; }
+      [[ $selected =~ $NEXT_MONTH_TEXT ]] && { increment_month +1; bias_row=0; }
+      # get ready for successive next/prev month hits
+      unset current_row
+    done
+esac
+
+# print blocklet text
+echo $LABEL$(date "$DATEFTM")
+echo $LABEL$(date "$SHORTFMT")
+###### Main body ######

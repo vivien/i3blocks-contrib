@@ -20,6 +20,12 @@ if [[ -z "$INTERFACE" ]] ; then
 fi
 #------------------------------------------------------------------------
 
+COLOR_GE80=${COLOR_GE80:-#00FF00}
+COLOR_GE60=${COLOR_GE60:-#FFF600}
+COLOR_GE40=${COLOR_GE40:-#FFAE00}
+COLOR_LOWR=${COLOR_LOWR:-#FF0000}
+COLOR_DOWN=${COLOR_DOWN:-#FF0000}
+
 # As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
 # connection (think desktop), the corresponding block should not be displayed.
 [[ ! -d /sys/class/net/${INTERFACE}/wireless ]] && exit
@@ -28,7 +34,7 @@ fi
 if [[ "$(cat /sys/class/net/$INTERFACE/operstate)" = 'down' ]]; then
     echo "down"
     echo "down"
-    echo "#FF0000"
+    echo $COLOR_DOWN
     exit
 fi
 
@@ -43,11 +49,11 @@ echo $QUALITY% # short text
 
 # color
 if [[ $QUALITY -ge 80 ]]; then
-    echo "#00FF00"
+    echo $COLOR_GE80
 elif [[ $QUALITY -ge 60 ]]; then
-    echo "#FFF600"
+    echo $COLOR_GE60
 elif [[ $QUALITY -ge 40 ]]; then
-    echo "#FFAE00"
+    echo $COLOR_GE40
 else
-    echo "#FF0000"
+    echo $COLOR_LOWR
 fi
