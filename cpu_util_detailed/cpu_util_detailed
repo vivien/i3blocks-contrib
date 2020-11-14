@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usrbin/env bash
 # cpu_util_detailed
 # Meant for usage as an i3blocks blocklet.
 # It reports detailed CPU utilization in colors using pango markup.
