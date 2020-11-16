@@ -10,5 +10,5 @@ Show connection status of VPNs managed by systemd.
 [openvpn-systemd]
 command=$SCRIPT_DIR/openvpn-systemd
 interval=20
-label=
+label=VPN 
 ```
