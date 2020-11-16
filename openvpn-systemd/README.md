@@ -2,6 +2,8 @@
 
 Show connection status of VPNs managed by systemd.
 
+![](openvpn-systemd.png)
+
 # Config
 
 ```ini
