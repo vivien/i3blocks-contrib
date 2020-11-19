@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 init_color=${init_color:-#FFFF00}
 on_color=${on_color:-#00FF00}
 export init_color on_color

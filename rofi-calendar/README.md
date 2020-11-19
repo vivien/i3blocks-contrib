@@ -21,10 +21,12 @@ Have a minimal calendar pop up in rofi when clicking the date blocklet (right cl
 [rofi-calendar]
 command=$SCRIPT_DIR/rofi-calendar
 interval=3600
-LABEL= 
-#DATEFMT=+%a. %d. %b. %Y
-#SHORTFMT=+%d.%m.%Y
-#POSITION=bottom
-#WIDTH=22
+#DATEFTM=+%a %d %b %Y
+#SHORTFMT=+%d/%m/%Y
+#LABEL= 
+#FONT=Monospace 10
+#LEFTCLICK_PREV_MONTH=false
+#PREV_MONTH_TEXT=« previous month «
+#NEXT_MONTH_TEXT=» next month »
+#ROFI_CONFIG_FILE=/dev/null
 ```
-
