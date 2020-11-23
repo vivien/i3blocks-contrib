@@ -25,4 +25,5 @@ interval=1
 #PLAY_LABEL=(playing)
 #PAUSE_LABEL=(paused)
 #TIMER_LOOP=true
+#UNIX_TIME=true
 ```
