@@ -81,7 +81,11 @@ end=$(($battery_count - 1))
 for i in $(seq 0 $end);
 do
     max_num_squares=5
-    num_active_squares=$((percentages[$i]/(100/$max_num_squares)))
+    num_active_squares=$(( percentages[$i]/(100/$max_num_squares) + 1))
+    if (( ${num_active_squares} > ${max_num_squares} ));
+    then
+        num_active_squares=${max_num_squares}
+    fi
 
     active_squares=
     for activeSquare in $(seq 1 $num_active_squares); do
