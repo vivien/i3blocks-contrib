@@ -8,6 +8,7 @@ DEFAULT_TIMER=${DEFAULT_TIMER:-60}
 PLAY_LABEL=${PLAY_LABEL:-(playing)}
 PAUSE_LABEL=${PAUSE_LABEL:-(paused)}
 TIMER_LOOP=${TIMER_LOOP:-false}
+NEUTRAL_COLOR=${NEUTRAL_COLOR:-#000000}
 ###### Default environment variables ######
 
 ###### Functions ######
@@ -53,7 +54,7 @@ set_mode() {
       status_symbol=$PAUSE_LABEL
       time=${time-$DEFAULT_STOPWATCH}
       fgcolor='#FFFFFF'
-      bgcolor='#000000'
+      bgcolor=$NEUTRAL_COLOR
       incr=1
       ;;
   esac
@@ -135,15 +136,15 @@ $running && time=$(( time + incr ))
 if (( mode == 0 )); then
   if (( time <= 0 )); then
     bgcolor='#FF0000'
-    fgcolor='#000000'
+    fgcolor=$NEUTRAL_COLOR
     time=0
     pause
   elif (( time > 0 )); then
     fgcolor=$(compute_color $time)
-    bgcolor='#000000'
+    bgcolor=$NEUTRAL_COLOR
   fi
 else
-  bgcolor='#000000'
+  bgcolor=$NEUTRAL_COLOR
   fgcolor='#FFFFFF'
 fi
 full_text="${labels[$mode]} $status_symbol $(prettify_time)"
