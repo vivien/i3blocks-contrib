@@ -95,13 +95,13 @@ def pangoEscape(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 def getLeafDevicePaths():
-    lines = check_output(['lsblk', '-spndo', 'NAME'], universal_newlines=True)
+    lines = check_output(['lsblk', '-lpno', 'NAME'], universal_newlines=True)
     lines = lines.split("\n")
     lines = filter(None, lines)
     return lines
 
 def getKernelName(path):
-    return check_output(['lsblk', '-ndso', 'KNAME', path],
+    return check_output(['lsblk', '-lndo', 'KNAME', path],
             universal_newlines=True).rstrip("\n")
 
 def getDeviceType(path):
