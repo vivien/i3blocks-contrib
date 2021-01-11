@@ -21,23 +21,12 @@ typedef struct {
   int size;
 } utf8_char;
 
-void usage(char *argv[]) {}
-
 
 #define BYTE_ONE 0x80   // 10000000
 #define BYTE_TWO 0xC0   // 11000000
 #define BYTE_THREE 0xE0 // 11100000
 #define BYTE_FOUR 0xF0  // 11110000
 #define BYTE_FIVE 0xF8  // 11111000
-
-
-// the masks for
-#define VAL_1_1 0
-#define VAL_2_1 BYTE_TWO
-#define VAL_2_2 BYTE_ONE
-#define VAL_2_2 BYTE_ONE
-#define VAL_3_1 BYTE_THREE
-#define VAL_3_2 BYTE_ONE
 
 
 uint utf8_char_count(const char* str)
@@ -82,11 +71,6 @@ void load_bar_chars(utf8_char* bar_chars, uint count, char* characters) {
 int clamp(int value, int min, int max) {
   return value < min ? min : (value > max ? max : value);
 }
-
-void display(utf8_char* chars, int count, int bar_size, char* output_buffer, long usage, long total, uint const warning, uint const critical)
-{
-}
-
 
 
 int main(int argc, char *argv[])
