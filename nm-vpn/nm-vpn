@@ -13,6 +13,7 @@ $3=="vpn" {
     color=init_color
 }
 $3=="tun" || ($4~/^tap/ || $3~/^tap/) {
+    if(!name) name=$1
     status="ON"
     color=on_color
 }
