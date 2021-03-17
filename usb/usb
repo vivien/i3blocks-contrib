@@ -98,8 +98,10 @@ def pangoEscape(text):
 
 
 def getLeafDevicePaths():
-    lines = check_output(['lsblk', '-spndo', 'NAME'], universal_newlines=True)
+    lines = check_output(['fdisk', '-l'], universal_newlines=True)
     lines = lines.split("\n")
+    lines = filter(lambda s: s[:4]=='/dev', lines)
+    lines = map(lambda s: s.split(' ')[0], lines)
     lines = filter(None, lines)
     return lines
 
