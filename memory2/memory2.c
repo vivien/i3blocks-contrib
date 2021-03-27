@@ -156,8 +156,9 @@ int main(int argc, char *argv[])
   envvar = getenv("color_critical");
   if (envvar)
     color_critical = envvar;
+  envvar = getenv("show_available");
   if(envvar)
-    ignore_swap = (strcmp(getenv("show_available"), "false")) ? 1 : 0;
+    ignore_swap = (strcmp(envvar, "false")) ? 1 : 0;
   
   uint count = utf8_char_count(characters);
   utf8_char* bar_chars = (utf8_char*)malloc(count * sizeof(utf8_char));
