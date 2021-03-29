@@ -9,6 +9,7 @@ LEFTCLICK_PREV_MONTH=${LEFTCLICK_PREV_MONTH:-false}
 PREV_MONTH_TEXT="${PREV_MONTH_TEXT:-« previous month «}"
 NEXT_MONTH_TEXT="${NEXT_MONTH_TEXT:-» next month »}"
 ROFI_CONFIG_FILE="${ROFI_CONFIG_FILE:-/dev/null}"
+BAR_POSITION="${BAR_POSITION:-bottom}"
 ###### Variables ######
 
 
@@ -106,6 +107,14 @@ case "$BLOCK_BUTTON" in
       else
         current_row=$(( $(echo $month_page | wc -l) - 1))
       fi
+
+      # check bar position and adjust anchor accordingly
+      if [[ $BAR_POSITION = "top" ]]; then
+        anchor="northeast"
+      else
+        anchor="southeast"
+      fi
+
       # open rofi and read the selected row
       # (add the following option to rofi command with proper config file, if needed)
       selected="$(echo $month_page \
@@ -116,7 +125,7 @@ case "$BLOCK_BUTTON" in
             -m -3 \
             -lines $(echo $month_page | wc -l) \
             -width -25 \
-            -theme-str '#window {anchor: southeast; location: northwest; }' \
+            -theme-str '#window {anchor: '"$anchor"'; location: northwest; }' \
             -theme $ROFI_CONFIG_FILE \
             -selected-row $(( current_row + bias_row )) \
             -p "$header")"
