@@ -10,6 +10,7 @@ PREV_MONTH_TEXT="${PREV_MONTH_TEXT:-« previous month «}"
 NEXT_MONTH_TEXT="${NEXT_MONTH_TEXT:-» next month »}"
 ROFI_CONFIG_FILE="${ROFI_CONFIG_FILE:-/dev/null}"
 BAR_POSITION="${BAR_POSITION:-bottom}"
+WEEK_START="${WEEK_START:-monday}"
 ###### Variables ######
 
 
@@ -24,7 +25,7 @@ get_current_date() {
 print_month() {
   mnt=$1
   yr=$2
-  cal --color=always --monday $mnt $yr \
+  cal --color=always --$WEEK_START $mnt $yr \
     | sed -e 's/\x1b\[[7;]*m/\<b\>\<u\>/g' \
           -e 's/\x1b\[[27;]*m/\<\/u\>\<\/b\>/g' \
           -e '/^ *$/d' \
