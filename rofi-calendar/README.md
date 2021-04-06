@@ -21,6 +21,8 @@ Have a minimal calendar pop up in rofi when clicking the date blocklet (right cl
 [rofi-calendar]
 command=$SCRIPT_DIR/rofi-calendar
 interval=3600
+#BAR_POSITION=bottom
+#WEEK_START=monday
 #DATEFTM=+%a %d %b %Y
 #SHORTFMT=+%d/%m/%Y
 #LABEL= 
