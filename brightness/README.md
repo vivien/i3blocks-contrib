@@ -34,3 +34,8 @@ Usage: brightness [options]
           -V, --version                 	print version and exit.
 
 ```
+
+## Roadmap
+
+- [x] Connect tool with i3blocks
+- [ ] Remove full paths from command arguments. Make it possible to set class or device and parse full path automatically via "/sys/brightness" or "/sys/leds". 

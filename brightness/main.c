@@ -38,8 +38,10 @@ static void usage(void) {
 
 int
 main(int argc, char *argv[]) {
-  char *actual_brightness_path = "/sys/class/backlight/intel_backlight/actual_brightness";
-  char *max_brightness_path = "/sys/class/backlight/intel_backlight/max_brightness";
+  static const char *default_abp = "/sys/class/backlight/intel_backlight/actual_brightness";
+  static const char *default_mbp = "/sys/class/backlight/intel_backlight/max_brightness";
+  char *actual_brightness_path = default_abp;
+  char *max_brightness_path = default_mbp;
 
   char buff[INOTIFY_BUFF_SIZE] = {0};
   fd_set read_descriptors;
@@ -91,14 +93,15 @@ main(int argc, char *argv[]) {
     return -1;
   }
 
-  wd = inotify_add_watch(ifd, actual_brightness_path , IN_MODIFY);
-  FD_ZERO ( &read_descriptors );
+  wd = inotify_add_watch(ifd, actual_brightness_path, IN_MODIFY);
+  FD_ZERO (&read_descriptors);
   FD_SET (ifd, &read_descriptors);
   time_to_wait.tv_sec = 10;
   time_to_wait.tv_usec = 0;
 
   while (1) {
-    rc = select(ifd+1, &read_descriptors, NULL, NULL, &time_to_wait);
+    fd_set tmp_set = read_descriptors;
+    rc = select(ifd+1, &tmp_set, NULL, NULL, &time_to_wait);
     if (rc < 0) {
       perror("select failed");
       break;
@@ -121,8 +124,9 @@ main(int argc, char *argv[]) {
     for (int eix = 0; eix < read_len; ) {
       struct inotify_event *event = (struct inotify_event*) &buff[eix];
       eix += INOTIFY_EVENT_SIZE + event->len;
-      if (!(event->mask & IN_MODIFY))
+      if (!(event->mask & IN_MODIFY)) {
         continue;
+      }
 
       print_brightness_percent(actual_brightness_path,
                                max_brightness_path);
@@ -135,9 +139,10 @@ main(int argc, char *argv[]) {
   inotify_rm_watch(ifd, wd);
   close(ifd);
 
-  // cause we used strdup
-  free(actual_brightness_path);
-  free(max_brightness_path);
+  if (actual_brightness_path != default_abp)
+    free(actual_brightness_path);
+  if (max_brightness_path != default_mbp)
+    free(max_brightness_path);
   return 0;
 }
 //////////////////////////////////////////////////////////////
