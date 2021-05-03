@@ -18,7 +18,7 @@ import json
 
 def mute_on():
     '''Turns off dunst notifications'''
-    subprocess.run(["notify-send", "DUNST_COMMAND_PAUSE"], check=True)
+    subprocess.run(["dunstctl", "set-paused", "true"], check=True)
     return {
         "full_text":"<span font='Font Awesome 5 Free Solid' color='#BE616E'>\uf1f6</span>",
         "DUNST_MUTE":"on"
@@ -26,7 +26,7 @@ def mute_on():
 
 def mute_off():
     '''Turns back on dunst notifications'''
-    subprocess.run(["notify-send", "DUNST_COMMAND_RESUME"], check=True)
+    subprocess.run(["dunstctl", "set-paused", "false"], check=True)
     return {
         "full_text":"<span font='Font Awesome 5 Free Solid' color='#A4B98E'>\uf0f3</span>",
         "DUNST_MUTE":"off"
