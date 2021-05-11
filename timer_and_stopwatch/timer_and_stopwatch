@@ -95,7 +95,7 @@ labels=([0]="$TIMER_LABEL" [1]="$STOPWATCH_LABEL")
 ###### Internal variables ######
 
 ###### First run initialization ######
-if [[ ${time-xxx} == 'xxx' ]]; then
+if [[ ! -v time ]]; then
   for i in "${!modes[@]}"; do
     if [[ "${modes[$i]}" == "$DEFAULT_MODE" ]]; then
       mode=$i
