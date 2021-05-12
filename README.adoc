@@ -72,4 +72,6 @@ Want to contribute?
 Great!
 Check the link:https://github.com/vivien/i3blocks-contrib/blob/master/CONTRIBUTING.md[contribution guidelines] in order to get started.
 
+NOTE: i3blocks-contrib REQUIRES i3blocks v1.5 or higher, since it uses i3blocks dynamic properties.
+
 Happy crafting!
