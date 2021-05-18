@@ -64,19 +64,24 @@ case $BLOCK_BUTTON in
   3) echo -n "$IPADDR" | xclip -q -se c ;;
 esac
 
-# try to guess the wifi name
-if command -v iw > /dev/null && iw $IF info > /dev/null 2>&1;
+if [[ "${display_wifi_name}" == "1" ]];
 then
+  # try to guess the wifi name
+  if command -v iw > /dev/null && iw $IF info > /dev/null 2>&1;
+  then
     WIFI_NAME=$(iw $IF info | grep -Po '(?<=ssid ).*' | tr -d " \t\n\r")
 
     if [[ $BLOCK_BUTTON -eq 1 ]];
     then
-        message="$LABEL $WIFI_NAME ($IPADDR)"
+      message="$LABEL $WIFI_NAME ($IPADDR)"
     else
-        message="$LABEL $WIFI_NAME"
+      message="$LABEL $WIFI_NAME"
     fi
-else
+  else
     message="$LABEL $IPADDR"
+  fi
+else
+  message="$LABEL $IPADDR"
 fi
 
 #------------------------------------------------------------------------
