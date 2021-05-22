@@ -25,6 +25,14 @@ For more information, visit [muquit/grabc](https://github.com/muquit/grabc)
 
 2. [fontawesome](https://github.com/FortAwesome/Font-Awesome)
 
+### Optional Dependencies
+
+1. xclip - for copying the value to clipboard in i3
+
+2. slurp, grim, imagemagick - for picking the color in SwayWM
+
+3. wl-clipboard - for copying the value to clipboard in SwayWM
+
 # Installation
 
 1. Copy script to your directory of choice
@@ -39,10 +47,17 @@ command=$SCRIPT_DIR/eyedropper
 full_text=<span foreground="#ffffff"></span>
 instance=#ffffff
 markup=pango
+#CLIPBOARD=true
+#SWAY=true
 ```
 
 - Change the "foreground" value in "full_text" to change the color of the initial eyedropper icon
 - Change the "instance" value to change the color of the hex value displayed
+
+Two environment variable configuration options are supported:
+
+1. CLIPBOARD=true - Copy the color value to the clipboard in addition to updating the string
+2. SWAY=true - Do color picking in a way that works when running in SwayWM (Wayland)
 
 ### Sample Look
 
