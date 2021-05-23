@@ -1,10 +1,10 @@
 # Github
 
-Shows Github notifications and adds a shortcut to access your notifications. It uses [Hub](https://github.com/github/hub) for api interactions and for an API oauth token.
+Shows Github notifications and adds a shortcut to access your notifications. It uses [Github's CLI](https://github.com/cli/cli) for api interactions and for an API access.
 
 # Dependencies
 
-- [Hub](https://github.com/github/hub)
+- [gh-cli](https://github.com/cli/cli)
 - [Font Awesome](https://fontawesome.com) for the Github icon.
 
 # Usage

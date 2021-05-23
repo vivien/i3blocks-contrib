@@ -14,7 +14,7 @@ import webbrowser
 
 
 def get_notifications():
-    notifications = len(json.loads(os.popen("hub api notifications").read()))
+    notifications = len(json.loads(os.popen("gh api notifications").read()))
 
     if notifications > 0:
         return {
