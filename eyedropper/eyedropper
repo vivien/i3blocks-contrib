@@ -17,9 +17,21 @@
 
 color=$BLOCK_INSTANCE
 
-# sleep to cater to grabc startup time
-sleep 0.5
-value=$(grabc 2>/dev/null)
+if [ -z "${SWAY}" ]; then
+  # sleep to cater to grabc startup time
+  sleep 0.5
+  value=$(grabc 2>/dev/null)
+  if [ "${CLIPBOARD}" ]; then
+    i3-msg -q exec "xclip -sel clip < <(echo -n \\$value)"
+  fi
+else
+  value=$(grim -g "$(slurp -p -b '#00000000')" -t ppm - \
+    | convert - -format '%[pixel:s]' info:- \
+    | awk -F '[(,)]' '{printf("#%02x%02x%02x",$2,$3,$4)}')
+  if [ "${CLIPBOARD}" ]; then
+    swaymsg -q exec wl-copy "\\$value"
+  fi
+fi
 full_text="<span foreground=\"$value\"></span><span foreground=\"$color\">$value</span>"
 
 echo $full_text
