@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ -z ${COMMAND_ON} || -z ${COMMAND_OFF} || -z ${COMMAND_STATUS} ]]; then
+  echo "All of COMMAND_ON, COMMAND_OFF, and COMMAND_STATUS are required" >&2
+  exit 1
+fi
+
+on_cmd=${COMMAND_ON}
+off_cmd=${COMMAND_OFF}
+status_cmd=${COMMAND_STATUS}
+
+if (( ${BLOCK_BUTTON:-0} == 1 )); then
+  eval $status_cmd 2>&1 >/dev/null
+  if (( $? == 0 )); then
+    eval $off_cmd 2>&1 >/dev/null
+  else
+    eval $on_cmd 2>&1 >/dev/null
+  fi
+fi
+
+eval $status_cmd 2>&1 >/dev/null
+if (( $? == 0 )); then
+  COLOR=${COLOR_ON}
+else
+  COLOR=${COLOR_OFF:-#555555}
+fi
+
+echo
+echo
+echo $COLOR
