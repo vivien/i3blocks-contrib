@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+#  dimmer is a script that changes hex color codes to reduce brightness
+#  Copyright (C) 2016 Anton Karmanov <starcom24@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or any
+#  later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+brightness=50
+
+if [ -n "$1" ] ; then
+  brightness=$1
+fi
+
+shopt -s nocasematch
+
+while read -r line
+do
+
+  if
+    ! [[ $brightness =~ ^[0-9]+$ ]] || \
+      [ "$brightness" -lt 0 ] || \
+      [ "$brightness" -gt 100 ]
+  then
+    >&2 echo "dimmer: Invalid brightness value"
+    exit 1
+  fi
+
+  if [ ${#line} -eq 7 ] && [ "${line:0:1}" = "#" ] &&\
+    [[ ${line:1:6} =~ ^[0-9A-F]{6}$ ]]
+  then
+    if [ "${brightness}" -eq 0 ]
+    then
+      # shellcheck disable=SC2016
+      line='$000000'
+    else
+      colors=("0x${line:1:2}" "0x${line:3:2}" "0x${line:5:2}")
+      line='#'
+      for color in "${colors[@]}"; do
+        value=$(((color + (100 / brightness - 1)) * brightness / 100))
+        color=$(echo "obase=16; ${value}" | bc)
+
+      # If <= 9 supplement with 0.
+      if [ ${#color} -lt 2 ] ; then
+        color="0${color}"
+      fi
+
+      line="$line$color"
+    done
+    fi
+  fi
+
+  echo "$line"
+done

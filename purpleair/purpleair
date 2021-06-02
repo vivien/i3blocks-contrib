@@ -1,0 +1,249 @@
+#!/bin/perl
+# For temperature: subtract 8 from the F value for the actual temperature
+
+# Get PurpleAir sensor ID
+if ($ENV{'SENSOR_ID'} == "") {
+  print STDERR "Missing required environment variable 'SENSOR_ID'.\n";
+  exit 1;
+}
+$sensor_id = $ENV{'SENSOR_ID'};
+
+# Get measurement type. Default: US_AQI
+@valid_types = ("US_AQI", "EU_AQI", "CA_AQHI", "IMECA", "IAS");
+$type = 'US_AQI';
+if (grep(/^$ENV{'TYPE'}$/, @valid_types)) {
+  $type = $ENV{'TYPE'};
+} elsif ($ENV{'TYPE'}) {
+  print STDERR "Unrecognized TYPE: $ENV{'TYPE'}. Valid values are: [@valid_types]";
+  exit 1;
+}
+
+# Read pm2.5 10-minute average from the PurpleAir sensor
+$pm2_5 = `curl "http://purpleair.com/json?show=$sensor_id" 2>/dev/null \\
+    | jq -r '.results | map(select(has("Stats")) | .Stats | fromjson | .v1) | add / length'`;
+
+###################
+# IMPLEMENTATIONS #
+###################
+
+sub UsAqi {
+  # See https://forum.airnowtech.org/t/the-aqi-equation/169
+  #
+  # PM2.5               | ConcLo | ConcHi | AQILo | AQIHi
+  # Good                | 0.0    | 12.0   | 0     | 50
+  # Moderate            | 12.1   | 35.4   | 51    | 100
+  # Unhealthy Sensitive | 35.5   | 55.4   | 101   | 150
+  # Unhealthy           | 55.5   | 150.4  | 151   | 200
+  # Very Unhealthy      | 150.5  | 250.4  | 201   | 300
+  # Hazardous           | 250.5  | 500.4  | 301   | 500
+  #
+  # |------------Multiplier-----------|             Threshold  Addition
+  # (AQIHi - AQILo) / (ConcHi - ConcLo) * (ConcNow - ConcLo) + AQILo
+
+  @colors = ("#00e400", "#ffff00", "#ff7e00", "#ff0000", "#8f3f97", "#7e0023");
+  $pm2_5 = $_[0];
+
+  # Table of values: Threshold, Multiplier, Addition
+  @t = (
+    [0.0, 4.1667, 0.0],
+    [12.1, 2.1030, 51],
+    [35.5, 2.4623, 101],
+    [55.5, 0.5163, 151],
+    [150.5, 0.9910, 201],
+    [250.5, 0.7963, 301]
+  );
+
+  # Find relevant row for computation based on pm2.5 threshold
+  for ($i = 5; $i >= 0; $i--) {
+    if ($pm2_5 >= $t[$i][0]) {
+      $r = $i;
+      last;
+    }
+  }
+
+  # Compute AQI from raw pm2.5 concentration
+  $aqi = $t[$r][1] * ($pm2_5 - $t[$r][0]) + $t[$r][2];
+
+  return (
+    'val' => sprintf("%.0f", $aqi),
+    'colors' => [@colors],
+    'color_idx' => $r
+  );
+}
+
+sub EuAqi {
+  # See https://airindex.eea.europa.eu/Map/AQI/Viewer/
+  # European Air Quality Index uses the pm2.5 concentration directly.
+
+  @colors = ("#50f0e6", "#50ccaa", "#f0e641", "#ff5050", "#960032", "#7d2181");
+  $pm2_5 = $_[0];
+
+  # Thresholds for color indices
+  @t = (0.0, 10.0, 20.0, 25.0, 50.0, 75.0);
+
+  # Find relevant row for computation based on pm2.5 threshold
+  for ($i = 5; $i >= 0; $i--) {
+    if ($pm2_5 >= $t[$i]) {
+      $r = $i;
+      last;
+    }
+  }
+
+  return (
+    'val' => sprintf("%.0f", $pm2_5),
+    'colors' => [@colors],
+    'color_idx' => $r
+  );
+}
+
+sub CaAqhi {
+  # See https://en.wikipedia.org/wiki/Air_Quality_Health_Index_(Canada)#Calculation
+  # Note: AQHI should also incorporate O3 and NO2, but PurpleAir only has PM2.5
+  #       The pm2.5 calculation is used alone and multiplied by 3.
+  # 1-3: Low
+  # 4-6: Moderate
+  # 7-10: High
+  # 11+: Very High
+
+  @colors = (
+    "#00ccff", "#0099cc", "#006699",
+    "#ffff00", "#ffcc00", "#ff9933",
+    "#ff6666", "#ff0000", "#cc0000",
+    "#990000", "#660000");
+  $pm2_5 = $_[0];
+
+  $aqhi = 3 * 1000 / 10.4 * ((exp(0.000487 * $pm2_5) - 1));
+
+  return (
+    'val' => sprintf("%.0f", $aqhi >= 1 ? $aqhi : 1),
+    'colors' => [@colors],
+    'color_idx' => $r
+  );
+}
+
+sub Imeca {
+  # See http://rama.edomex.gob.mx/imeca
+  #
+  # PM2.5               | Threshold | Multiplier  | Addition
+  # Buena               | 0.0       | 4.17        | 0
+  # Regular             | 12.1      | 1.49        | 51
+  # Mala                | 45.1      | 0.94        | 101
+  # Muy Mala            | 97.5      | 0.93        | 151
+  # Extremadamente Mala | 150.5     | 0.99        | 201
+  # Extremadamente Mala | 250.5     | 0.99        | 301
+  # Extremadamente Mala | 350.5     | 0.66        | 401
+  #
+  # Multiplier * (pm2.5 - Threshold) + Addition
+
+  @colors = ("#00e400", "#ffff00", "#ff7e00", "#ff0000", "#99004c", "#99004c", "#99004c");
+  $pm2_5 = $_[0];
+
+  # Table of values: Threshold, Multiplier, Addition
+  @t = (
+    [0.0, 4.17, 0.0],
+    [12.1, 1.49, 51.0],
+    [45.1, 0.94, 101.0],
+    [97.5, 0.93, 151.0],
+    [150.5, 0.99, 201.0],
+    [250.5, 0.99, 301.0],
+    [350.5, 0.66, 401.0]
+  );
+
+  # Find relevant row for computation based on pm2.5 threshold
+  for ($i = 6; $i >= 0; $i--) {
+    if ($pm2_5 >= $t[$i][0]) {
+      $r = $i;
+      last;
+    }
+  }
+
+  # Compute AQI from raw pm2.5 concentration
+  $aqi = $t[$r][1] * ($pm2_5 - $t[$r][0]) + $t[$r][2];
+
+  return (
+    'val' => sprintf("%.0f", $aqi),
+    'colors' => [@colors],
+    'color_idx' => $r
+  );
+}
+
+sub Ias {
+  # See https://www.dof.gob.mx/nota_detalle_popup.php?codigo=5576807
+  # Índice de aire y salud uses the pm2.5 concentration directly.
+
+  @colors = ("#00e400", "#ffff00", "#ff7e00", "#ff0000", "#99004c");
+  $pm2_5 = $_[0];
+
+  # Thresholds for color indices
+  @t = (0.0, 26.0, 46.0, 80.0, 148.0);
+
+  # Find relevant row for computation based on pm2.5 threshold
+  for ($i = 4; $i >= 0; $i--) {
+    if ($pm2_5 >= $t[$i]) {
+      $r = $i;
+      last;
+    }
+  }
+
+  return (
+    'val' => sprintf("%.0f", $pm2_5),
+    'colors' => [@colors],
+    'color_idx' => $r
+  );
+}
+
+##################
+# OUTPUT RESULTS #
+##################
+
+# Compute requested value
+# Expected return value is a hash of the form:
+# (
+#   'val' => <numeric measurement value>,
+#   'colors' => [<color hex codes>],
+#   'color_idx' => <0-based index of color array>,
+# )
+if ($type eq "US_AQI") {
+  %result = UsAqi($pm2_5);
+} elsif ($type eq "EU_AQI") {
+  %result = EuAqi($pm2_5);
+} elsif ($type eq "CA_AQHI") {
+  %result = CaAqhi($pm2_5);
+} elsif ($type eq "IMECA") {
+  %result = Imeca($pm2_5);
+} elsif ($type eq "IAS") {
+  %result = Ias($pm2_5);
+} else {
+  # It should not be possible to reach here.
+  %result = (
+    'val' => 'ERR',
+    'colors' => ("#ff0000"),
+    'color_idx' => 0,
+    'num_colors' => 1
+  );
+}
+
+# Get color overrides, if any.
+if ($ENV{'COLORS'}) {
+  @colors = split(',', $ENV{'COLORS'});
+  if (scalar(@colors) < scalar(@{ $result{'colors'} })) {
+    print STDERR "Warning: number of color overrides is fewer than the number".
+        " of buckets in type $type\n";
+  }
+} else {
+  @colors = @{ $result{'colors'} };
+}
+
+# Adjust color index if greater than colors length
+$color_idx = $result{'color_idx'};
+if ($color_idx >= scalar(@colors)) {
+  $color_idx = scalar(@colors) - 1;
+}
+
+# Full text, short text, color
+print "$result{'val'}\n";
+print "$result{'val'}\n";
+
+if (!$ENV{'NO_COLOR'}) {
+  print "$colors[$color_idx]\n";
+}
