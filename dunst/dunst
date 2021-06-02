@@ -10,14 +10,11 @@ track of the toggle.
 __author__ = "Jessey White-Cinis <j@cin.is>"
 __copyright__ = "Copyright (c) 2019 Jessey White-Cinis"
 __license__ = "MIT"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 import os
 import subprocess
 import json
-
-
-dunstctl = '/usr/bin/env dunstctl'
 
 def mute_on():
     '''Turns off dunst notifications'''
