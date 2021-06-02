@@ -23,6 +23,8 @@ use File::Basename;
 
 # Default values
 my $indicator = $ENV{BLOCK_INSTANCE} || $ENV{KEY} || "CAPS";
+my $text_on = $ENV{TEXT_ON} || $indicator;
+my $text_off = $ENV{TEXT_OFF} || $indicator;
 my $color_on  = $ENV{COLOR_ON} || "#00FF00";
 my $color_off = $ENV{COLOR_OFF} || "#222222";
 my $bg_color_on = $ENV{BG_COLOR_ON};
@@ -77,6 +79,7 @@ if ($hide and !$indicator_status) {
 }
 
 # Output
+$indicator = $indicator_status ? $text_on : $text_off;
 my $fg_color = $indicator_status ? $color_on : $color_off;
 my $bg_color = $indicator_status ? $bg_color_on : $bg_color_off;
 

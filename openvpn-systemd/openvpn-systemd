@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+
+use JSON::Parse 'parse_json';
+
+my $units = parse_json(`systemctl list-units --output=json --state=active 'openvpn-client@*'`);
+
+if (@$units) {
+    my @names = sort map {
+        $_->{unit} =~ /^openvpn-client@(.*)\.service$/;
+        $1;
+    } @$units;
+    print join(' ', @names) . "\n";
+    print "up\n";
+    print "#00FF00\n";
+} else {
+    print "down\n";
+    print "down\n";
+    print "#FF0000\n";
+}

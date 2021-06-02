@@ -36,6 +36,7 @@ signal=10
 #STEP=5%
 #MIXER=[determined automatically]
 #SCONTROL=[determined automatically]
+#NATURAL_MAPPING=0
 ```
 For PulseAudio users, MIXER is usually "pulse" or "default".
 For Jack/Jack2 users, MIXER is usually "jackplug".
@@ -43,3 +44,6 @@ For ALSA users, use "default" for your primary card, or "hw:#"
 where # is the number of the card desired.
 
 For a list of available SCONTROL options, use `amixer -D $MIXER scontrols`.
+
+If `NATURAL_MAPPING` is set to a non-zero value, the `-M` flag is used for `amixer`, enabling
+a volume mapping more natural for the human ear, as used in alsamixer.

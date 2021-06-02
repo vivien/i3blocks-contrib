@@ -8,9 +8,11 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:apt-upgrades[] | Show system upgrades using aptitude
 | link:arch-update[] | Show AUR updates using yaourt
 | link:aur-update[] | Show AUR updates
+| link:backlight[] | Show the screen brightness value given by `xbacklight`
 | link:bandwidth[] | Show bandwidth information (default bash version)
 | link:bandwidth2[] | Show bandwidth information (C version)
 | link:bandwidth3[] | Show bandwidth information (another bash version)
+| link:battery-poly[] | Show multi-battery info
 | link:battery[] | Show battery info
 | link:battery2[] | Pretty battery info
 | link:batterybar[] | Show battery info graphically as a bar
@@ -22,12 +24,14 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:docker[] | Show the number of Docker containers and container IP
 | link:dunst[] | Toggle Dunst notifications using a simple Do-Not-Disturb button
 | link:email[] | Show the number of unread IMAP messages
-| link:essid[] | Show the wifi ESSID you are connected to
+| link:essid[] | Show the wifi ESSID you are connected to (dep: iwconfig, perl)
 | link:gpu-load[] | Shows load of Nvidia GPUs
+| link:go[] | Show the currently installed Go version
 | link:iface[] | Show network interface IP/status
 | link:kbdd_layout[] | Show the keyboard layout using dbus and kbdd
 | link:keyindicator[] | Show the status of capslock or numlock
 | link:key_layout[] | Show the current keyboard layout using setxkbmap
+| link:key_light[] | Control the keyboard backlight
 | link:kubernetes[] | Show the kubernetes current context and namespace
 | link:load_average[] | Show the system 1 minute load average
 | link:mediaplayer[] | Generic media player status/controls using playerctl
@@ -40,6 +44,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:tahoe-lafs[] | Show status of your tahoe-lafs grid
 | link:temperature[] | Show system temperatures using lm-sensors
 | link:time[] | Show the current date/time and click to change timezones
+| link:ssid[] | Show the wifi SSID you are connected to (dep: iw, awk)
 | link:usb[] | Show connected usb storage device info
 | link:volume[] | Show the current system volume (default)
 | link:volume-pulseaudio[] | Pretty print system volume for pulseaudio
