@@ -16,9 +16,12 @@ import os
 import subprocess
 import json
 
+
+dunstctl = '/usr/bin/env dunstctl'
+
 def mute_on():
     '''Turns off dunst notifications'''
-    subprocess.run(["notify-send", "DUNST_COMMAND_PAUSE"], check=True)
+    subprocess.run(["dunstctl", "set-paused", "true"], check=True)
     return {
         "full_text":"<span font='Font Awesome 5 Free Solid' color='#BE616E'>\uf1f6</span>",
         "DUNST_MUTE":"on"
@@ -26,7 +29,7 @@ def mute_on():
 
 def mute_off():
     '''Turns back on dunst notifications'''
-    subprocess.run(["notify-send", "DUNST_COMMAND_RESUME"], check=True)
+    subprocess.run(["dunstctl", "set-paused", "false"], check=True)
     return {
         "full_text":"<span font='Font Awesome 5 Free Solid' color='#A4B98E'>\uf0f3</span>",
         "DUNST_MUTE":"off"
@@ -39,8 +42,10 @@ def clicked():
 
 def muted():
     '''Returns True if Dunst is muted'''
-    mute = "DUNST_MUTE" in os.environ and os.environ["DUNST_MUTE"]
-    return mute == 'on'
+    cmd = ['dunstctl', 'is-paused']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    output = proc.communicate()[0]
+    return u'true' ==  output.strip().decode("UTF-8")
 
 if clicked():
     # toggle button click to turn mute on and off
