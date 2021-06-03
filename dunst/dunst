@@ -10,7 +10,7 @@ track of the toggle.
 __author__ = "Jessey White-Cinis <j@cin.is>"
 __copyright__ = "Copyright (c) 2019 Jessey White-Cinis"
 __license__ = "MIT"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 import os
 import subprocess
@@ -39,8 +39,10 @@ def clicked():
 
 def muted():
     '''Returns True if Dunst is muted'''
-    mute = "DUNST_MUTE" in os.environ and os.environ["DUNST_MUTE"]
-    return mute == 'on'
+    cmd = ['dunstctl', 'is-paused']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    output = proc.communicate()[0]
+    return u'true' ==  output.strip().decode("UTF-8")
 
 if clicked():
     # toggle button click to turn mute on and off
