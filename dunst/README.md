@@ -15,7 +15,7 @@ Creates a do-not-disturb button for muting [dunst](https://dunst-project.org/) n
 
 Clicking the bell icon will toggle dunst notifications from being displayed.
 
-This is accomplished by sending ```notify-send``` the special ```DUNST_COMMAND_PAUSE``` or ```DUNST_COMMAND_RESUME``` message.
+This is accomplished using the `dunstctl` command.
 
 
 # Config
