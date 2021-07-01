@@ -1,0 +1,87 @@
+#!/usr/bin/env perl
+#
+#   Copyright 2021 Robert Unverzagt <robert.unverzagt@protonmail.com>
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+use strict;
+use warnings;
+use JSON;
+use Data::Dumper;
+use Getopt::Long;
+
+# Default option values (default location is Portland, OR)
+my $lat = $ENV{LAT} || "45.52";
+my $lon = $ENV{LON} || "-122.70";
+
+sub help {
+    print "Usage: weather_NOAA [-lat <latitude>] [-lon <longitude>]\n";
+    print "-lat <latitude>: the latitude coordinate of your location\n";
+    print "-lon <longitude>: the longitude coordinate of your location\n\n";
+    print "NOTE: Only works in areas where NOAA publishes forecasts (namely the USA)\n";
+    exit 0;
+}
+
+GetOptions( "help|h"    => \&help,
+            "lat=s"     => \$lat,
+            "lon=s"     => \$lon,
+);
+
+# Use CURL to retrieve station ID and gridpoint
+my $json;
+{
+    open( my $fh, 'curl -s https:\/\/api.weather.gov\/points\/'.$lat.','.$lon.' |') or die;
+    local $/;
+    $json = <$fh>;
+    close $fh;
+}
+
+
+# Decode the json data into a perl native datatype, and extract the data we need
+my $decoded = decode_json($json);
+
+# Detect error
+if ($decoded->{"status"})
+{
+    print "ERROR: ".$decoded->{'title'}."\n";
+    print $decoded->{'detail'}."\n";
+    die;
+}
+
+my $stationID   = $decoded->{'properties'}->{'gridId'};
+my $Xcoord      = $decoded->{'properties'}->{'gridX'};
+my $Ycoord      = $decoded->{'properties'}->{'gridY'};
+
+# Use CURL to retrieve the forecast from NOAA
+{
+    open( my $fh, 'curl -s https:\/\/api.weather.gov\/gridpoints\/'.$stationID.'\/'.$Xcoord.','.$Ycoord.'\/forecast\/hourly |') or die;
+    local $/;
+    $json = <$fh>;
+    close $fh;
+}
+
+$decoded = decode_json($json);
+
+if ($decoded->{"status"})
+{
+    print "ERROR: ".$decoded->{'title'}."\n";
+    print $decoded->{'detail'}."\n";
+    die;
+}
+
+# Extract just the forecast for the next hour
+my $forecast = $decoded->{'properties'}->{'periods'}->[0];
+
+# Use this forecast data to construct the output string
+print $forecast->{'temperature'}."°".$forecast->{'temperatureUnit'}." ".$forecast->{'shortForecast'}."\n";
