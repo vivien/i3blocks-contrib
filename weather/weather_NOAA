@@ -26,9 +26,10 @@ my $lat = $ENV{LAT} || "45.52";
 my $lon = $ENV{LON} || "-122.70";
 
 sub help {
-    print "Usage: weather_NOAA [-s <stationID> -x <X corrdinate> -y <Y coordinate>]\n";
-    print "If specifying a location, all three options are required\n";
-    print "This info can be found at https://weather.gov\n";
+    print "Usage: weather_NOAA [-lat <latitude>] [-lon <longitude>]\n";
+    print "-lat <latitude>: the latitude coordinate of your location\n";
+    print "-lon <longitude>: the longitude coordinate of your location\n\n";
+    print "NOTE: Only works in areas where NOAA publishes forecasts (namely the USA)\n";
     exit 0;
 }
 
