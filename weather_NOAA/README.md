@@ -1,4 +1,4 @@
-# weather
+# weather_NOAA
 
 Retrieve short term forecast from NOAA.
 Since the forecast is from NOAA, this script only works within the USA.
@@ -10,8 +10,8 @@ Since the forecast is from NOAA, this script only works within the USA.
 # Usage
 
 ``` ini
-[weather]
-command=./weather/weather_NOAA
+[weather_NOAA]
+command=./weather_NOAA/weather_NOAA
 #LAT=45.52
 #LON=-122.6819
 interval=600
