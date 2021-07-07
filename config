@@ -26,8 +26,15 @@
 # Change $SCRIPT_DIR to the location of your scripts!
 command=$SCRIPT_DIR/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=14
-markup=none
+markup=pango
 separator=false
+
+#[ytdl-mpv]
+#interval=once
+#signal=4
+#CACHE_DEFAULT=1048576
+#PLAYING_COLOR=red
+#NOT_PLAYING_COLOR=white
 
 # Generic media player support
 # This displays "ARTIST - SONG" if a music is playing.
@@ -37,23 +44,46 @@ instance=mpd
 interval=5
 signal=10
 
-
 # Volume indicator
 # The first parameter sets the step (and units to display)
 # The second parameter overrides the mixer selection
 # See the script for details.
-[volume]
-label=
-#label=♪
-instance=Master
-#instance=PCM
-interval=once
+# [volume]
+# label=
+# #label=♪
+# instance=Master Playback Volume
+# #instance=PCM
+# interval=once
+# signal=10
+
+[volume-pulseaudio]
+# command=$SCRIPT_DIR/volume-pulseaudio
+interva=once
 signal=10
+# label=
+#MIXER=[determined automatically]
+#SCONTROL=[determined automatically]
+##exposed format variables: ${SYMB}, ${VOL}, ${INDEX}, ${NAME}
+LONG_FORMAT="${SYMB} ${VOL}% [${INDEX}:${NAME}]"
+SHORT_FORMAT="${SYMB} ${VOL}% [${INDEX}]"
+# AUDIO_HIGH_SYMBOL=
+# AUDIO_MED_THRESH=50
+# AUDIO_MED_SYMBOL=
+# AUDIO_LOW_THRESH=0
+# AUDIO_LOW_SYMBOL=
+# AUDIO_DELTA=5
+DEFAULT_COLOR="#d79921"
+MUTED_COLOR="#ff0000"
+USE_ALSA_NAME=1
+USE_DESCRIPTION=1
+# SUBSCRIBE=1 #requires interval=persist and always uses LONG_FORMAT
+SUBSCRIBE=0
+
 
 # Memory usage
 # The type defaults to "mem" if the instance is not specified.
 [memory]
-label=
+label=<span color="#03f4fc"> </span>
 interval=30
 
 #[memory]
@@ -71,7 +101,9 @@ interval=30
 instance=/
 
 [disk]
-label= 
+# label=<span color="#fc4e03"> </span>
+# font awesome
+label=<span color="#91ff00"> </span>
 instance=/home/
 interval=30
 
@@ -79,7 +111,7 @@ interval=30
 # The script may be called with -w and -c switches to specify thresholds,
 # see the script for details.
 [cpu_usage]
-label=
+label=<span color="#03c2fc"> </span>
 interval=10
 #min_width=CPU: 100.00%
 #T_WARN=50
@@ -87,14 +119,14 @@ interval=10
 #DECIMALS=2
 
 [load_average]
-label=﬙
+label=<span color="#03fce7">﬙ </span>
 interval=10
 
 # Network interface monitoring
 # If the instance is not specified, use the interface used for default route.
 # The address can be forced to IPv4 or IPv6 with -4 or -6 switches.
 [iface]
-label=歷
+label=<span color="#03fc6b"> </span>
 #instance=wlan0
 #color=#00FF00
 interval=10
@@ -116,9 +148,8 @@ OUTLABEL=
 
 # Battery indicator
 # The battery instance defaults to 0.
-[battery]
-interval=10
-#markup=pango
+[battery2]
+interval=30
 
 # OpenVPN support
 # Support multiple VPN, with colors.
@@ -131,33 +162,37 @@ interval=10
 # The script may be called with -w and -c switches to specify thresholds,
 # see the script for details.
 [temperature]
-label=
+label=
 interval=10
 
 [backlight]
-label=
+label=
 interval=20
 STEP_SIZE=10
 interval=once#
 signal=10
 
 [calendar]
-interval=1
-LABEL=
+interval=60
+LABEL=<span color="#00ccff"> </span>
 DATEFMT=+%a %d %H:%M 
 HEIGHT=250
 WIDTH=350
 
-
 [docker]
 color=#0db7ed
 interval=10
-LABEL=
+LABEL=
 
 [dunst]
 interval=once
 format=json
-markup=pango
 #min_width=50
 #align=center
 #DUNST_MUTE=off
+
+# Insync indicator
+[insync]
+label=
+interval=1
+separator=false
