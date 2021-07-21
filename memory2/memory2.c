@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <sys/sysinfo.h>
+#include "freeram.c"
 
 #define RED "#FF7373"
 #define ORANGE "#FFA500"
@@ -120,11 +121,11 @@ int main(int argc, char *argv[])
     sysinfo_t info;
     sysinfo(&info);
 
-    long total = info.totalram;
-    long free  = info.freeram;
+    long total = getTotalRam();
+    long free  = getFreeRam();
     long usage = total - free;
     
-    float percent = 100 * ((float)usage / total);
+    float percent = 100 * ((float)usage / total );
     float bar_percent = percent;
 
     memset(buffer, 0, buffer_size);
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
       printf("<span>");
     }
 
-    const float byte_to_gb = 1024 * 1024 * 1024;
+    const float byte_to_gb = 1024 * 1024;
     
     float usage_gb = usage / byte_to_gb;
     float total_gb = total / byte_to_gb;
