@@ -155,6 +155,12 @@ sed 's/.*= "\(.*\)".*/\1/')
         COLOR=$MUTED_COLOR
     fi
 
+    if [[ $ACTIVE = "" ]] ; then
+        echo "AUDIO PAUSED"
+        COLOR=$DEFAULT_COLOR
+        COLOR=#000000
+    fi
+
     if [[ $SUBSCRIBE == 1 ]] ; then
         print_format "$LONG_FORMAT"
     else
