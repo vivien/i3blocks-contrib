@@ -88,20 +88,20 @@ CAPABILITY=$(amixer -D $MIXER get $SCONTROL | sed -n "s/  Capabilities:.*cvolume
 
 function move_sinks_to_new_default {
     DEFAULT_SINK=$1
-    pacmd list-sink-inputs | grep index: | grep -o '[0-9]\+' | while read SINK
+    pactl list sink-inputs | grep index: | grep -o '[0-9]\+' | while read SINK
     do
-        pacmd move-sink-input $SINK $DEFAULT_SINK
+        pactl move-sink-input $SINK $DEFAULT_SINK
     done
 }
 
 function set_default_playback_device_next {
     inc=${1:-1}
-    num_devices=$(pacmd list-sinks | grep -c index:)
-    sink_arr=($(pacmd list-sinks | grep index: | grep -o '[0-9]\+'))
-    default_sink_index=$(( $(pacmd list-sinks | grep index: | grep -no '*' | grep -o '^[0-9]\+') - 1 ))
+    num_devices=$(pactl list sinks | grep -c index:)
+    sink_arr=($(pactl list sinks | grep index: | grep -o '[0-9]\+'))
+    default_sink_index=$(( $(pactl list sinks | grep index: | grep -no '*' | grep -o '^[0-9]\+') - 1 ))
     default_sink_index=$(( ($default_sink_index + $num_devices + $inc) % $num_devices ))
     default_sink=${sink_arr[$default_sink_index]}
-    pacmd set-default-sink $default_sink
+    pactl set-default-sink $default_sink
     move_sinks_to_new_default $default_sink
 }
 
@@ -118,16 +118,14 @@ function print_format {
 }
 
 function print_block {
-    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Description\|Volume: \(front-left\|mono\)\|Mute:")
-    for Description in NAME DESCRIPTION MUTED VOL; do
-        read $Description
+    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|node.nick = ")
+    for Name in NAME MUTED VOL NICK; do
+        read $Name
     done < <(echo "$ACTIVE")
     INDEX=$(echo "$Name" | grep -o '[0-9]\+')
     VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
     VOL="${VOL%?}"
-    NAME=$(echo "$DESCRIPTION" | sed \
-'s/.*<.*\.\(.*\)>.*/\1/; t;'\
-'s/.*<\(.*\)>.*/\1/; t;')
+    NAME=$(echo "$NICK" | grep -o '".*"' | sed 's/"//g')
 
     if [[ $USE_ALSA_NAME == 1 ]] ; then
         ALSA_NAME=$(pactl list sinks |\

@@ -1,11 +1,13 @@
+# Before using this block
 
-# volume-pipewire
-This is a fork of volume-pulseaudio, that supports pipewire,
+This is a fork of the block volume-pulseaudio, that supports pipewire,
 pulseaudio, and alsa. This is achieved by using the tool pactl instead of pacmd.
 So hopefuly this should be the future of this block.
 
-It Displays the system volume and
-optionally the default playback device and index.
+# volume-pipewire
+
+Display the system volume and
+optionally the default playback device and indeax.
 Offers controls for these via clicks/scrolling.
 Supports changing audiostreams that are already playing.
 
@@ -74,6 +76,5 @@ signal=1
 
 # TODOS FOR THE COMMUNITY
 
-* The device title is currently displayed with the full name. If someone with 
-better perl skills wants to give a short to parse the short name from
-the NAME string, please, feel welcome.
+* When no sound is playing, we currently display 'Audio paused' instead of the current volume. This is because pactl reports the dink as SUSPENDED (instead of ACTIVE) when no sound is beign played. In order to solve this, we would have to store the latest valid value of VOL somehow.
+
