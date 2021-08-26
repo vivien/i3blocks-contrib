@@ -73,7 +73,3 @@ signal=1
 ## SUBSCRIBE=1 requires interval=persist and always uses LONG_FORMAT
 #SUBSCRIBE=0
 ```
-
-# TODOS FOR THE COMMUNITY
-
-* When no sound is playing, we currently display 'Sound inactive' instead of the current volume. This is because pactl reports the sink as SUSPENDED (instead of ACTIVE) when no sound is being played. In order to solve this, we would have to store the latest valid value of VOL somehow, which is not really possible as far as I know.
