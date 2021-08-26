@@ -150,7 +150,8 @@ sed 's/.*= "\(.*\)".*/\1/')
     fi
 
     if [[ $ACTIVE = "" ]] ; then
-        echo "AUDIO PAUSED"
+        echo "Sound inactive"
+
         COLOR=$DEFAULT_COLOR
         COLOR='#222225'
     fi
