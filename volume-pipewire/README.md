@@ -76,5 +76,4 @@ signal=1
 
 # TODOS FOR THE COMMUNITY
 
-* When no sound is playing, we currently display 'Audio paused' instead of the current volume. This is because pactl reports the dink as SUSPENDED (instead of ACTIVE) when no sound is beign played. In order to solve this, we would have to store the latest valid value of VOL somehow.
-
+* When no sound is playing, we currently display 'Audio paused' instead of the current volume. This is because pactl reports the dink as SUSPENDED (instead of ACTIVE) when no sound is being played. In order to solve this, we would have to store the latest valid value of VOL somehow.

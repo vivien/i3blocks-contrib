@@ -118,11 +118,11 @@ function print_format {
 }
 
 function print_block {
-    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|node.nick = ")
-    for Name in NAME MUTED VOL NICK; do
+    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|api.alsa.pcm.card = \|node.nick = ")
+    for Name in NAME MUTED VOL INDEX NICK; do
         read $Name
     done < <(echo "$ACTIVE")
-    INDEX=$(echo "$Name" | grep -o '[0-9]\+')
+    INDEX=$(echo "$INDEX"  | grep -o '".*"' | sed 's/"//g')
     VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
     VOL="${VOL%?}"
     NAME=$(echo "$NICK" | grep -o '".*"' | sed 's/"//g')
@@ -135,11 +135,7 @@ head -n1 |\
 sed 's/.*= "\(.*\)".*/\1/')
         NAME=${ALSA_NAME:-$NAME}
     elif [[ $USE_DESCRIPTION == 1 ]] ; then
-        DESCRIPTION=$(pactl list sinks |\
-awk '/^\s*\*/{f=1}/^\s*index:/{f=0}f' |\
-grep "device.description" |\
-head -n1 |\
-sed 's/.*= "\(.*\)".*/\1/')
+        DESCRIPTION=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep 'Description: ' | sed 's/^.*: //')
         NAME=${DESCRIPTION:-$NAME}
     fi
 
@@ -156,7 +152,7 @@ sed 's/.*= "\(.*\)".*/\1/')
     if [[ $ACTIVE = "" ]] ; then
         echo "AUDIO PAUSED"
         COLOR=$DEFAULT_COLOR
-        COLOR=#000000
+        COLOR='#222225'
     fi
 
     if [[ $SUBSCRIBE == 1 ]] ; then
