@@ -11,13 +11,13 @@ my $short_label = $ENV{SHORT_LABEL} // "";
 my $local_ip = "";
 my $external_ip = "";
 
-open (IFCONFIG, 'ifconfig eno1 | grep -i "inet " | awk \'{print $2}\' |') or die;
+open (IFCONFIG, 'ifconfig wlp6s0 | grep -i "inet " | awk \'{print $2}\' |') or die;
     $local_ip = <IFCONFIG>;
 close(IFCONFIG);
 
-open (DRILL, 'drill myip.opendns.com @resolver1.opendns.com | grep "^myip" | awk \'{print $5}\' |') or die;
-    $external_ip = <DRILL>;
-close(DRILL);
+open (CURL, 'curl -s http://myexternalip.com/raw |') or die;
+    $external_ip = <CURL>;
+close(CURL);
 
 # Remove newline
 chop($local_ip);
