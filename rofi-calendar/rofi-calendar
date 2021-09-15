@@ -124,9 +124,8 @@ case "$BLOCK_BUTTON" in
             -markup-rows \
             -font $FONT \
             -m -3 \
-            -lines $(echo $month_page | wc -l) \
-            -width -25 \
-            -theme-str '#window {anchor: '"$anchor"'; location: northwest; }' \
+            -theme-str 'window {width: 10%; anchor: '"$anchor"'; location: northwest;}' \
+            -theme-str 'listview {lines: '"$(echo $month_page | wc -l)"' ;scrollbar: false;}' \
             -theme $ROFI_CONFIG_FILE \
             -selected-row $(( current_row + bias_row )) \
             -p "$header")"
