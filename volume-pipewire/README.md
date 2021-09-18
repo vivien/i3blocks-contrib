@@ -18,7 +18,7 @@ Supports changing audiostreams that are already playing.
 
 # Dependencies
 
-pipewire-pulse, pipewire-alsa, pipewire-jack, fontawesome (fonts-font-awesome package) for the speaker symbols
+pipewire-pulse, pipewire-alsa, pipewire-jack, alsa-utils, fontawesome (fonts-font-awesome package) for the speaker symbols
 
 # Usage
 
