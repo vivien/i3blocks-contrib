@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""
+poly-battery-status-py: Generates a pretty status-bar string for multi-battery systems on Linux.
+Copyright (C) 2020  Falke Carlsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+import re
+import sys
+from enum import Enum
+from pathlib import Path
+
+PSEUDO_FS_PATH = "/sys/class/power_supply/"
+CURRENT_CHARGE_FILENAME = "energy_now"
+MAX_CHARGE_FILENAME = "energy_full"
+POWER_DRAW_FILENAME = "power_now"
+TLP_THRESHOLD_PERCENTAGE = 1.0
+PERCENTAGE_FORMAT = ".2%"
+
+if len(sys.argv) > 1:
+    # parsing threshold
+    try:
+        TLP_THRESHOLD_PERCENTAGE = float(sys.argv[1])
+    except ValueError:
+        print(f"[ERROR]: Could not convert '{sys.argv[1]}' into a float.")
+    if len(sys.argv) > 2:
+        # parsing formatting
+        PERCENTAGE_FORMAT = sys.argv[2]
+
+
+class Status(Enum):
+    CHARGING = 1
+    DISCHARGING = 2
+    PASSIVE = 3
+
+
+class Configuration:
+    time_to_completion: int
+    percentage: float
+    status: Status
+
+    def __init__(self, time_to_completion, percentage, status):
+        self.time_to_completion = time_to_completion
+        self.percentage = percentage
+        self.status = status
+
+
+class Battery:
+    status: Status
+    current_charge: int
+    max_charge: int
+    power_draw: int
+
+    def __init__(self, status, current_charge, max_charge, power_draw):
+        self.Status = status
+        self.current_charge = current_charge
+        self.max_charge = max_charge
+        self.power_draw = power_draw
+
+
+def get_configuration() -> Configuration:
+    # get all batteries on system
+    batteries = []
+    for x in Path(PSEUDO_FS_PATH).iterdir():
+        bat_name = str(x.parts[len(x.parts) - 1])
+        if re.match("^BAT\d+$", bat_name):
+            batteries.append(Battery(
+                get_status(bat_name),
+                get_current_charge(bat_name),
+                get_max_charge(bat_name),
+                get_power_draw(bat_name)))
+
+    # calculate global status, assumes that if a battery is not passive, it will be discharging or charging
+    config_status = Status.PASSIVE
+    for bat in batteries:
+        if bat.Status == Status.CHARGING:
+            config_status = Status.CHARGING
+            break
+        elif bat.Status == Status.DISCHARGING:
+            config_status = Status.DISCHARGING
+            break
+
+    # construct and return configuration
+    return Configuration(calc_time(batteries, config_status), calc_percentage(batteries), config_status)
+
+
+def get_status(bat_name: str) -> Status:
+    raw_status = Path(f"{PSEUDO_FS_PATH}{bat_name}/status").open().read().strip()
+    if raw_status == "Unknown" or raw_status == "Full":
+        return Status.PASSIVE
+    elif raw_status == "Charging":
+        return Status.CHARGING
+    elif raw_status == "Discharging":
+        return Status.DISCHARGING
+    else:
+        raise ValueError
+
+
+def get_current_charge(bat_name: str) -> int:
+    return int(Path(f"{PSEUDO_FS_PATH}{bat_name}/{CURRENT_CHARGE_FILENAME}").open().read().strip())
+
+
+def get_max_charge(bat_name: str) -> int:
+    return int(Path(f"{PSEUDO_FS_PATH}{bat_name}/{MAX_CHARGE_FILENAME}").open().read().strip())
+
+
+def get_power_draw(bat_name: str) -> int:
+    return int(Path(f"{PSEUDO_FS_PATH}{bat_name}/{POWER_DRAW_FILENAME}").open().read().strip())
+
+
+def calc_time(batteries: list, status: Status) -> int:
+    if status == Status.PASSIVE:
+        return 0
+    # get total metrics on configuration
+    total_current_charge = sum([bat.current_charge for bat in batteries])
+    total_max_charge = sum([bat.max_charge for bat in batteries])
+    total_power_draw = sum([bat.power_draw for bat in batteries])
+    if total_power_draw == 0:
+        return 0
+    if status == Status.DISCHARGING:
+        # return number of seconds until empty
+        return (total_current_charge / total_power_draw) * 3600
+    elif status == Status.CHARGING:
+        # return number of seconds until (optionally relatively) charged
+        return (((total_max_charge * TLP_THRESHOLD_PERCENTAGE) - total_current_charge) / total_power_draw) * 3600
+
+
+def calc_percentage(batteries: list) -> float:
+    total_max_charge = sum([bat.max_charge for bat in batteries])
+    total_current_charge = sum([bat.current_charge for bat in batteries])
+    return total_current_charge / total_max_charge
+
+
+def calc_display_time(status: Status, seconds: int) -> str:
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) / 60)
+    if status == Status.PASSIVE:
+        return ""
+
+    # assume charging initially if not passive
+    direction = "+"
+    if status == Status.DISCHARGING:
+        direction = "-"
+
+    # format output digitally, e.g. (+0:09)
+    return f" ({direction}{hours}:{minutes:02})"
+
+
+def print_status(config: Configuration):
+    print(f"{config.percentage:{PERCENTAGE_FORMAT}}{calc_display_time(config.status, config.time_to_completion)}")
+
+
+def main():
+    print_status(get_configuration())
+
+
+if __name__ == '__main__':
+    main()

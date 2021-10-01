@@ -94,7 +94,7 @@ void display(int const unit, int const divisor,
   if (unit == 'b')
     b = b * 8;
 
-  snprintf(fmtstr, sizeof (fmtstr), "%%%d.1lf ", divisor > 1000 ? 6 : 5);
+  snprintf(fmtstr, sizeof (fmtstr), "%%%d.1lf", divisor > 1000 ? 6 : 5);
 
   if (b < divisor) {
     printf(fmtstr, b);

@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# cpu_util_detailed
+# Meant for usage as an i3blocks blocklet.
+# It reports detailed CPU utilization in colors using pango markup.
+# Written by skidnik <skidnik@gmail.com>
+# Licensed under GPLv3 https://www.gnu.org/licenses/gpl-3.0.txt
+#
+# Defaults if not set
+interval=${interval:-0} # just in case it's started not by i3blocks
+stats=${stats:-usr nice sys iowait}
+format=${format:-%6.2f}
+warn=${warn:-80}
+declare -A colormap=(
+                    [usr]=${usr_color:-green}
+                    [nice]=${nice_color:-yellow}
+                    [sys]=${sys_color:-red}
+                    [iowait]=${iowait_color:-grey}
+                    [irq]=${irq_color:-purple}
+                    [soft]=${soft_color:-violet}
+                    [steal]=${steal_color:-orange}
+                    [guest]=${guest_color:-cyan}
+                    [gnice]=${gnice_color:-blue}
+                    [idle]=${idle_color:-white}
+                    [total]=${total_color:-white}
+                    )
+# If $report_time not set:
+# Set it to $interval - 1, but not less than 1.
+# If $interval is 'repeat' or -2 set report_time to 5.
+if [[ -z $report_time ]]; then
+    if [[ "$interval" =~ ^-?[0-9]+$ ]];
+    then
+        if [[ $interval -gt 2 ]]; then
+            report_time=$(( interval - 1 ))
+        elif [[ $interval == -2 ]]; then
+            report_time=5
+        else
+            report_time=1
+        fi
+    elif [[ $interval == repeat ]]; then
+        report_time=5
+    fi
+fi
+# 'idle' is hardcoded as it's always required, no need to ask for it two times.
+getstats=${stats//idle /}
+# Get detailed CPU load as a set of variables with same names:
+if _mpstat="$(command -v mpstat)"
+then
+    declare $( ${_mpstat} -u "$report_time" 1 | sed -n '3,4p' | awk -v stats="$getstats idle" '
+    BEGIN{
+    split(stats, fields)
+    }
+    {
+    split($0, headers)
+    getline
+    split($0, values)
+    for (i in fields) {
+        for (j in headers)
+        if ( headers[j] ~ "^%" fields[i] ) {
+            printf "%s=%s\n", fields[i], values[j]
+        }
+    }
+    }
+    ')
+    total=$( bc <<<"scale=2; 100 - $idle" )
+else
+    # This is a fallback way for the case `mpstat` is not available
+    start_uptime=($(cat /proc/uptime))
+    start=($(sed -n '1p' /proc/stat))
+    sleep ${report_time}
+    end_uptime=($(cat /proc/uptime))
+    end=($(sed -n '1p' /proc/stat))
+    user_hz=$(getconf CLK_TCK)
+    num_cpus=$(nproc --all)
+    delta_time=$( bc <<<"scale=2; ${end_uptime[0]}-${start_uptime[0]}" )
+    user_hz_time=$( bc <<<"$delta_time * $user_hz" )
+    usr=$( bc <<<"scale=4; (${end[1]}-${start[1]})/$num_cpus/$user_hz_time*100" )
+    nice=$( bc <<<"scale=4; (${end[2]}-${start[2]})/$num_cpus/$user_hz_time*100" )
+    sys=$( bc <<<"scale=4; (${end[3]}-${start[3]})/$num_cpus/$user_hz_time*100" )
+    idle=$( bc <<<"scale=4; (${end[4]}-${start[4]})/$num_cpus/$user_hz_time*100" )
+    iowait=$( bc <<<"scale=4; (${end[5]}-${start[5]})/$num_cpus/$user_hz_time*100" )
+    irq=$( bc <<<"scale=4; (${end[6]}-${start[6]})/$num_cpus/$user_hz_time*100" )
+    soft=$( bc <<<"scale=4; (${end[7]}-${start[7]})/$num_cpus/$user_hz_time*100" )
+    steal=$( bc <<<"scale=4; (${end[8]}-${start[8]})/$num_cpus/$user_hz_time*100" )
+    guest=$( bc <<<"scale=4; (${end[9]}-${start[9]})/$num_cpus/$user_hz_time*100" )
+    gnice=$( bc <<<"scale=4; (${end[10]}-${start[10]})/$num_cpus/$user_hz_time*100" )
+    total=$( bc <<<"scale=4; ${end_uptime[1]}-${start_uptime[1]}" )
+fi
+# Output stats with pango formatting in a defined order
+for stat in $stats
+do
+    # No other way to make format adjustable
+    # shellcheck disable=SC2059
+    printf "<span color='%s'>$format</span>" "${colormap[$stat]}" "${!stat}"
+done
+echo # trailing newline
+# Short text
+# shellcheck disable=SC2059
+printf "$format\n" "$total"
+# Set urgent flag if over warn threshold
+(( $( bc <<<"$total >= $warn" ) )) && exit 33 || :

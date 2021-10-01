@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright (C) 2014 Julien Bonjean <julien@bonjean.info>
 # Copyright (C) 2014 Alexander Keller <github@nycroth.com>
 
@@ -43,16 +43,16 @@ for flag in "$1" "$2"; do
       AF=inet6 ;;
     -L)
       if [[ "$IF" = "" ]]; then
-        LABEL="iface "
+        LABEL="iface"
       else
-        LABEL="$IF: "
+        LABEL="$IF:"
       fi ;;
   esac
 done
 
 if [[ "$IF" = "" ]] || [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; then
-  echo "${LABEL}down" # full text
-  echo "${LABEL}down" # short text
+  echo "${LABEL} down" # full text
+  echo "${LABEL} down" # short text
   echo \#FF0000 # color
   exit
 fi
@@ -64,7 +64,26 @@ case $BLOCK_BUTTON in
   3) echo -n "$IPADDR" | xclip -q -se c ;;
 esac
 
+if [[ "${display_wifi_name}" == "1" ]];
+then
+  # try to guess the wifi name
+  if command -v iw > /dev/null && iw $IF info > /dev/null 2>&1;
+  then
+    WIFI_NAME=$(iw $IF info | grep -Po '(?<=ssid ).*' | tr -d " \t\n\r")
+
+    if [[ $BLOCK_BUTTON -eq 1 ]];
+    then
+      message="$LABEL $WIFI_NAME ($IPADDR)"
+    else
+      message="$LABEL $WIFI_NAME"
+    fi
+  else
+    message="$LABEL $IPADDR"
+  fi
+else
+  message="$LABEL $IPADDR"
+fi
+
 #------------------------------------------------------------------------
 
-echo "$LABEL$IPADDR" # full text
-echo "$LABEL$IPADDR" # short text
+echo "$message"

@@ -118,8 +118,10 @@ interval=5
 #
 # This displays "ARTIST - SONG" if a music is playing.
 # Supported players are: spotify, vlc, audacious, xmms2, mplayer, and others.
+# Set to %any to automatically pick (Requires playerctl >=2.1.1)
 #[mediaplayer]
-#instance=spotify
+# This picks any player, with vlc as first, and spotify as last choice
+#instance=vlc,%any,spotify
 #interval=5
 #signal=10
 

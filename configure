@@ -1,0 +1,7 @@
+#!/bin/sh
+set -ex
+PREFIX=$(echo $1 | cut -d= -f 2)
+if [ -n "$PREFIX" ]
+then
+    sed -i "s;^PREFIX.*;PREFIX = $PREFIX;g" Makefile
+fi
