@@ -34,7 +34,7 @@ def mute_off():
 
 def clicked():
     '''Returns True if the button was clicked'''
-    button = "BLOCK_BUTTON" in os.environ and os.environ["BLOCK_BUTTON"]
+    button = os.environ.get("BLOCK_BUTTON", None)
     return bool(button)
 
 def muted():
