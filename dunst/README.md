@@ -28,6 +28,5 @@ format=json
 markup=pango
 #min_width=50
 #align=center
-#DUNST_MUTE=off
 ```
 
