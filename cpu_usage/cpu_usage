@@ -17,6 +17,9 @@ my $t_crit = $ENV{T_CRIT} // 80;
 my $cpu_usage = -1;
 my $decimals = $ENV{DECIMALS} // 2;
 my $label = $ENV{LABEL} // "";
+my $color_normal = $ENV{COLOR_NORMAL} // "#EBDBB2";
+my $color_warn = $ENV{COLOR_WARN} // "#FFFC00";
+my $color_crit = $ENV{COLOR_CRIT} // "#FF0000";
 
 sub help {
     print "Usage: cpu_usage [-w <warning>] [-c <critical>] [-d <decimals>]\n";
@@ -53,10 +56,11 @@ printf "%.${decimals}f%%\n", $cpu_usage;
 
 # Print color, if needed
 if ($cpu_usage >= $t_crit) {
-    print "#FF0000\n";
-    exit 33;
+    print "${color_crit}\n";
 } elsif ($cpu_usage >= $t_warn) {
-    print "#FFFC00\n";
+    print "${color_warn}\n";
+} else {
+    print "${color_normal}\n";
 }
 
 exit 0;
