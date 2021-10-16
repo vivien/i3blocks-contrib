@@ -25,4 +25,6 @@ The recommended i3blocks config is
 label=[]= 
 command=$SCRIPT_DIR/i3-focusedwindow 20
 interval=persist
+# Set IDLE_SECONDS to alleviate high CPU usage. 
+# IDLE_SECONDS=2
 ```
