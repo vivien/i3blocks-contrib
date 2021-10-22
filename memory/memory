@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 TYPE="${BLOCK_INSTANCE:-mem}"
+PERCENT="${PERCENT:-true}"
 
-awk -v type=$TYPE '
+awk -v type=$TYPE -v percent=$PERCENT '
 /^MemTotal:/ {
 	mem_total=$2
 }
@@ -52,8 +53,11 @@ END {
 	}
 
 	# full text
-	printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
-
+	if (percent == "true" ) {
+		printf("%.1fG/%.1fG (%.f%%)\n", used, total, pct)
+	} else {
+		printf("%.1fG/%.1fG\n", used, total)
+	}
 	# short text
 	printf("%.f%%\n", pct)
 
