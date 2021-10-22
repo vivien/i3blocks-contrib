@@ -42,15 +42,15 @@ sub buttons {
 
     if($method eq 'mpd') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
-            system("mpc prev");
+            system("mpc prev &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
-            system("mpc toggle");
+            system("mpc toggle &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
-            system("mpc next");
+            system("mpc next &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
-            system("mpc volume +10");
+            system("mpc volume +10 &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
-            system("mpc volume -10");
+            system("mpc volume -10 &>/dev/null");
         }
     } elsif ($method eq 'cmus') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
@@ -104,6 +104,7 @@ sub cmus {
 
             # metadata found so we are done
             print(join ' - ', @metadata);
+            print("\n");
             exit 0;
         }
     }
