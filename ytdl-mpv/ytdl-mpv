@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Copyright (C) 2018 James Murphy
+# Copyright (C) 2018-2021 James Murphy, Falko Galperin
 # Licensed under the terms of the GNU GPL v2 only.
 #
 # i3blocks blocklet script to play youtube videos from your clipboard using mpv
@@ -10,7 +10,6 @@ use warnings;
 use utf8;
 use Data::Validate::URI;
 
-my $cache_default = $ENV{CACHE_DEFAULT} || 1048576;
 my $signal = $ENV{signal} || 1;
 my $notify_i3bar = "pkill -RTMIN+$signal i3blocks";
 my $string = qx/xclip -out/;
@@ -25,7 +24,7 @@ my $i3cmdexitstatus = 0;
 
 if ($uriValidator->is_web_uri($string) or $BLOCK_BUTTON == 3) {
     if ($BLOCK_BUTTON == 1) {
-        $i3cmd = "exec mpv --ytdl --cache-default=$cache_default --tls-verify '$string' && $notify_i3bar";
+        $i3cmd = "exec mpv --ytdl --tls-verify '$string' && $notify_i3bar";
     } elsif ($BLOCK_BUTTON == 2) {
         $i3cmd = "exec mpv --ytdl --tls-verify --ytdl-format=bestaudio '$string' && $notify_i3bar";
     } elsif ($BLOCK_BUTTON == 3) {
