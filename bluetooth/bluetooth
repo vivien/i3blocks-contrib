@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+#desc           :manage bluetooth connection via i3blocks blocklet
+#author         :Matthew Zito (goldmund)
+#created        :11/2021
+
+# Copyright (C) 2021  Matthew Zito (goldmund)
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+COLOR_ICON="${ICON_COLOR:-#8be9fd}"
+COLOR_ON="${ON_COLOR:-#50fa7b}"
+COLOR_OFF="${OFF_COLOR:-#FF5555}"
+
+BLUETOOTH_ICON="<span color=\"$COLOR_ICON\" font='FontAwesome'>&#xf294;</span>"
+
+fmt () {
+	local text="$1"
+	local color="$2"
+
+	if [[ $markup == "pango" ]]; then
+		output="$BLUETOOTH_ICON <span color=\"$color\">"$text"</span>"
+	else
+		output="$text"
+	fi
+
+  echo "$output"
+}
+
+main () {
+	case "$BLOCK_BUTTON" in
+		1)
+			bluetooth toggle &>/dev/null
+			;;
+	esac
+
+	if [[ "$(bluetooth | grep -wo 'on')" ]]; then
+		fmt 'ON' "$COLOR_ON"
+	else
+	  fmt 'OFF' "$COLOR_OFF"
+	fi
+}
+
+# stop if being sourced
+return 2>/dev/null
+
+set -o errexit
+
+main "$*"
