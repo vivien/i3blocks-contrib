@@ -18,6 +18,7 @@ threshold="${THRESHOLD:-0}"
 warn_color="${WARN_COLOR:-#FF0000}"
 sep="${SEPARATOR:-/}"
 unit_suffix="${SUFFIX:-B/s}"
+align="${ALIGN--}"
 
 function list_devices {
     echo "Devices iostat reports that match our regex:"
@@ -71,10 +72,10 @@ iostat -dyz "$dt" | awk -v sep="$sep" "
             }
             printf \"$label\";
             if(!$kB_only && ($MB_only || rx >= 1024 || wx >= 1024)) {
-                printf \"%-$width.${MB_precision}f%s%$width.${MB_precision}f M$unit_suffix\", rx/1024, sep, wx/1024;
+                printf \"%$align$width.${MB_precision}f%s%$width.${MB_precision}f M$unit_suffix\", rx/1024, sep, wx/1024;
             }
             else {
-                printf \"%-$width.${kB_precision}f%s%$width.${kB_precision}f k$unit_suffix\", rx, sep, wx;
+                printf \"%$align$width.${kB_precision}f%s%$width.${kB_precision}f k$unit_suffix\", rx, sep, wx;
             }
             if ($threshold > 0 && (rx >= $threshold || wx >= $threshold)) {
                 printf \"</span>\";

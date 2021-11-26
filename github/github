@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""
+A Github block for displaying notifications in i3 using i3blocks
+"""
+
+__author__ = "Adin Hodovic <hodovicadin@gmail.com>"
+__copyright__ = "Copyright (c) 2020 Adin Hodovic"
+__license__ = "MIT"
+__version__ = "1.0.0"
+
+import json
+import os
+import webbrowser
+
+
+def get_notifications():
+    notifications = len(json.loads(os.popen("gh api notifications").read()))
+
+    if notifications > 0:
+        return {
+            "full_text": f"<span font='Font Awesome 5 Free Solid'>&#xf09b; {notifications}</span>"
+        }
+    return {"full_text": "<span font='Font Awesome 5 Free Solid'>&#xf09b;</span>"}
+
+
+def clicked():
+    """Returns True if the button was clicked"""
+    button = "BLOCK_BUTTON" in os.environ and os.environ["BLOCK_BUTTON"]
+    return bool(button)
+
+
+if clicked():
+    webbrowser.open("https://github.com/notifications")
+
+print(json.dumps(get_notifications()))

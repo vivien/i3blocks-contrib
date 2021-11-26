@@ -5,19 +5,22 @@
 #
 # A battery indicator blocklet script for i3blocks
 
-import re
 from subprocess import check_output
+import os
+import re
 
+config = dict(os.environ)
 status = check_output(['acpi'], universal_newlines=True)
 
 if not status:
     # stands for no battery found
-    fulltext = "<span color='red'><span font='FontAwesome'>\uf00d \uf240</span></span>"
+    color = config.get("color_10", "red")
+    fulltext = "<span color='{}'><span font='FontAwesome'>\uf00d \uf240</span></span>".format(color)
     percentleft = 100
 else:
-    # if there is more than one battery in one laptop, the percentage left is 
-    # available for each battery separately, although state and remaining 
-    # time for overall block is shown in the status of the first battery 
+    # if there is more than one battery in one laptop, the percentage left is
+    # available for each battery separately, although state and remaining
+    # time for overall block is shown in the status of the first battery
     batteries = status.split("\n")
     state_batteries=[]
     commasplitstatus_batteries=[]
@@ -49,7 +52,8 @@ else:
         percentleft = 0
 
     # stands for charging
-    FA_LIGHTNING = "<span color='yellow'><span font='FontAwesome'>\uf0e7</span></span>"
+    color = config.get("color_charging", "yellow")
+    FA_LIGHTNING = "<span color='{}'><span font='FontAwesome'>\uf0e7</span></span>".format(color)
 
     # stands for plugged in
     FA_PLUG = "<span font='FontAwesome'>\uf1e6</span>"
@@ -75,22 +79,22 @@ else:
     def color(percent):
         if percent < 10:
             # exit code 33 will turn background red
-            return "#FFFFFF"
+            return config.get("color_10", "#FFFFFF")
         if percent < 20:
-            return "#FF3300"
+            return config.get("color_20", "#FF3300")
         if percent < 30:
-            return "#FF6600"
+            return config.get("color_30", "#FF6600")
         if percent < 40:
-            return "#FF9900"
+            return config.get("color_40", "#FF9900")
         if percent < 50:
-            return "#FFCC00"
+            return config.get("color_50", "#FFCC00")
         if percent < 60:
-            return "#FFFF00"
+            return config.get("color_60", "#FFFF00")
         if percent < 70:
-            return "#FFFF33"
+            return config.get("color_70", "#FFFF33")
         if percent < 80:
-            return "#FFFF66"
-        return "#FFFFFF"
+            return config.get("color_80", "#FFFF66")
+        return config.get("color_full", "#FFFFFF")
 
     form =  '<span color="{}">{}%</span>'
     fulltext += form.format(color(percentleft), percentleft)

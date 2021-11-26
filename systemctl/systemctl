@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# The service we want to check or toggle (according to systemctl)
+SERVICE=$BLOCK_INSTANCE
+# Colors to display
+INACTIVE_COLOR=#888888
+ACTIVE_COLOR=#22BB22
+# Exact string to display
+ACTIVE="<span foreground=\"$ACTIVE_COLOR\">$SERVICE</span>"
+INACTIVE="<span foreground=\"$INACTIVE_COLOR\"><s>$SERVICE</s></span>"
+
+if [ "$( systemctl is-active "$SERVICE" )" != "active" ]
+then
+  if [ "$BLOCK_BUTTON" == '1' ]
+  then
+    if systemctl start "$SERVICE"
+    then
+      echo "$ACTIVE"
+    fi
+  fi
+  echo "$INACTIVE"
+else
+  if [ "$BLOCK_BUTTON" == '1' ]
+  then
+	  if systemctl stop "$SERVICE"
+    then
+      echo "$INACTIVE"
+    fi
+  fi
+  echo "$ACTIVE"
+fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright (C) 2020 hseg <gesh@gesh.uni.cx>
 # Copyright (C) 2014 Alexander Keller <github@nycroth.com>
 
@@ -30,7 +30,7 @@ fi
 
 #------------------------------------------------------------------------
 
-SSID=$(iw "$INTERFACE" info | awk '/ssid/ {print $2}')
+SSID=$(iw "$INTERFACE" info | awk '/ssid/ {$1=""; print $0}')
 
 #------------------------------------------------------------------------
 

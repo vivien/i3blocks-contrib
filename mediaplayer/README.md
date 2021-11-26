@@ -17,11 +17,11 @@ use MPRIS DBus Interface Specification
 
 mpd is supported through mpc (music player client).
 
-For MPRIS support you need to have playerctl binary in your path.
+For MPRIS support you need to have the playerctl binary in your path.
 See: https://github.com/acrisci/playerctl
 
-If you leave the instance empty it will try to find an
-active player used on it's own.
+If you leave the instance empty playerctl will try to find an
+active MPRIS-compatible player on its own.
 
 # Installation
 
