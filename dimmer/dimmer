@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #  dimmer is a script that changes hex color codes to reduce brightness
 #  Copyright (C) 2016 Anton Karmanov <starcom24@gmail.com>

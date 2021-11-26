@@ -37,5 +37,5 @@ case $BLOCK_BUTTON in
 esac
 
 
-BRIGHTNESS=$(xbacklight -get | cut -d. -f 1)
+BRIGHTNESS=$(xbacklight -get | cut -f1 -d'.')
 echo "${BRIGHTNESS}%"

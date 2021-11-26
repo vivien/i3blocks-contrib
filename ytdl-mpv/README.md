@@ -20,7 +20,6 @@ command=$SCRIPT_DIR/ytdl-mpv
 markup=pango
 interval=once
 signal=4
-#CACHE_DEFAULT=1048576
 #PLAYING_COLOR=red
 #NOT_PLAYING_COLOR=white
 ```
