@@ -52,7 +52,7 @@ while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
         [-m mixer] [-s scontrol] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
-\${SYMB}, \${VOL}, \${INDEX}, \${NAME}
+\${SYMB}, \${VOL}, \${INDEX}, \${NAME}, \${PORT}
 -S\tSubscribe to volume events (requires persistent block, always uses long format)
 -a\tUse ALSA name if possible
 -d\tUse device description instead of name if possible
@@ -115,18 +115,19 @@ case "$BLOCK_BUTTON" in
 esac
 
 function print_format {
-    echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}'
+    echo "$1" | envsubst '${SYMB}${VOL}${INDEX}${NAME}${PORT}'
 }
 
 function print_block {
-    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|api.alsa.pcm.card = \|node.nick = ")
-    for Name in NAME MUTED VOL INDEX NICK; do
+    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A66 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|api.alsa.pcm.card = \|node.nick = \|Active Port: " | sed 's/Active Port/Port/')
+    for Name in NAME MUTED VOL INDEX NICK PORT; do
         read $Name
     done < <(echo "$ACTIVE")
     INDEX=$(echo "$INDEX"  | grep -o '".*"' | sed 's/"//g')
     VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
     VOL="${VOL%?}"
     NAME=$(echo "$NICK" | grep -o '".*"' | sed 's/"//g')
+    PORT=$(echo "$PORT" | sed 's/.*] //g')
 
     if [[ $USE_ALSA_NAME == 1 ]] ; then
         ALSA_NAME=$(pactl list sinks |\
