@@ -11,6 +11,9 @@ It comes with some other features though:
 * Warning and critical colors as an option.
 * Choice for SI units or binary units.
 
+## Dependencies
+awesome-terminal-fonts: for showing labels
+
 ## Build
 
 ```
