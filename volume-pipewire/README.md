@@ -7,7 +7,7 @@ So hopefuly this should be the future of this block.
 # volume-pipewire
 
 Display the system volume and
-optionally the default playback device and indeax.
+optionally the default playback device and index.
 Offers controls for these via clicks/scrolling.
 Supports changing audiostreams that are already playing.
 
@@ -28,15 +28,18 @@ the following to your i3 config
 
 ```
 # Pipewire-pulse
-bindsym XF86AudioMute $exec pactl set-sink-mute 0 toggle
-bindsym XF86AudioLowerVolume $exec pactl set-sink-volume 0 -5%
-bindsym XF86AudioRaiseVolume $exec pactl set-sink-volume 0 +5%
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+bindsym XF86AudioMute --release exec pkill -RTMIN+1 i3blocks
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
+bindsym XF86AudioLowerVolume --release exec pkill -RTMIN+1 i3blocks
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
+bindsym XF86AudioRaiseVolume --release exec pkill -RTMIN+1 i3blocks
 
 # Media player controls
-bindsym XF86AudioPlay $exec playerctl play-pause
-bindsym XF86AudioPause $exec playerctl play-pause
-bindsym XF86AudioNext $exec playerctl next
-bindsym XF86AudioPrev $exec playerctl previous
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 ```
 
 where the number `1` in `-RTMIN+1` can be replaced to another signal number,
