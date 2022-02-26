@@ -1,0 +1,54 @@
+#!/usr/bin/env sh
+
+PING_WARNING_COLOR="${PING_WARNING_COLOR:-#f0c674}"
+PING_ERROR_COLOR="${PING_ERROR_COLOR:-#cc6666}"
+
+PING_RTT_WARNING="${PING_RTT_WARNING:-50}"
+PING_RTT_ERROR="${PING_RTT_ERROR:-100}"
+
+PING_PL_WARNING="${PING_PL_WARNING:-1}"
+PING_PL_ERROR="${PING_PL_ERROR:-10}"
+
+PING_NO_PL="${PING_NO_PL:-0}"
+
+PING_INTERVAL="${PING_INTERVAL:-0.2}"
+PING_COUNT="${PING_COUNT:-100}"
+PING_TARGET="${PING_TARGET:-8.8.8.8}"
+PING_DEADLINE="${PING_DEADLINE:-70}" # Something reasonable, like PING_INTERVAL*PING_COUNT+PING_COUNT*0.5
+
+PING_CMD="${PING_CMD:-ping -f -w ${PING_DEADLINE} -i ${PING_INTERVAL} -c ${PING_COUNT} ${PING_TARGET}}"
+
+#################################################################################################
+
+r="$($PING_CMD)" || exit 1
+test -n "$r" || exit 1
+
+if [ "$PING_NO_PL" = 0 ]; then
+	pl="$(echo "$r" | tail -2 | head -1 | grep -o "[0-9\.,]\+% packet loss" | cut -d% -f1)"
+	test -n "$pl" && pl="$(printf "%.0f" "$pl")" || pl="???"
+fi
+
+avg="$(echo "$r" | tail -1 | cut -d/ -f5)"
+test -n "$avg" && avg="$(printf "%.2f" "$avg")" || avg="??"
+
+if [ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_WARNING" ]; then
+	if [ "$(printf "%.0f" "$avg")" -ge "$PING_RTT_ERROR" ]; then
+		msOptions=" foreground=\"${PING_ERROR_COLOR}\""
+	else
+		msOptions=" foreground=\"${PING_WARNING_COLOR}\""
+	fi
+fi
+
+if [ "$PING_NO_PL" = 0 ] && [ "$pl" -ge "$PING_PL_WARNING" ]; then
+	if [ "$pl" -ge "$PING_PL_ERROR" ]; then
+		plOptions=" foreground=\"${PING_ERROR_COLOR}\""
+	else
+		plOptions=" foreground=\"${PING_WARNING_COLOR}\""
+	fi
+fi
+
+if [ "$PING_NO_PL" = 0 ]; then
+	echo "<span${msOptions}>${avg}ms</span> <span${plOptions}>(${pl}% PL)</span>"
+fi
+
+echo "<span${msOptions}>${avg}ms</span>"
