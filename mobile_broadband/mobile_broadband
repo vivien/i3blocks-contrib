@@ -1,0 +1,29 @@
+#! /usr/bin/perl
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+use XML::LibXML;
+
+# default values
+my $short_label = $ENV{SHORT_LABEL} // "";
+my $total_data = $ENV{TOTAL_DATA} // "";
+
+my $traffic_statistics_xml = "";
+my $dom = "";
+my $useage = "";
+
+open (CURL, 'curl -s "http://192.168.8.1/api/monitoring/month_statistics" | awk \'{printf "%s",$0} END {print ""}\' |') or die;
+    $traffic_statistics_xml = <CURL>;
+close(CURL);
+
+$dom = XML::LibXML->load_xml(string => $traffic_statistics_xml);
+$useage = sprintf("%.2f", int($dom->findnodes('/response/CurrentMonthDownload')) / 1000 / 1000 / 1000);
+
+# Print full_text
+print $useage, "GB", $total_data, "\n";
+
+# Print short_text
+print $short_label, $useage, "GB", $total_data, "\n";
+
+exit 0;
