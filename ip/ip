@@ -11,7 +11,7 @@ my $short_label = $ENV{SHORT_LABEL} // "";
 my $local_ip = "";
 my $external_ip = "";
 
-open (IFCONFIG, 'ifconfig eno1 | grep -i "inet " | awk \'{print $2}\' |') or die;
+open (IFCONFIG, 'ifconfig wlp6s0 | grep -i "inet " | awk \'{print $2}\' |') or die;
     $local_ip = <IFCONFIG>;
 close(IFCONFIG);
 
