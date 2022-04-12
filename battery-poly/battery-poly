@@ -127,6 +127,8 @@ def calc_time(batteries: list, status: Status) -> int:
     total_current_charge = sum([bat.current_charge for bat in batteries])
     total_max_charge = sum([bat.max_charge for bat in batteries])
     total_power_draw = sum([bat.power_draw for bat in batteries])
+    if total_power_draw == 0:
+        return 0
     if status == Status.DISCHARGING:
         # return number of seconds until empty
         return (total_current_charge / total_power_draw) * 3600

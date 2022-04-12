@@ -1,8 +1,8 @@
 # timer_and_stopwatch
 
-Have a minimal timer and stopwatch blocklet. Right click to switches between
-the two functionalities, left click to start/stop the counter, wheel to set the
-timer or the initialial stopwatch time.
+A minimal timer and stopwatch blocklet. Right click switches between the two
+functionalities, left click starts/stops the counter, wheel sets the timer
+or the initialial stopwatch time.
 
 ![](running_timer.png)
 
@@ -25,4 +25,5 @@ interval=1
 #PLAY_LABEL=(playing)
 #PAUSE_LABEL=(paused)
 #TIMER_LOOP=true
+#NEUTRAL_COLOR=#000000
 ```

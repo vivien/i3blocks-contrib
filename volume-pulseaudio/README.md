@@ -1,7 +1,7 @@
 # volume-pulseaudio
 
 Display the system volume and
-optionally the default playback device and indeax.
+optionally the default playback device and index.
 Offers controls for these via clicks/scrolling.
 Supports changing audiostreams that are already playing.
 
@@ -22,7 +22,7 @@ the following to your i3 config
 
 ```
 # change volume or toggle mute
-bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+1 i3blocks 
+bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+1 i3blocks
 bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+1 i3blocks
 bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+1 i3blocks
 ```
