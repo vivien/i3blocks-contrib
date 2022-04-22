@@ -50,9 +50,9 @@ case "$BLOCK_BUTTON" in
         anchor="southwest"
       fi
 
-      # open rofi and read the selected row
+      # open rofi
       # (add the following option to rofi command with proper config file, if needed)
-      selected="$(echo $weather_report \
+      echo $weather_report \
         | rofi \
             -dmenu \
             -markup-rows \
@@ -61,7 +61,7 @@ case "$BLOCK_BUTTON" in
             -theme-str 'window {width: 53%; anchor: '"$anchor"'; location: northwest;}' \
             -theme-str 'listview {lines: '"$(echo $weather_report | wc -l)"' ;scrollbar: false;}' \
             -theme $ROFI_CONFIG_FILE \
-            -p "Detailed weather report:")"
+            -p "Detailed weather report"
 esac
 
 # print blocklet text
