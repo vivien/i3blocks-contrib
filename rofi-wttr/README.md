@@ -28,8 +28,8 @@ command=$SCRIPT_DIR/rofi-wttr
 interval=3600
 #BAR_POSITION=top
 #FONT=Monospace 10
-#LABEL="🌡️"
-#LOCATION="Washington_DC"
+#LABEL=🌡️
+#LOCATION=Washington_DC
 #ROFI_CONFIG_FILE=/dev/null
 ```
 
