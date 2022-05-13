@@ -43,6 +43,14 @@ def create_argparse():
         help='Include AUR packages. Attn: Yaourt must be installed'
     )
     parser.add_argument(
+        '-y',
+        '--aur_yay',
+        action = 'store_const',
+        const = True,
+        default = _default('AUR_YAY', 'False', strbool),
+        help='Include AUR packages. Attn: Yay must be installed'
+    )
+    parser.add_argument(
         '-q',
         '--quiet',
         action = 'store_const',
@@ -80,7 +88,7 @@ def get_updates():
     return updates
 
 
-def get_aur_updates():
+def get_aur_yaourt_updates():
     output = ''
     try:
         output = check_output(['yaourt', '-Qua']).decode('utf-8')
@@ -95,6 +103,15 @@ def get_aur_updates():
     aur_updates = [line.split(' ')[0]
                    for line in output.split('\n')
                    if line.startswith('aur/')]
+
+    return aur_updates
+
+def get_aur_yay_updates():
+    output = check_output(['yay', '-Qua']).decode('utf-8')
+    if not output:
+        return []
+
+    aur_updates = [line.split(' ')[0] for line in output.split('\n') if line]
 
     return aur_updates
 
@@ -115,7 +132,9 @@ args = create_argparse()
 
 updates = get_updates()
 if args.aur:
-    updates += get_aur_updates()
+    updates += get_aur_yaourt_updates()
+elif args.aur_yay:
+    updates += get_aur_yay_updates()
 
 update_count = len(updates)
 if update_count > 0:
