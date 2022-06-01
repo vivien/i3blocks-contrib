@@ -45,7 +45,7 @@ interval=once
 signal=1
 #MIXER=[determined automatically]
 #SCONTROL=[determined automatically]
-##exposed format variables: ${SYMB}, ${VOL}, ${INDEX}, ${NAME}
+##exposed format variables: ${SYMB}, ${VOL}, ${INDEX}, ${NAME}, ${PORT}
 #LONG_FORMAT="${SYMB} ${VOL}% [${INDEX}:${NAME}]"
 #SHORT_FORMAT="${SYMB} ${VOL}% [${INDEX}]"
 #AUDIO_HIGH_SYMBOL='  '
