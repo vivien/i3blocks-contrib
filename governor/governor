@@ -1,0 +1,34 @@
+#!/bin/bash
+current_governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
+next_governor=$current_governor
+
+# Cycle through the available governors and returns the one right after
+# the governor currently in use. For instance, if the list is
+# powersave -> performance -> on-demand, and the current governor is
+# "on-demand", then this function returns "powersave".
+find_next_governor() {
+    local available_governors=$(cpupower frequency-info --governors \
+        | sed -n "s/ *available cpufreq governors: //p")
+    found=false
+    for i in $available_governors $available_governors; do
+        if $found; then
+            next_governor="$i"
+            break
+        fi
+
+        if [[ "$i" = "$current_governor" ]]; then
+            found=true
+        fi
+    done
+}
+
+# When clicked, change the current CPU governor to the next type.
+if [[ -n "$BLOCK_BUTTON" ]]; then
+    find_next_governor
+    if [[ "$next_governor" != "$current_governor" ]]; then
+        sudo /usr/bin/cpupower frequency-set -g "$next_governor"
+        [[ $? -eq 0 ]] && current_governor="$next_governor"
+    fi
+fi
+
+echo -e $current_governor
