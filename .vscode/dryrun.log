@@ -1,0 +1,12 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/kn/dev/i3blocks-contrib'
+make -C bandwidth2/ 
+make[1]: Entering directory '/home/kn/dev/i3blocks-contrib/bandwidth2'
+cc -g -Wall -Werror -O2 -std=c11    bandwidth2.c   -o bandwidth2
+make[1]: Leaving directory '/home/kn/dev/i3blocks-contrib/bandwidth2'
+make -C cpu_usage2/ 
+make[1]: Entering directory '/home/kn/dev/i3blocks-contrib/cpu_usage2'
+cc -g -Wall -Werror -O2 -std=gnu11    cpu_usage2.c   -o cpu_usage2
+make[1]: Leaving directory '/home/kn/dev/i3blocks-contrib/cpu_usage2'
+make: Leaving directory '/home/kn/dev/i3blocks-contrib'
+ 
