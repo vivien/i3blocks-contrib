@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Copyright (C) 2018 borgified <borgified@gmail.com>
 # Copyright (C) 2014 Alexander Keller <github@nycroth.com>
 

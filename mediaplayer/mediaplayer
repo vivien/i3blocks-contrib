@@ -15,12 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Requires playerctl binary to be in your path (except cmus)
-# See: https://github.com/acrisci/playerctl
+# For all media players except mpd/cmus/rhythmbox, MPRIS support should be
+# enabled and the playerctl binary should be in your path.
+# See https://github.com/acrisci/playerctl
 
 # Set instance=NAME in the i3blocks configuration to specify a music player
 # (playerctl will attempt to connect to org.mpris.MediaPlayer2.[NAME] on your
-# DBus session).
+# DBus session). If instance is empty, playerctl will connect to the first
+# supported media player it finds.
 
 use Time::HiRes qw(usleep);
 use Env qw(BLOCK_INSTANCE);
@@ -40,15 +42,15 @@ sub buttons {
 
     if($method eq 'mpd') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
-            system("mpc prev");
+            system("mpc prev &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
-            system("mpc toggle");
+            system("mpc toggle &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
-            system("mpc next");
+            system("mpc next &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
-            system("mpc volume +10");
+            system("mpc volume +10 &>/dev/null");
         } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
-            system("mpc volume -10");
+            system("mpc volume -10 &>/dev/null");
         }
     } elsif ($method eq 'cmus') {
         if ($ENV{'BLOCK_BUTTON'} == 1) {
@@ -102,6 +104,7 @@ sub cmus {
 
             # metadata found so we are done
             print(join ' - ', @metadata);
+            print("\n");
             exit 0;
         }
     }
@@ -119,7 +122,7 @@ sub mpd {
 sub playerctl {
     buttons('playerctl');
 
-    my $artist = qx(playerctl $player_arg metadata artist);
+    my $artist = qx(playerctl $player_arg metadata artist 2>/dev/null);
     chomp $artist;
     # exit status will be nonzero when playerctl cannot find your player
     exit(0) if $? || $artist eq '(null)';
@@ -141,7 +144,7 @@ sub rhythmbox {
     print($data);
 }
 
-if ($player_arg eq '' or $player_arg =~ /mpd/) {
+if ($player_arg =~ /mpd/) {
     mpd;
 }
 elsif ($player_arg =~ /cmus/) {
