@@ -1,0 +1,126 @@
+#!/bin/sh
+# Copyright (C) 2022 Marcin Mikuła <marcinmikula840@gmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Interface
+INTERFACE="${INTERFACE:-"${BLOCK_INSTANCE:-wlan0}"}"
+
+# Thresholds
+GOOD_THRESHOLD="${GOOD_THRESHOLD:-80}"
+MEDIUM_THRESHOLD="${MEDIUM_THRESHOLD:-40}"
+
+# Colors
+CONNECTED_GOOD_COLOR="${CONNECTED_GOOD_COLOR:-#00ff00}"
+CONNECTED_MEDIUM_COLOR="${CONNECTED_MEDIUM_COLOR:-#ffff00}"
+CONNECTED_BAD_COLOR="${CONNECTED_BAD_COLOR:-#ff0000}"
+DISCONNECTED_COLOR="${DISCONNECTED_COLOR:-#ff0000}"
+
+# Labels
+CONNECTED_GOOD_LABEL="${CONNECTED_LABEL:-}"
+CONNECTED_MEDIUM_LABEL="${CONNECTED_MEDIUM_LABEL:-$CONNECTED_GOOD_LABEL}"
+CONNECTED_BAD_LABEL="${CONNECTED_BAD_LABEL:-$CONNECTED_GOOD_LABEL}"
+DISCONNECTED_LABEL="${DISCONNECTED_LABEL:-}"
+
+SHOW_IP="${SHOW_IP:-false}"
+
+# Get ESSID of current WiFi network
+get_essid() {
+  iwconfig $INTERFACE >/dev/null 2>&1
+  if [[ "$?" = "0" ]]
+  then
+    # Return current ESSID
+    echo $(iwconfig $INTERFACE 2>/dev/null | awk -F\" '{print $2;}' | head -1)
+  else
+    # Print "ERROR" if script was unable to get current ESSID
+    echo "ERROR"
+  fi
+}
+
+# Get connection's strength
+get_signal_strength() {
+  sig=$(iwconfig $INTERFACE | sed -n '6p' | awk -F' ' '{ print $4; }' | awk -F'=' '{ print $2; }' | awk -F '/' '{print $1;}')
+  if [[ "$?" = "0" ]]
+  then
+    # This calculated value has been checked for accuracy with "wifi" blocklet. It *seems* to return identical results.
+    ret_sig=$((sig * 2))
+    echo $(echo $ret_sig | awk '{ print ($1 > 100) ? 100 : ($1 < 0 ? 0 : $1); }')
+  else
+    # Print letter "E" if script was unable to get signal's strength
+    echo "E"
+  fi
+}
+
+# Get connection's IP
+get_ip() {
+  ip=$(ip addr show $INTERFACE | awk -F' ' '{ if($1 ~ /^inet/) print $2; }' | head -1 | sed -rn 's/([^\/].+)\/.*/\1/p')
+  if [[ $? = '0' ]]
+  then
+    echo $ip
+  else
+    # Print letter "E" if script was unable to get IP
+    echo "E"
+  fi
+}
+
+# Check if provided interface is actually wireless
+# As per #36 -- It is transparent: e.g. if the machine has no battery or wireless
+# connection (think desktop), the corresponding block should not be displayed.
+if [[ ! -d /sys/class/net/${INTERFACE}/wireless ]]
+then
+  exit
+elif [[ "$(cat /sys/class/net/${INTERFACE}/operstate)" = 'down' ]] # Check if provided interface is up
+then
+  echo "${DISCONNECTED_LABEL} Disconnected" # full text
+  echo "${DISCONNECTED_LABEL}" # short text
+  echo $DISCONNECTED_COLOR # color
+  exit
+else
+  essid=$(get_essid)
+
+  # Check if ARBITRARY_SIGNAL is set (for debugging/testing purposes)
+  if [[ -z ${ARBITRARY_SIGNAL+x} ]]
+  then
+    signal=$(get_signal_strength)
+  else
+    signal="$ARBITRARY_SIGNAL"
+  fi
+
+  #set colors and labels according to provided thresholds and signal strength
+  if (( $signal >= $GOOD_THRESHOLD ))
+  then
+    color="$CONNECTED_GOOD_COLOR"
+    label="$CONNECTED_GOOD_LABEL"
+  elif (( $signal < $GOOD_THRESHOLD && $signal >= $MEDIUM_THRESHOLD ))
+  then
+    color="$CONNECTED_MEDIUM_COLOR"
+    label="$CONNECTED_MEDIUM_LABEL"
+  else
+    color="$CONNECTED_BAD_COLOR"
+    label="$CONNECTED_BAD_LABEL"
+  fi
+
+  full_output="$label $essid - $signal%"
+  short_output="$label $essid"
+
+  if [[ "$SHOW_IP" != 'false' ]]
+  then
+    full_output="$full_output ($(get_ip))"
+  fi
+
+  echo $full_output # full text
+  echo $short_output # short text
+  echo $color # color
+  exit
+fi
