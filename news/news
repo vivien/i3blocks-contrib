@@ -1,0 +1,33 @@
+#!/usr/bin/python
+
+import requests
+import webbrowser
+import os.path
+
+#get your api key at https://newsapi.org/
+
+api_key = ""
+
+#find sources & country codes at https://newsapi.org/docs/endpoints/sources
+
+sources = "associated-press"
+country = ""
+
+try:
+    data = requests.get('https://newsapi.org/v2/top-headlines?apiKey='+api_key+'&sources='+sources+'&country='+country).json()
+
+    sourceName = data['articles'][0]['source']['name']
+    title = data['articles'][0]['title']
+    url = data['articles'][0]['url']
+
+    print(sourceName+': '+title)
+
+except requests.exceptions.RequestException as e:
+    print ('Something went wrong!')
+    
+def clicked():
+    button = "BLOCK_BUTTON" in os.environ and os.environ["BLOCK_BUTTON"]
+    return bool(button)
+
+if clicked():
+    webbrowser.open(url)
