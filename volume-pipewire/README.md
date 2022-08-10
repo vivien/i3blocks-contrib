@@ -2,7 +2,7 @@
 
 This is a fork of the block volume-pulseaudio, that supports pipewire,
 pulseaudio, and alsa. This is achieved by using the tool pactl instead of pacmd.
-So hopefuly this should be the future of this block.
+So hopefully this should be the future of this block.
 
 # volume-pipewire
 

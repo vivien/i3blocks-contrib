@@ -77,13 +77,13 @@ class AirlyApiClient:
 
     def getAirQualityIndex(self, caqiMeasurement=None):
         """get the air quality index value from given CAQI measurement
-        it's current measuement by default"""
+        it's current measurement by default"""
         m = caqiMeasurement or self.getCaqiMeasurement()
         index = m['value']
         return index
 
     def getColor(self, measurement=None):
-        """get color for given air quality indes"""
+        """get color for given air quality index"""
         m = measurement or self.getCaqiMeasurement()
         return m['color']
 

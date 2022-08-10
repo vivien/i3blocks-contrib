@@ -8,7 +8,7 @@ The statusbar
 ![The weather forecast popup](rofi-wttr-detail.png)
 The popup with the default rofi theme
 
-## Depencencies
+## Dependencies
 
 * [rofi](https://github.com/davatorium/rofi)
 * curl

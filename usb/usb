@@ -63,7 +63,7 @@ if IGNORE_LIST:
 # Edit this function to ignore certain devices (e.g. those that are always
 # plugged in).
 # The dictionary udev_attributes_dict contains all the attributes given by
-# udevadm info --query=propery --name=$path
+# udevadm info --query=property --name=$path
 def ignore(path, udev_attributes_dict):
     # E.g. how to ignore devices whose device name begins with /dev/sda
     # if udev_attributes_dict["DEVNAME"].startswith("/dev/sda"):
@@ -326,7 +326,7 @@ def parseArguments():
             ])
 
     unArg("--truncate-fs-labels",
-          "(integer) Trucate device labels to a certain number of characters",
+          "(integer) Truncate device labels to a certain number of characters",
           TRUNCATE_FS_LABELS, type=int)
     ignoreText = " ".join([
         "Ignore a device by path.",

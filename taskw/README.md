@@ -27,7 +27,7 @@ but the most up to date version is available from [this repo](https://github.com
  - `TIMEW_DESC_OVERRIDE` : whether to pull task description information from taskwarrior (false) or timewarrior (true). Will also set `TIMEW_TF` to true if true.
  - `TASKW_MAX_LENGTH` : the number of characters to truncate long task descriptions at.
  - `TASKW_NOTASK_MSG` : the text to display if there are no active tasks.
- - `TASKW_SORT_URGENCY` : a boolean to determine whether to display the most urgent active task (or the default behaviour which is to display the task which has been active longest).
+ - `TASKW_SORT_URGENCY` : a boolean to determine whether to display the most urgent active task (or the default behavior which is to display the task which has been active longest).
  - `TASKW_PENDING_TF` : a boolean to determine whether to display the total number of pending tasks
  - `TASKW_MAIN_FILTER` option allows you to select a filter to display. The default is `+ACTIVE`.
  

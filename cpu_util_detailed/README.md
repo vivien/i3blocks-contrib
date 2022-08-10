@@ -45,7 +45,7 @@ interval=-2
 
 **report_time** - time for gathering CPU statistics, refer to man(1) mpstat. If not set, determined based on **interval**: for 'repeat' and '-2' set to 5, for less or equal 2 set to 1, for more than 2 set to **interval** - 1. This can be used to determine blocklet refresh interval with **interval** set to 'repeat' or '-2'.
 
-**stats** - a space separated list of stats to be displayed in the desired order. Names are as per man(1) mpstat -u option without a '%' symbol. Full list: usr nice sys iowait irq soft steal guest gnice idle total. Defailt is 'usr nice sys iowait'. You may want to add e.g. 'guest' if you're running virtual machines.
+**stats** - a space separated list of stats to be displayed in the desired order. Names are as per man(1) mpstat -u option without a '%' symbol. Full list: usr nice sys iowait irq soft steal guest gnice idle total. Default is 'usr nice sys iowait'. You may want to add e.g. 'guest' if you're running virtual machines.
 
 Colors of relevant stats:
 

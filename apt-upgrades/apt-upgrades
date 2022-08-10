@@ -32,7 +32,7 @@ Options:
 -o\tShow refresh symbol only, but no numbers.
 -c\tColor when upgrade is pending. Default:  #00FF00
 -n\tColor when no upgrade is pending. Default: #FFFFFF
--N\tOnly display text if upgrade is pending (supercedes -n)
+-N\tOnly display text if upgrade is pending (supersedes -n)
 -h\tShow this help text\n" && exit 0;;
     esac
 done
