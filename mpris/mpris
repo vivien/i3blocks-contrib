@@ -1,0 +1,102 @@
+#!/bin/sh
+# MPRIS segment script with support for persist and block button actions
+# requires: dbus-monitor, playerctl
+#
+# Copyright (c) 2022 Avalon Williams
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+#
+# options:
+#   * SUBSCRIBE: subscribe to changes, requires interval=persist
+#   * ELLIPSE_LEN: if set, will truncate strings longer than the number it is
+#       set to, adding an ellipse at the end. Useful for long song names
+#   * ARSTIST_SEP: seperator string for artist and song name
+#   * PAUSED_ICON: defaults to 
+#   * PLAYING_ICON: defaults to 
+#   * STEP: volume step, defaults to 0.01
+
+: "${ARTIST_SEP:= - }" "${SUBSCRIBE:=0}" \
+	"${PAUSED_ICON:= }" "${PLAYING_ICON:= }" "${STEP:=0.01}"
+
+# button action, $1 is the button number
+btnaction() {
+	case "$1" in
+		1) playerctl play-pause      ;;
+		2) playerctl previous        ;;
+		3) playerctl next            ;;
+		4) playerctl volume "$STEP+" ;;
+		5) playerctl volume "$STEP-" ;;
+	esac
+}
+
+printsgmt() {
+	if [ -n "$ELLIPSE_LEN" ] && [ "$ELLIPSE_LEN" -gt 0 ]; then
+		echo "${icon}${artist}${title}" | sed -r "s/(^.{${ELLIPSE_LEN}}).*/\1.../"
+	else
+		echo "${icon}${artist}${title}"
+	fi
+}
+
+blksegment() {
+	title="$(playerctl metadata xesam:title 2>/dev/null)"
+	artist="$(playerctl metadata xesam:artist 2>/dev/null)"
+	status="$(playerctl status 2>/dev/null)"
+	icon=""
+
+	if [ -z "$status" ]; then
+		return
+	fi
+
+	case "$status" in
+		"Stopped") return               ;;
+		"Paused")  icon="$PAUSED_ICON"  ;;
+		"Playing") icon="$PLAYING_ICON" ;;
+	esac
+
+	if [ -n "$artist" ]; then
+		artist="${artist}${ARTIST_SEP}"
+	fi
+	
+	printsgmt
+
+	if [ "$SUBSCRIBE" -eq 0 ]; then
+		printsgmt
+	fi
+	
+	unset title artist status icon
+}
+
+if [ "$SUBSCRIBE" -eq 0 ]; then
+	blksegment
+else
+	{ 
+		stdbuf -oL sh -c "dbus-monitor path=/org/mpris/MediaPlayer2 \
+			interface=org.freedesktop.DBus.Properties \
+			member=PropertiesChanged | grep '^signal'" &
+		stdbuf -oL cat
+	} | while read line; do
+		# reading from a merged stdin between the scripts stdin and the output of dbus-monitor
+		# if not a line starting with signal, it is a button input
+		if echo "$line" | grep -qv '^signal' > /dev/null; then
+			btnaction "$line"
+		fi
+
+		blksegment
+	done
+fi
