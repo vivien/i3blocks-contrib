@@ -40,8 +40,8 @@ btnaction() {
 		1) playerctl play-pause      ;;
 		2) playerctl previous        ;;
 		3) playerctl next            ;;
-		4) playerctl volume "$STEP+" ;;
-		5) playerctl volume "$STEP-" ;;
+		4) playerctl volume "$STEP-" ;;
+		5) playerctl volume "$STEP+" ;;
 	esac
 }
 
