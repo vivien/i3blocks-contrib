@@ -95,7 +95,7 @@ else
 			interface=org.freedesktop.DBus.Properties \
 			member=PropertiesChanged | grep '^signal'" &
 		stdbuf -oL cat
-	} | while read line; do
+	} | while read -r line; do
 		# reading from a merged stdin between the scripts stdin and the output of dbus-monitor
 		# if not a line starting with signal, it is a button input
 		if echo "$line" | grep -qv '^signal' > /dev/null; then
