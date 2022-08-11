@@ -60,11 +60,16 @@ blksegment() {
 	icon=""
 
 	if [ -z "$status" ]; then
+		# needed to clear the status bar
+		[ "$SUBSCRIBE" -ne 0 ] && echo
 		return
 	fi
 
 	case "$status" in
-		"Stopped") return               ;;
+		"Stopped")
+			[ "$SUBSCRIBE" -ne 0 ] && echo
+			return
+			;;
 		"Paused")  icon="$PAUSED_ICON"  ;;
 		"Playing") icon="$PLAYING_ICON" ;;
 	esac
