@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#get current capacity of first (and second battery)
+fst=$(acpi |sed "s/,//g;s/Not charging/Notcharging/g;s/%//g"| sed -n -e 1p | cut -d " " -f4 | sed "s/ //g")
+sec=$(acpi |sed "s/,//g;s/Not charging/Notcharging/g;s/%//g"| sed -n -e 2p | cut -d " " -f4 | sed "s/ //g")
+
+#get last max capacity of first (and second battery)
+fst_max=$(acpi -i | sed -n -e 2p | cut -d " " -f10)
+sec_max=$(acpi -i | sed -n -e 4p | cut -d " " -f10)
+capacity_max=$(($fst_max+$sec_max))
+
+#calculate percentage based amount of batteries
+if [ -z "$sec" ]; then
+	capacity=$fst
+else
+	capacity=$((($fst*$fst_max+$sec*$sec_max)/$capacity_max))
+fi
+
+fst_status=$(acpi | cut -d " " -f3 | sed -n -e 1p | sed "s/,//g;s/ //g")
+sec_status=$(acpi | cut -d " " -f3 | sed -n -e 2p | sed "s/,//g;s/ //g")
+ch="Charging"
+
+#get symbol for -a option and simple
+if [ "$fst_status" = "$ch" ] || [ "$sec_status" = "$ch" ] ; then
+	symbol="🔌"
+	symbola=""
+elif [ "$capacity" -ge 90 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 60 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 40 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 5 ] ; then
+	symbola=""
+else
+	symbola=""
+fi
+[ -z $symbol ] && symbol="🔋"
+
+#checking for option -a for font Awesome symbols
+if [ "$1" = -a ] ; then
+	echo $symbola$capacity%
+elif [ "$1" = -s ] ; then
+	echo BAT $capacity%
+elif [ "$1" = -0 ] ; then
+	echo $capacity%
+else
+	echo $symbol$capacity%
+fi
