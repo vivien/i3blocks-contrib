@@ -20,6 +20,7 @@
 import json
 import os
 import requests
+import socket
 import subprocess as sp
 
 block_button = os.environ['BLOCK_BUTTON'] if 'BLOCK_BUTTON' in os.environ else None
@@ -43,6 +44,7 @@ args.add_argument('UPDATE_COLOR', 'yellow')
 args.add_argument('QUIET', False, bool)
 args.add_argument('IGNORE', [], list)
 args.add_argument('CACHE_UPDATES', False, bool)
+args.add_argument('FORCE_IPV4', 1, int)
 
 
 def version_in_aur(pkg):
@@ -75,6 +77,15 @@ def vcs_version(pkg, ver):
     # no base release to compare, just return None
     return None
 
+if args.force_ipv4:
+    # This is useful, because the AUR API often gets timeouts with
+    # IPV6 and the call does not return.
+
+    # monkey-patch this function to always return the IPV4-version,
+    # even if capable of IPV6
+    requests.packages.urllib3.util.connection.allowed_gai_family = (
+        lambda: socket.AF_INET
+    )
 
 # show the list of updates already cached
 if args.cache_updates and block_button in [2, 3]:
