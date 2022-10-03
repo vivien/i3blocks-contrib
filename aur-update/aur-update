@@ -57,7 +57,7 @@ def version_in_aur(pkg):
 
 
 def vcs_version(pkg, ver):
-    """ Try to find a sensble version for VSC packages
+    """ Try to find a sensible version for VSC packages
 
     If pkg looks like a VCS package according to
        https://wiki.archlinux.org/index.php/VCS_package_guidelines
