@@ -11,12 +11,12 @@ __license__ = "MIT"
 __version__ = "1.1.0"
 
 import os
-import subprocess
+import subprocess as sp
 import json
 
 def mute_toggle():
     '''Toggle dunst notifications'''
-    subprocess.run(["dunstctl", "set-paused", "toggle"], check=True)
+    sp.run(["dunstctl", "set-paused", "toggle"], check=True)
 
 def clicked():
     '''Returns True if the button was clicked'''
@@ -25,9 +25,7 @@ def clicked():
 
 def muted():
     '''Returns True if Dunst is muted'''
-    cmd = ['dunstctl', 'is-paused']
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    output = proc.communicate()[0]
+    output = sp.check_output(('dunstctl', 'is-paused'))
     return u'true' ==  output.strip().decode("UTF-8")
 
 if clicked():
