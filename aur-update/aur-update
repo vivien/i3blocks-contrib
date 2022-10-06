@@ -41,9 +41,9 @@ class Args(object):
 
 args = Args()
 args.add_argument('UPDATE_COLOR', 'yellow')
-args.add_argument('QUIET', False, bool)
+args.add_argument('QUIET', 0, int)
 args.add_argument('IGNORE', [], list)
-args.add_argument('CACHE_UPDATES', False, bool)
+args.add_argument('CACHE_UPDATES', 0, int)
 args.add_argument('FORCE_IPV4', 1, int)
 
 
