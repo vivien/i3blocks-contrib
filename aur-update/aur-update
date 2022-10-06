@@ -41,9 +41,9 @@ class Args(object):
 
 args = Args()
 args.add_argument('UPDATE_COLOR', 'yellow')
-args.add_argument('QUIET', False, bool)
+args.add_argument('QUIET', 0, int)
 args.add_argument('IGNORE', [], list)
-args.add_argument('CACHE_UPDATES', False, bool)
+args.add_argument('CACHE_UPDATES', 0, int)
 args.add_argument('FORCE_IPV4', 1, int)
 
 
@@ -116,6 +116,7 @@ for pkg in installed_version.keys():
 
 # create the message for the block
 n_updates = len(updates)
+msg = ''
 if n_updates > 0:
     msg = "<span color='{0}'>{1} AUR updates</span>".format(args.update_color, n_updates)
 elif not args.quiet:
