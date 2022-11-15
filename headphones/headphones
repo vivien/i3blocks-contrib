@@ -1,0 +1,53 @@
+#! /bin/sh
+# Meant for usage as an i3blocks blocklet.
+# It reports headphone connection
+# Licensed under GPLv4-or-later https://www.gnu.org/licenses/gpl-3.0.txt
+
+# -------------------------------------#
+# Dependencies:
+# 	font awesome
+# -------------------------------------#
+
+interval=${interval:-0}
+HEADPHONES_SYMBOL=${HEADPHONES_SYMBOL:-""} #"🎧" # ""
+SPEAKER_SYMBOL=${SPEAKER_SYMBOL:-""}
+
+## instance can be found 
+## with $(grep "Headphone Playback Switch")
+## in (codec#0) of a given sound card
+NODE_NUM=${NODE_NUM:-"0x16"}
+
+CARD_INSTANCE=${CARD_INSTANCE:-"card1"}
+CONNECTION_POINT="/proc/asound/$CARD_INSTANCE/codec#0"
+
+CONNECTED_CODE=0
+DISCONNECTED_CODE=1
+
+## these are disabled due to being unused (from shellcheck)
+#conn_state="connected"
+#disconn_state="disconnected"
+#err_state="Something went wrong!"
+## outcomented for future use hopefuly
+#HEADPHONES_STATUS=$(grep -A4 "Node $NODE_NUM" "$CONNECTION_POINT" | grep "Amp-Out vals:  \[0x00 0x00\]" > /dev/null) # make this give exit code back
+
+headphone_connection_status()
+{
+	grep -A4 "Node $NODE_NUM" "$CONNECTION_POINT" | grep "Amp-Out vals:  \[0x00 0x00\]" > /dev/null
+	echo $?
+}
+show_conn()
+{
+	status=$(headphone_connection_status)
+
+	if [ "$status" = "$CONNECTED_CODE" ]; then
+		echo "$HEADPHONES_SYMBOL"
+	elif [ "$status" = "$DISCONNECTED_CODE" ]; then
+		echo "$SPEAKER_SYMBOL"
+	fi
+}
+conn_error()
+{
+	echo \#FF0000 # color⏎
+	exit 33
+}
+show_conn
