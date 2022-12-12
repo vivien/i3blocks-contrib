@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     sysinfo(&info);
 
     long total = info.totalram;
-    long free  = info.freeram;
+    long free  = (info.freeram + info.bufferram) * info.mem_unit;
     long usage = total - free;
     
     float percent = 100 * ((float)usage / total);
