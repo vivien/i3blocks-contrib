@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+command -v jq >/dev/null 2>&1 || { echo >&2 "Program 'jq' required but it is not installed.
+Aborting."; exit 1; }
+command -v wget >/dev/null 2>&1 || { echo >&2 "Program 'wget' required but is not installed.
+Aborting."; exit 1; }
+
+if [ -z "$LAT" ] || [ -z "$LON" ]; then
+    echo "Coordinates not set"
+    exit
+fi
+
+# To use this script you need to create an API key here https://home.openweathermap.org
+# You need to put your Open Weather APIKEY here:
+APIKEY=$(cat "$APIKEY_PATH")
+URL=$"https://api.openweathermap.org/data/3.0/onecall?units=metric&lat=${LAT}&lon=${LON}&exclude=minutely,hourly,daily&appid=${APIKEY}"
+
+WEATHER_RESPONSE=$(wget -qO- "${URL}")
+if [ $? -ne 0 ] ; then
+    echo "Request failed"
+    exit
+fi
+
+CONDITION=$(echo "$WEATHER_RESPONSE" | jq '.current.weather[0].main' | sed 's/"//g')
+TEMP=$(echo "$WEATHER_RESPONSE" | jq '.current.temp')
+WIND_DIR=$( echo "$WEATHER_RESPONSE" | jq '.current.wind_deg')
+WIND_SPEED=$( echo "$WEATHER_RESPONSE" | jq '.current.wind_speed')
+TIME_NOW=$( echo "$WEATHER_RESPONSE" | jq '.current.dt')
+SUNRISE=$( echo "$WEATHER_RESPONSE" | jq '.current.sunrise')
+SUNSET=$( echo "$WEATHER_RESPONSE" | jq '.current.sunset')
+DESCRIPTION=$( echo "$WEATHER_RESPONSE" | jq '.current.weather[0].description' | sed 's/"//g')
+ALERT=$( echo "$WEATHER_RESPONSE" | jq '.alerts[0].event' | sed 's/"//g')
+TEMP=$(awk "BEGIN {print int($TEMP)}")
+WIND_SPEED_MS=$(awk "BEGIN {print int($WIND_SPEED)}")
+WIND_SPEED_KMH=$(awk "BEGIN {print int(60*60*$WIND_SPEED/1000)}")
+WIND_DIR=$(awk "BEGIN {print int(($WIND_DIR % 360)/22.5)}")
+DIR_ARRAY=( N NNE NE ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW N )
+WIND_DIR=${DIR_ARRAY[WIND_DIR]}
+
+DAYTIME="n"
+if [[ "$TIME_NOW" > "$SUNRISE" ]] && [[ "$TIME_NOW" < "$SUNSET" ]]; then
+    DAYTIME="d"
+fi
+
+case $CONDITION in
+  'Clouds')
+      WEATHER_ICON=""
+      ;;
+  'Rain')
+      WEATHER_ICON=""
+      ;;
+  'Drizzle')
+      WEATHER_ICON=""
+      ;;
+  'Thunderstorm')
+      WEATHER_ICON=""
+      ;;
+  'Snow')
+      WEATHER_ICON=""
+      ;;
+  'Clear')
+      if [ "$DAYTIME" == "d" ]; then
+          WEATHER_ICON=""
+      else
+          WEATHER_ICON=""
+      fi
+      ;;
+  *)
+      WEATHER_ICON="🌫"
+      ;;
+esac
+
+WIND_DESC=""
+if [[ "$WIND_SPEED_KMH" -gt 15 ]] ; then
+    WIND_DESC=" ${WIND_SPEED_MS} m/s ${WIND_DIR}"
+fi
+
+full_text="${WEATHER_ICON} ${TEMP}°C${WIND_DESC}: ${DESCRIPTION}"
+if [ "$ALERT" != "null" ]; then
+    full_text+=" " 
+    if (( ${BLOCK_BUTTON:-0} == 1 )); then
+        alerts=""
+        for alert in $(echo "$WEATHER_RESPONSE" | jq -r '.alerts[] | @base64'); do
+            _jq() {
+                echo "$alert" | base64 --decode | jq -r "$1"
+            }
+            WARN_START=$(_jq '.start')
+            WARN_END=$(_jq '.end')
+            WARN_START=$(date -d @"$WARN_START" "+%a %R")
+            WARN_END=$(date -d @"$WARN_END" "+%a %R")
+            ALERT_E=$(_jq '.event' | sed 's/"//g')
+            ALERT_D=$(_jq '.description' | sed 's/"//g')
+            alerts+="\n[${WARN_START} - ${WARN_END}]\n${ALERT_E}\n${ALERT_D}\n"
+        done
+
+        notify-send -u critical "  Weather alerts" "$alerts"
+    fi
+fi
+
+
+echo "${full_text}"
+echo "${TEMP}°C "
+
