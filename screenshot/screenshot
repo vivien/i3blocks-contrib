@@ -27,7 +27,6 @@ save_to_file() {
 
         case $ACTION in
                 "save_file")
-			mkdir -p $SAVE_DIR
                         xclip -selection clipboard -o > "$filename"
                         ;;
         esac
@@ -35,14 +34,15 @@ save_to_file() {
 
 click_screenshot() {
         case $1 in
-                1) sleep 0.3 && import "$FORMAT":- | xclip -selection clipboard -t image/png &>> "$SAVE_DIR"/error.log ;;
-                3) sleep 0.3 && import -window root "$FORMAT":- | xclip -selection clipboard -t image/png &>> "$SAVE_DIR"/error.log ;;
+                1) sleep 0.3 && import "$FORMAT":- | xclip -selection clipboard -t image/png ;;
+                3) sleep 0.3 && import -window root "$FORMAT":- | xclip -selection clipboard -t image/png ;;
                 # screenshot will be overwritten if multiple within a second.
                 # Using nanoseconds format seem unnecessary
         esac
 }
 
 if click_screenshot $BLOCK_BUTTON && [[ "$IS_SAVE" = true ]]; then
+        mkdir -p $SAVE_DIR
         if ! command -v dunst &> /dev/null; then
                 echo "dunst is not installed, can't use save on click feature" >> "$SAVE_DIR"/error.log
                 exit 1
