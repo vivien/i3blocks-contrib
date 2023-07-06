@@ -7,6 +7,7 @@ Show CPU usage.
 # Dependencies
 
 * `mpstat`
+* `sysstat`  # mpstat comes in this systat package in most linux distrubution
 
 # Config
 
