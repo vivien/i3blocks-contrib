@@ -41,6 +41,7 @@ When `tun`|`tap` in not active, `nm-vpn` will print in the following form:
 [nm-vpn]
 #init_color=#FFFF00
 #on_color=#00FF00
+command=$SCRIPT_DIR/nm-vpn
 label=VPN: 
 interval=5
 ```
