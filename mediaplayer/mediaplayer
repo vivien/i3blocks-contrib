@@ -122,19 +122,13 @@ sub mpd {
 sub playerctl {
     buttons('playerctl');
 
-    my $artist = qx(playerctl $player_arg metadata artist 2>/dev/null);
-    chomp $artist;
+    my $metadata = qx(playerctl $player_arg metadata \\
+        --format '{{artist}} - {{title}}' 2>/dev/null);
+    chomp $metadata;
     # exit status will be nonzero when playerctl cannot find your player
-    exit(0) if $? || $artist eq '(null)';
+    exit(0) if $? || $metadata eq '(null)';
 
-    push(@metadata, $artist) if $artist;
-
-    my $title = qx(playerctl $player_arg metadata title);
-    exit(0) if $? || $title eq '(null)';
-
-    push(@metadata, $title) if $title;
-
-    print(join(" - ", @metadata)) if @metadata;
+    print($metadata) if $metadata;
 }
 
 sub rhythmbox {
