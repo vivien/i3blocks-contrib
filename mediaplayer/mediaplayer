@@ -33,7 +33,7 @@ playerctl() {
 getMetadata() {
     playerctl metadata -F \
         --format $'{{default(artist, "\004\005")}} - {{title}}' \
-        | sed $'s/^\004\005 - //;s/^[[:space:]]*//;s/[[:space:]]*$//'
+        | sed -u $'s/^\004\005 - //;s/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
 case "$BLOCK_INSTANCE" in
@@ -48,8 +48,7 @@ case "$BLOCK_INSTANCE" in
     *) networkDelay() { :; } ;;
 esac
 
-export -f getMetadata
-stdbuf -oL bash -c 'getMetadata' &
+getMetadata &
 
 while read -r button; do
     case "$button" in
