@@ -25,6 +25,6 @@ Add the following to your i3blocks config:
 [mediaplayer]
 command=$SCRIPT_DIR/mediaplayer
 instance=spotify
-interval=5
+interval=persist
 signal=10
 ```

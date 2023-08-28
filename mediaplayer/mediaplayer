@@ -52,7 +52,7 @@ if ($ENV{'BLOCK_BUTTON'} == 1) {
     system("playerctl $player_arg volume 0.01-");
 }
 
-my $metadata = qx(playerctl $player_arg metadata \\
+my $metadata = qx(playerctl $player_arg metadata -F \\
         --format '{{default(artist, "\004\005")}} - {{title}}' 2>/dev/null);
 chomp $metadata;
 $metadata =~ s/^\004\005 - //;
