@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/bash
 # Copyright (C) 2014 Tony Crisci <tony@dubstepdish.com>
 # Copyright (C) 2015 Thiago Perrotta <perrotta dot thiago at poli dot ufrj dot br>
 # Copyright (C) 2023 Gesh <gesh@gesh.uni.cx>
@@ -25,39 +25,38 @@
 # DBus session). If instance is empty, playerctl will connect to the first
 # supported media player it finds.
 
-use Time::HiRes qw(usleep);
-use Env qw(BLOCK_INSTANCE);
-
-use constant DELAY => 50; # Delay in ms to let network-based players (spotify) reflect new data.
-use constant SPOTIFY_STR => 'spotify';
-
-my @metadata = ();
-my $player_arg = "";
-
-if ($BLOCK_INSTANCE) {
-    $player_arg = "--player='$BLOCK_INSTANCE'";
+playerctl() {
+    command playerctl ${BLOCK_INSTANCE+"--player=$BLOCK_INSTANCE"} "$@" \
+        </dev/null
 }
 
-if ($ENV{'BLOCK_BUTTON'} == 1) {
-    system("playerctl $player_arg previous");
-    usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
-} elsif ($ENV{'BLOCK_BUTTON'} == 2) {
-    system("playerctl $player_arg play-pause");
-} elsif ($ENV{'BLOCK_BUTTON'} == 3) {
-    system("playerctl $player_arg next");
-    usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
-} elsif ($ENV{'BLOCK_BUTTON'} == 4) {
-    system("playerctl $player_arg volume 0.01+");
-} elsif ($ENV{'BLOCK_BUTTON'} == 5) {
-    system("playerctl $player_arg volume 0.01-");
+getMetadata() {
+    playerctl metadata -F \
+        --format $'{{default(artist, "\004\005")}} - {{title}}' \
+        | sed $'s/^\004\005 - //;s/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
-my $metadata = qx(playerctl $player_arg metadata -F \\
-        --format '{{default(artist, "\004\005")}} - {{title}}' 2>/dev/null);
-chomp $metadata;
-$metadata =~ s/^\004\005 - //;
-# exit status will be nonzero when playerctl cannot find your player
-exit(0) if $? || $metadata eq '(null)';
+case "$BLOCK_INSTANCE" in
+    spotify)
+        # Delay to let network-based players (spotify) reflect new data.
+        networkDelay() {
+            delay=50 # in ms
+            : "${delayus:=$(bc <<<"$delay * 0.001")}"
+            sleep "$delayus"
+        }
+    ;;
+    *) networkDelay() { :; } ;;
+esac
 
-print($metadata) if $metadata;
-print("\n");
+export -f getMetadata
+stdbuf -oL bash -c 'getMetadata' &
+
+while read -r button; do
+    case "$button" in
+        1) playerctl previous && networkDelay ;;
+        2) playerctl play-pause ;;
+        3) playerctl next && networkDelay ;;
+        4) playerctl volume 0.01+ ;;
+        5) playerctl volume 0.01- ;;
+    esac
+done
