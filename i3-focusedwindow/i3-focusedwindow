@@ -41,7 +41,7 @@ function getWindowDimensions()
 
 function getWindowPosition()
 {
-    windowposition=$(xdotool getwindowgeometry $(xdotool getactivewindow) | grep "Position" | awk '{print $2}')
+    windowposition="$(xdotool getwindowgeometry $(xdotool getactivewindow) | grep "Position" | awk '{print $2}')"
     echo "Pos:$windowposition"
 }
 
