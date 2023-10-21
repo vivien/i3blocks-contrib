@@ -4,7 +4,6 @@
 OPTIONS="Options:
     -class       --classname               Get classname of current window
     -title       --titlename               Get titlename of current window
-    -win         --windowname              Get window name of current window
     -dim         --dimensions              Get window dimensions of current window
     -pos         --position                Get window positions of current window
 "
@@ -25,12 +24,6 @@ function getTitlename()
     #get titlename
     titlename="$(xdotool getactivewindow getwindowname)"
     echo "title=[$titlename]"
-}
-
-function getWindowName()
-{
-    windowname="$(xdotool getactivewindow getwindowname)"
-    echo "Win Name::$windowname"
 }
 
 function getWindowDimensions()
@@ -59,11 +52,7 @@ while true; do
     getTitlename
     exit 0
     ;;
-   -win | --windowname)
-    getWindowName
-    exit 0
-    ;;
-   -dim | --dimensions)
+  -dim | --dimensions)
     getWindowDimensions
     exit 0
     ;;
