@@ -67,4 +67,8 @@ while true; do
     getWindowDimensions
     exit 0
     ;;
+  -pos | --position)
+    getWindowDimensions
+    exit 0
+    ;;
   esac; done
