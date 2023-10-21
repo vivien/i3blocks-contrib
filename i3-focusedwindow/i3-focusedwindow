@@ -1,15 +1,65 @@
 #!/usr/bin/env bash
-# Author: Kn
+# Author: zDEFz
 
-while :
-do
-  ID=$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}')
-  if [[ $1 ]] 
-  then
-    TITLE=$(xprop -id $ID -len $1 | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
-    echo "$TITLE"
-  else
-    TITLE=$(xprop -id $ID | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
-    echo "$TITLE"
+OPTIONS="Options:
+    -class       --classname                Get classname of current window
+    -title       --titlename                Get titlename of current window
+    -win         --windowname              Get window name of current window
+    -dim         --dimensions              Get window dimensions of current window
+"
+
+function print_usage() {
+  printf "Usage:\n"
+  printf "\n$(basename "$0") %s\n\n" "$OPTIONS"
+}
+
+
+function getClassname()
+{
+    classname="$(xdotool getactivewindow getwindowclassname)"
+    echo "class=[$classname]"
+}
+
+
+function getTitlename()
+{
+    #get titlename
+    titlename="$(xdotool getactivewindow getwindowname)"
+    echo "title=[$titlename]"
+}
+
+function getWindowName()
+{
+    windowname="$(xdotool getactivewindow getwindowname)"
+    echo "Win Name::$windowname"
+}
+
+function getWindowDimensions()
+{
+    windowdimensions="$(xdotool getactivewindow getwindowgeometry | grep Geometry | cut -d ':' -f2)"
+    echo "Dim:$windowdimensions"
+}
+
+while true; do
+  if [ -z "$1" ]; then
+    print_usage
+    exit 1
   fi
-done
+  case "$1" in
+  -class | --classname)
+    getClassname
+    exit 1
+    ;;
+  -title | --titlename)
+    getTitlename
+    exit 0
+    ;;
+   -win | --windowname)
+    getWindowName
+    exit 0
+    ;;
+   -dim | --dimensions)
+    getWindowDimensions
+    exit 0
+    ;;
+  esac; done
