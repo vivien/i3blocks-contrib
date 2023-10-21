@@ -17,8 +17,6 @@ i3-focusedwindow -win or --windowname # for windowname
 i3-focusedwindow -dim or --dimensions # for dimensions
 ```
 
-Blank for unlimited length, i.e. output line can occupy all available space.
-
 # Installation
 
 The recommended i3blocks config is
