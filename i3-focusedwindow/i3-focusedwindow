@@ -2,10 +2,11 @@
 # Author: zDEFz
 
 OPTIONS="Options:
-    -class       --classname                Get classname of current window
-    -title       --titlename                Get titlename of current window
+    -class       --classname               Get classname of current window
+    -title       --titlename               Get titlename of current window
     -win         --windowname              Get window name of current window
     -dim         --dimensions              Get window dimensions of current window
+    -pos         --position                Get window positions of current window
 "
 
 function print_usage() {
@@ -13,13 +14,11 @@ function print_usage() {
   printf "\n$(basename "$0") %s\n\n" "$OPTIONS"
 }
 
-
 function getClassname()
 {
     classname="$(xdotool getactivewindow getwindowclassname)"
     echo "class=[$classname]"
 }
-
 
 function getTitlename()
 {
@@ -38,6 +37,12 @@ function getWindowDimensions()
 {
     windowdimensions="$(xdotool getactivewindow getwindowgeometry | grep Geometry | cut -d ':' -f2)"
     echo "Dim:$windowdimensions"
+}
+
+function getWindowPosition()
+{
+    windowposition=$(xdotool getwindowgeometry $(xdotool getactivewindow) | grep "Position" | awk '{print $2}')
+    echo "Pos:$windowposition"
 }
 
 while true; do
