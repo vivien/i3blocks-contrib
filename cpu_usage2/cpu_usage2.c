@@ -19,15 +19,16 @@ typedef unsigned long long int ulli;
 void usage(char *argv[])
 {
   printf("Usage: %s "
-         "[-t seconds] [-w %%age] [-c %%age] [-d decimals] [-l label] [-h]\n",
+         "[-t seconds] [-w %%age] [-c %%age] [-d decimals] [-l label] [-nh]\n",
          argv[0]);
   printf("\n");
-  printf("-t seconds\trefresh time (default is 1)\n");
+  printf("-t seconds\tRefresh time (default is 1)\n");
   printf("-w %%\tSet warning (color orange) for cpu usage. (default: none)\n");
   printf("-c %%\tSet critical (color red) for cpu usage. (default: none)\n");
   printf("-d number\tNumber of decimal places for percentage (default: 2)\n");
   printf("-l label\tLabel to print before the cpu usage (default: CPU)\n");
-  printf("-h \t\tthis help\n");
+  printf("-n \t\tSet maximum usage to $(nproc) * 100%% (default: 100%%)\n");
+  printf("-h \t\tThis help\n");
   printf("\n");
 }
 
@@ -69,6 +70,7 @@ ulli get_usage(ulli *used_jiffies)
 int main(int argc, char *argv[])
 {
   int warning = 50, critical = 80, t = 1, decimals = 2;
+  long nproc = 1;
   char *label = "CPU ";
   int c;
   char *envvar = NULL;
@@ -88,8 +90,11 @@ int main(int argc, char *argv[])
   envvar = getenv("LABEL");
   if (envvar)
     label = envvar;
+  envvar = getenv("NPROC");
+  if (envvar)
+    nproc = -1;
 
-  while (c = getopt(argc, argv, "ht:w:c:d:l:"), c != -1) {
+  while (c = getopt(argc, argv, "ht:w:c:d:l:n"), c != -1) {
     switch (c) {
     case 't':
       t = atoi(optarg);
@@ -106,11 +111,18 @@ int main(int argc, char *argv[])
     case 'l':
       label = optarg;
       break;
+    case 'n':
+      nproc = -1;
+      break;
     case 'h':
       usage(argv);
       return EXIT_SUCCESS;
     }
   }
+
+  // Determines the number of CPU threads if -n or NPROC are provided
+  if (nproc == -1)
+    nproc = sysconf(_SC_NPROCESSORS_ONLN);
 
   ulli old_total;
   ulli old_used;
@@ -124,8 +136,9 @@ int main(int argc, char *argv[])
     sleep(t);
     total = get_usage(&used);
 
-    display(label, 100.0D * (used - old_used) / (total - old_total),
-            warning, critical, decimals);
+    display(label,
+            nproc * 100.0D * (used - old_used) / (total - old_total),
+            nproc * warning, nproc * critical, decimals);
     fflush(stdout);
     old_total = total;
     old_used = used;
