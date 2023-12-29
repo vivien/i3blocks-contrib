@@ -96,10 +96,14 @@ main(int argc, char *argv[]) {
   wd = inotify_add_watch(ifd, actual_brightness_path, IN_MODIFY);
   FD_ZERO (&read_descriptors);
   FD_SET (ifd, &read_descriptors);
-  time_to_wait.tv_sec = 10;
-  time_to_wait.tv_usec = 0;
 
   while (1) {
+    // We need to configure time_to_wait before each call of select,
+    // as according to the `select(2)` man page:
+    // "On Linux, select() modifies timeout to reflect the amount of time not slept"
+    time_to_wait.tv_sec = 10;
+    time_to_wait.tv_usec = 0;
+
     fd_set tmp_set = read_descriptors;
     rc = select(ifd+1, &tmp_set, NULL, NULL, &time_to_wait);
     if (rc < 0) {
