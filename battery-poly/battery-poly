@@ -98,7 +98,7 @@ def get_configuration() -> Configuration:
 
 def get_status(bat_name: str) -> Status:
     raw_status = Path(f"{PSEUDO_FS_PATH}{bat_name}/status").open().read().strip()
-    if raw_status == "Unknown" or raw_status == "Full":
+    if raw_status == "Unknown" or raw_status == "Full" or raw_status == "Not charging":
         return Status.PASSIVE
     elif raw_status == "Charging":
         return Status.CHARGING
