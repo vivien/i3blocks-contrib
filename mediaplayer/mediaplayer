@@ -101,8 +101,9 @@ sub cmus {
 
         if (@metadata) {
             buttons('cmus');
-
             # metadata found so we are done
+            # remove potential new line char
+            chomp(@metadata);
             print(join ' - ', @metadata);
             print("\n");
             exit 0;
@@ -133,7 +134,8 @@ sub playerctl {
     exit(0) if $? || $title eq '(null)';
 
     push(@metadata, $title) if $title;
-
+    # remove potential new line char
+    chomp(@metadata);
     print(join(" - ", @metadata)) if @metadata;
 }
 
