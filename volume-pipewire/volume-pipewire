@@ -119,7 +119,11 @@ function print_format {
 }
 
 function print_block {
-    ACTIVE=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|api.alsa.pcm.card = \|node.nick = ")
+    ACTIVE="$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55)"
+    if [[ $ACTIVE = "" ]] ; then
+        ACTIVE="$(pactl list sinks | grep "$(pactl get-default-sink)" -B4 -A55)"
+    fi
+    ACTIVE="$(echo "$ACTIVE" | grep "Name:\|Volume: \(front-left\|mono\)\|Mute:\|api.alsa.pcm.card = \|node.nick = ")"
     for Name in NAME MUTED VOL INDEX NICK; do
         read $Name
     done < <(echo "$ACTIVE")
