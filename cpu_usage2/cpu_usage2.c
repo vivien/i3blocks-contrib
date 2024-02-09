@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     sleep(t);
     total = get_usage(&used);
 
-    display(label, 100.0D * (used - old_used) / (total - old_total),
+    display(label, 100.0 * (used - old_used) / (total - old_total),
             warning, critical, decimals);
     fflush(stdout);
     old_total = total;
