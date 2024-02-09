@@ -66,7 +66,7 @@ These options specify the fine tuning of elements set as visible with the *METAR
 
 ## Configuration option *METARSCONFIGS/temperatureUnit*
 
-This option specifies the [temperature unit](https://github.com/python-metar/python-metar/blob/master/metar/Datatypes.py) of *python-metar*. Currently supported values are *F* (Fahrenheit), *C* (Celcius) and *K* (Kelvin).
+This option specifies the [temperature unit](https://github.com/python-metar/python-metar/blob/master/metar/Datatypes.py) of *python-metar*. Currently supported values are *F* (Fahrenheit), *C* (Celsius) and *K* (Kelvin).
 
 ## Configuration option *METARSCONFIGS/temperatureSym*
 

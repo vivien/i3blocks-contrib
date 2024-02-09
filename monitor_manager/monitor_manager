@@ -366,7 +366,7 @@ class MonitorManager():
         result = "yes"
         if all(map(lambda o: o.blanked or not o.active, self.outputs)):
             result = messagebox.askquestion("All blanked or off",
-                    "All ouputs are set to be turned off or blanked, continue?",
+                    "All outputs are set to be turned off or blanked, continue?",
                     icon="warning")
         return result == "yes"
 

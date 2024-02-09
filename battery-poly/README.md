@@ -6,7 +6,7 @@ Generates a pretty battery string for multi-battery systems. Based on [cogitanti
 ## Features
 - Uses sysfs for gathering batteries and values on these
 - Calculates time-to-depleted and time-to-full from current power-draw
-- Takes battery-thresholds, such as [TLP](https://github.com/linrunner/TLP), into account when calculating time-to-**full**. Defaults to 100% but is overrideable through arguments.
+- Takes battery-thresholds, such as [TLP](https://github.com/linrunner/TLP), into account when calculating time-to-**full**. Defaults to 100% but is overridable through arguments.
 - Omits time-to-* when passive (specifically when sysfs delivers a status of `Unknown` or `Full`)
 - Takes a Python formatting string for percentage. Default is `.2%` rendering a percentage with two decimals.
 

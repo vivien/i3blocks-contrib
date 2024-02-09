@@ -19,7 +19,7 @@ Additionally the script can take more arguments passed to it by command-line in 
 ### Warning Threshold
 The warning threshold in percent (used disk space).
 
-Display warnig color when 70% of the available disk space is used:
+Display warning color when 70% of the available disk space is used:
 ``
 warn_threshold=70
 ``
@@ -57,13 +57,13 @@ Output format used by pythons string formatting for displayment.
 
 To get:
 ```
-: 119.3G used of 518.5 total beeing 23.0%
+: 119.3G used of 518.5 total being 23.0%
 ```
 
 the following *format*-argument must be passed to the script:
 
 ```
-format="{used:.1f}G used of {total:.1f} total beeing {perc_used}%"
+format="{used:.1f}G used of {total:.1f} total being {perc_used}%"
 ```
 Quotes are required for format.
 
@@ -81,7 +81,7 @@ Quotes are required for format.
 label=:
 instance=/
 interval=30
-command=$SCRIPT_DIR/disk_usage/disk_usage format="{used:.1f}G used of {total:.1f} Total beeing {perc_used}%" warn_color=#90ce00
+command=$SCRIPT_DIR/disk_usage/disk_usage format="{used:.1f}G used of {total:.1f} Total being {perc_used}%" warn_color=#90ce00
 ```
 
 ## Click events
@@ -114,7 +114,7 @@ for_window [title="pop-up"] floating enable border none sticky
 
 Output of the launch-command will be redirected to /dev/null
 
-## Dependancies
+## Dependencies
 
 The script uses only standard python modules and should therefore run on any python environment or should easily be made to run.
 

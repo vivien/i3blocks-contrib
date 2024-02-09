@@ -9,7 +9,7 @@ Left button mouse click opens custom URL.
 # Dependencies
 
 Python 3, [python-keyring](https://pypi.python.org/pypi/keyring) (optional),
-gnome-keyring (if pyton-keyring using, also you able to use any other
+gnome-keyring (if python-keyring using, also you able to use any other
 compatible backend)
 
 **Packages names in Debian based distros**:

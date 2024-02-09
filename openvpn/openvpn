@@ -7,7 +7,7 @@
 # Usage:
 # 1. The configuration name of OpenVPN should be familiar for you (home,work...)
 # 2. The device name in your configuration file should be fully named (tun0,tap1...not only tun or tap)
-# 3. When you launch one or multiple OpenVPN connexion, be sure the PID file is written in the correct folder (ex: --writepid /run/openvpn/home.pid)
+# 3. When you launch one or multiple OpenVPN connection, be sure the PID file is written in the correct folder (ex: --writepid /run/openvpn/home.pid)
 
 use strict;
 use warnings;

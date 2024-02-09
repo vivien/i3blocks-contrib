@@ -74,7 +74,7 @@ def parse_args():
 			key, value = arg.split('=')
 			args[key] = int(value) if value.isdigit() else value
 	except (KeyError, ValueError):
-		# ValuError in case user does something weird
+		# ValueError in case user does something weird
 		pass
 
 	return args

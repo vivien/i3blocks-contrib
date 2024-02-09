@@ -1,6 +1,6 @@
 # kubernetes
 
-Show the kubernetes current context and namespace in use. This is usefull when you are operating multiple kube clusters and/or namespaces.
+Show the kubernetes current context and namespace in use. This is useful when you are operating multiple kube clusters and/or namespaces.
 
 ![](kubernetes.png)
 

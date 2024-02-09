@@ -25,9 +25,9 @@ directory.
 
 Now keep in mind, that there are also two ways to specify measurements places.
 One way is to specify the installationId which may be obtained from the API or
-whe airly.eu widgets.
+the airly.eu widgets.
 
-Another way is to use the place lattitude and longitude and specify them explicitly
+Another way is to use the place latitude and longitude and specify them explicitly
 in the config file, which would give interpolated measurements.
 
 An apikey is a must and may be obtained by registering an user account on airly.eu

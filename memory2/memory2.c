@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   
   load_bar_chars(bar_chars, count, characters);
 
-  // allocate the maximun size possible
+  // allocate the maximum size possible
   int buffer_size = (bar_size * 4) + 1;
   char* buffer = (char*)malloc(buffer_size);
   
