@@ -46,6 +46,7 @@ This repository contains a set of scripts (a.k.a. *blocklets*) for link:https://
 | link:tahoe-lafs[] | Show status of your tahoe-lafs grid
 | link:temperature[] | Show system temperatures using lm-sensors
 | link:time[] | Show the current date/time and click to change timezones
+| link:timew[] | Show how much time you have spend on the active task with timewarrior
 | link:ssid[] | Show the wifi SSID you are connected to (dep: iw, awk)
 | link:usb[] | Show connected usb storage device info
 | link:volume[] | Show the current system volume (default)

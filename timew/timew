@@ -1,0 +1,6 @@
+#!/bin/sh
+timew >/dev/null || exit 0
+tags="$(timew | head -n1 | sed 's/Tracking //g')"
+total=$(echo "timew sum $tags" | sh | tac | grep -oPm1 ' \d:\d\d')
+echo $tags ⌛ $total
+echo ⚒: $total && exit 0
