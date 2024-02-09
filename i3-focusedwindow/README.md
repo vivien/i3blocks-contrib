@@ -6,23 +6,23 @@ Displays title of focused window in i3Wm
 
 # Requirements
 
-Dependencies: `xprop`, `awk` 
+Dependencies: `xdotool`
 
 # Command line arguments  
 
 ```bash
-i3-focusedwindow [maximum length to display]
+i3-focusedwindow -class or --classname # for classname
+i3-focusedwindow -title or --titlename # for titlename
+i3-focusedwindow -win or --windowname # for windowname
+i3-focusedwindow -dim or --dimensions # for dimensions
 ```
-
-Blank for unlimited length, i.e. output line can occupy all available space.
 
 # Installation
 
 The recommended i3blocks config is
 
 ```INI
-[i3-focusedwindow]
-label=[]= 
-command=$SCRIPT_DIR/i3-focusedwindow 20
-interval=persist
+[i3-focused-window]
+command=$SCRIPT_DIR/custom/i3-focused-window -class
+interval=1
 ```
