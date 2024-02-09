@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+tick=0
+while :; do
+  prev_id="$id"
+  id=$(xprop -root | sed -n 's/_NET_ACTIVE_WINDOW(WINDOW): window id # \(.*.\)$/\1/p')
+
+  if [[ $tick -gt 10 ]] || [[ "$prev_id" != "$id" ]]; then 
+    prev_title="$title"
+    title=$(echo $(xprop -id $id | sed -n 's/_NET_WM_NAME(.*.= "\(.*.\)"$/\1/p'))
+    [[ "$prev_title" != "$title" ]] && echo ${title::90};
+    tick=0
+  fi
+  
+  tick=($tick+1)
+  sleep $idle_seconds > /dev/null 2>&1
+done
