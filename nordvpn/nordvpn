@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+color=\#d21a1a
+vpnstatus=""
+
+if nordvpn status | grep "Status: Connected" ; then
+    color=\#15d4ce
+    server=$(nordvpn status | grep "Current server:" | sed -e "s/Current server: //" | grep -oE "^[^.]+")
+    vpnstatus="[$server] "
+fi
+
+echo "$vpnstatus"
+echo
+echo $color
