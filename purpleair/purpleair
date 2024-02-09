@@ -1,6 +1,13 @@
 #!/bin/perl
 # For temperature: subtract 8 from the F value for the actual temperature
 
+# Get PurpleAir API Key
+if ($ENV{'API_KEY'} == "") {
+  print STDERR "Missing required environment variable 'API_KEY'.\n";
+  exit 1;
+}
+$api_key = $ENV{'API_KEY'};
+
 # Get PurpleAir sensor ID
 if ($ENV{'SENSOR_ID'} == "") {
   print STDERR "Missing required environment variable 'SENSOR_ID'.\n";
@@ -19,8 +26,8 @@ if (grep(/^$ENV{'TYPE'}$/, @valid_types)) {
 }
 
 # Read pm2.5 10-minute average from the PurpleAir sensor
-$pm2_5 = `curl "http://purpleair.com/json?show=$sensor_id" 2>/dev/null \\
-    | jq -r '.results | map(select(has("Stats")) | .Stats | fromjson | .v1) | add / length'`;
+$pm2_5 = `curl -X GET "https://api.purpleair.com/v1/sensors/$sensor_id" -H "X-API-Key: $api_key" 2>/dev/null \\
+    | jq -r '.sensor.stats."pm2.5"'`;
 
 ###################
 # IMPLEMENTATIONS #

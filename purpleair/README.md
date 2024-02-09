@@ -17,11 +17,18 @@ A purpleair config block looks like this:
 label=
 command=$SCRIPT_DIR/purpleair
 interval=60
+API_KEY=01234567-89AB-CDEF-0123-456789ABCDEF
 SENSOR_ID=78305
 #TYPE=US_AQI
 #COLORS=#85df56,#fbcf4b,#f28c33,#dd4d3c,#cf79e0,#9b2f6a
 #NO_COLOR=true
 ```
+
+## Getting an API Key
+
+If you do not already have an API Key from PurpleAir, you can request one following the instructions in the *Introduction* section of [PupleAir's community guide article](https://community.purpleair.com/t/making-api-calls-with-the-purpleair-api/180).
+
+PurpleAir provides two keys: a *read* key and a *write* key. The *read* key must be used in the `API_KEY` parameter.
 
 ## Finding a sensor ID
 
@@ -40,6 +47,7 @@ There is one required parameter, along with some optional ones:
 
 Parameter | Description
 --------- | -----------
+API_KEY   | Required: Your PurpleAir *read* key
 SENSOR_ID | Required: The PurpleAir sensor to query
 TYPE      | Optional: The air quality computation to perform. Default: US_AQI
 COLORS    | Optional: Comma-separated list of color hex values to use in place of the default colors
