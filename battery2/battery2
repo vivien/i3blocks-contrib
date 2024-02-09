@@ -12,10 +12,12 @@ import re
 config = dict(os.environ)
 status = check_output(['acpi'], universal_newlines=True)
 
+FONT = "Font Awesome 6 Free"
+
 if not status:
     # stands for no battery found
     color = config.get("color_10", "red")
-    fulltext = "<span color='{}'><span font='FontAwesome'>\uf00d \uf240</span></span>".format(color)
+    fulltext = "<span color='{}'><span font='{}'>\uf00d \uf240</span></span>".format(color, FONT)
     percentleft = 100
 else:
     # if there is more than one battery in one laptop, the percentage left is
@@ -53,16 +55,16 @@ else:
 
     # stands for charging
     color = config.get("color_charging", "yellow")
-    FA_LIGHTNING = "<span color='{}'><span font='FontAwesome'>\uf0e7</span></span>".format(color)
+    FA_LIGHTNING = "<span color='{}'><span font='{}'>\uf0e7</span></span>".format(color, FONT)
 
     # stands for plugged in
-    FA_PLUG = "<span font='FontAwesome'>\uf1e6</span>"
+    FA_PLUG = "<span font='{}'>\uf1e6</span>".format(FONT)
 
     # stands for using battery
-    FA_BATTERY = "<span font='FontAwesome'>\uf240</span>"
+    FA_BATTERY = "<span font='{}'>\uf240</span>".format(FONT)
 
     # stands for unknown status of battery
-    FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
+    FA_QUESTION = "<span font='{}'>\uf128</span>".format(FONT)
 
 
     if state == "Discharging":
