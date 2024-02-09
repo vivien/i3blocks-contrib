@@ -10,6 +10,7 @@ Configuration sample:
 
 ```
 [metars]
+command=$SCRIPT_DIR/metars
 interval=2100
 METARSSTATION=EFHK
 METARSURL=https://tgftp.nws.noaa.gov/data/observations/metar/stations/{}.TXT
