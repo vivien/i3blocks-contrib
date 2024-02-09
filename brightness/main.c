@@ -185,15 +185,13 @@ print_brightness_percent(const char *actual_path,
   for (size_t i = 0; i < 2; ++i) {
     bool success = get_float_value_from_file(parr[i], farr[i]);\
     if (!success) {
-      printf("\xF0\x9F\x94\x86"); //brightness symbol 🔆
-      printf(": NA\n");
+      printf("NA\n");
       fflush(stdout); // because we use select(), ant it blocks stdout
       return;
     }
   }
 
-  printf("\xF0\x9F\x94\x86"); //brightness symbol 🔆
-  printf(": %02.f%%\n", (curr / max) * 100.f);
+  printf("%02.f%%\n", (curr / max) * 100.f);
   fflush(stdout); // because we use select(), ant it blocks stdout
 }
 //////////////////////////////////////////////////////////////

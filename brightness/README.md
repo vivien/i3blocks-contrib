@@ -17,6 +17,8 @@ The result executable will be placed into bin directory.
 ```
 [brightness]
 command=./brightness/bin/brightness -a /sys/class/backlight/intel_backlight/actual_brightness -m /sys/class/backlight/intel_backlight/max_brightness
+# brightness symbol
+label=🔆
 interval=persist
 ```
 
