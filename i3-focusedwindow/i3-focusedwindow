@@ -12,4 +12,9 @@ do
     TITLE=$(xprop -id $ID | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
     echo "$TITLE"
   fi
+
+  if [[ -v IDLE_SECONDS ]]
+  then
+    sleep $IDLE_SECONDS
+  fi
 done
