@@ -1,0 +1,46 @@
+#!/bin/bash
+
+dir="/sys/class/power_supply"
+ch="Charging"
+#get first stats
+cap0=$(cat "$dir"/BAT0/energy_now)
+max0=$( cat "$dir"/BAT0/energy_full)
+status0=$(cat "$dir"/BAT0/status)
+
+#check for second battery
+if [ -d "$dir"/BAT1 ]; then
+	cap1=$(cat "$dir"/BAT1/energy_now)
+	max1=$( cat "$dir"/BAT1/energy_full)
+	status1=$(cat "$dir"/BAT1/status)
+	capacity=$((100*($cap0+$cap1)/($max0+$max1)))
+else
+	capacity=$((100*$cap0/$max0))
+fi
+
+#get symbol for -a option and simple
+if [ "$status0" = "$ch" ] || [ "$status1" = "$ch" ] ; then
+	symbol="🔌"
+	symbola=""
+elif [ "$capacity" -ge 90 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 60 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 40 ] ; then
+	symbola=""
+elif [ "$capacity" -ge 5 ] ; then
+	symbola=""
+else
+	symbola=""
+fi
+[ -z $symbol ] && symbol="🔋"
+
+#checking for option -a for font Awesome symbols
+if [ "$1" = -a ] ; then
+	echo $symbola$capacity%
+elif [ "$1" = -s ] ; then
+	echo BAT $capacity%
+elif [ "$1" = -0 ] ; then
+	echo $capacity%
+else
+	echo $symbol$capacity%
+fi
