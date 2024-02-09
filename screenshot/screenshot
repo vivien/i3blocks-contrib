@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Copyright © 2023 Shivank Garg <shivankgarg98 at gmail dot com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the  in hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+FORMAT=${FORMAT:-png}
+IS_SAVE=${IS_SAVE:-true}
+SAVE_DIR=${SAVE_DIR:-$HOME/screenshots}
+BLOCK_BUTTON=${BLOCK_BUTTON:-1}
+
+filename=$SAVE_DIR/screenshot_$(date "+%Y%m%d_%H%M%S").$FORMAT
+
+save_to_file() {
+        ACTION=$(dunstify "Screenshot Captured in Clipboard" "Click here to save 💾 the screenshot" -A 'save_file, Save to screenshots')
+
+        case $ACTION in
+                "save_file")
+                        xclip -selection clipboard -o > "$filename"
+                        ;;
+        esac
+}
+
+click_screenshot() {
+        case $1 in
+                1) sleep 0.3 && import "$FORMAT":- | xclip -selection clipboard -t image/png ;;
+                3) sleep 0.3 && import -window root "$FORMAT":- | xclip -selection clipboard -t image/png ;;
+                # screenshot will be overwritten if multiple within a second.
+                # Using nanoseconds format seem unnecessary
+        esac
+}
+
+if click_screenshot $BLOCK_BUTTON && [[ "$IS_SAVE" = true ]]; then
+        mkdir -p $SAVE_DIR
+        if ! command -v dunst &> /dev/null; then
+                echo "dunst is not installed, can't use save on click feature" >> "$SAVE_DIR"/error.log
+                exit 1
+        fi
+        save_to_file
+fi
