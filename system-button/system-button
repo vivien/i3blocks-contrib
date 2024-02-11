@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# configuration
+
+declare -r reg_col=${color:-#c80000}
+declare -r reg_bgcol=${background:-#000000}
+declare -r err_col="#ffffff"
+declare -r err_bgcol="#ff0000"
+
+base_cmd=""
+inhibitors="who"
+if which loginctl >/dev/null; then
+  if which systemctl >/dev/null; then
+    base_cmd="systemctl -i"
+  else
+    base_cmd="loginctl -i"
+  fi
+  if which dbus-send >/dev/null; then
+    inhibitors=inhibitors_dbus
+  fi
+fi
+
+declare -ri fa_btn=${FORCE_ACTION_BUTTON:-'3'}
+declare -ri sb_btn=${SCROLL_BACK_BUTTON:-'4'}
+
+declare -ra actions=(poweroff reboot suspend hibernate)
+declare -rA labels=(
+  [poweroff]=${POWEROFF_LABEL:-}
+  [reboot]=${REBOOT_LABEL:-}
+  [suspend]=${SUSPEND_LABEL:-}
+  [hibernate]=${HIBERNATE_LABEL:-}
+)
+ERROR_LABEL="${ERROR_LABEL:-}"
+
+
+# global state
+
+declare -i sel=0
+declare action
+
+
+# helper functions
+
+function reply() {
+  col="$reg_col"
+  bgcol="$reg_bgcol"
+  if [ $# -ge 2 ]; then
+    col="$err_col"
+    bgcol="$err_bgcol"
+  fi
+  printf "<span color='%s' bgcolor='%s'>%s</span>\n" "$col" "$bgcol" "$1"
+}
+
+function update_action() {
+  sel=$((($sel + ${1:-0}) % ${#actions[@]}))
+  action=${actions[$sel]}
+}
+
+function inhibitors_dbus {
+  dbus-send --system --print-reply --type=method_call \
+    --dest=org.freedesktop.login1 \
+    /org/freedesktop/login1 \
+    org.freedesktop.login1.Manager.ListInhibitors \
+  | grep uint32 | sed -e '1~2!d' -e 's/^.* //'
+}
+
+function perform() {
+  declare -ru vname=${1}_CMD
+  cmd=${base_cmd:+"$base_cmd $1"}
+  cmd=${cmd:-${!vname}}
+  if [ -z "$cmd" ]; then
+    echo "$vname undefined"
+    return 1
+  elif [ -z "$2" -a $($inhibitors | wc -l) -gt 1 ]; then
+    echo "Inhibitors exist, possibly other user sessions."
+    return 2
+  elif ! $cmd; then
+    echo "$cmd failed"
+    return 1
+  else
+    return 0
+  fi
+}
+
+
+# intitialization
+
+update_action
+reply ${labels[$action]}
+
+
+# main loop
+
+while read button; do
+  msg=""
+  declare -i delta=0
+  declare -i res=0
+  case $button in
+    1) msg=`perform $action`; res=$?;;
+    ${fa_btn}) msg=`perform $action force`; res=$?;;
+    ${sb_btn}) delta=-1;;
+    *) delta=1
+  esac
+  update_action delta
+  case $res in
+    0) reply "${labels[$action]}";;
+    1) if which notify-send >/dev/null; then
+         reply "$ERROR_LABEL" true
+         notify-send "bar block [$name]" "$msg"
+       else
+         reply "${msg}" true
+       fi;;
+    *) reply "$ERROR_LABEL" true
+  esac
+done
