@@ -13,6 +13,7 @@ __version__ = "1.1.0"
 import os
 import subprocess as sp
 import json
+import sys
 
 def mute_toggle():
     '''Toggle dunst notifications'''
@@ -37,4 +38,4 @@ if muted():
 else:
     RTN = {"full_text":"<span font='Font Awesome 5 Free Solid' color='#A4B98E'>\uf0f3</span>"}
 
-print(json.dumps(RTN))
+print(json.dumps(RTN, ensure_ascii=False))
