@@ -57,6 +57,10 @@ if [[ "$IF" = "" ]] || [[ "$(cat /sys/class/net/$IF/operstate)" = 'down' ]]; the
   exit
 fi
 
+# by default, print the ip address
+unset show_ipaddr
+[[ "$display_ipaddr" != 0 ]] && show_ipaddr=1
+
 # if no interface is found, use the first device with a global scope
 IPADDR=$(ip addr show $IF | perl -n -e "/$AF ([^ \/]+).* scope global/ && print \$1 and exit")
 
@@ -73,15 +77,15 @@ then
 
     if [[ $BLOCK_BUTTON -eq 1 ]];
     then
-      message="$LABEL $WIFI_NAME ($IPADDR)"
+      message="$LABEL $WIFI_NAME${show_ipaddr+ ($IPADDR)}"
     else
       message="$LABEL $WIFI_NAME"
     fi
   else
-    message="$LABEL $IPADDR"
+    message="$LABEL${show_ipaddr+ $IPADDR}"
   fi
 else
-  message="$LABEL $IPADDR"
+  message="$LABEL${show_ipaddr+ $IPADDR}"
 fi
 
 #------------------------------------------------------------------------
