@@ -3,12 +3,22 @@ init_color=${init_color:-#FFFF00}
 on_color=${on_color:-#00FF00}
 export init_color on_color
 nmcli -t connection show --active | awk -F ':' '
+function join(array, end, result, i)
+{
+    sep = " "
+    result = array[0]
+    for (i = 1; i < end; i++)
+        result = result sep array[i]
+    return result
+}
+
 BEGIN {
     init_color=ENVIRON["init_color"]
     on_color=ENVIRON["on_color"]
+    num=0
 }
 $3=="vpn" {
-    name=$1
+    names[num++]=$1
     status="INIT"
     color=init_color
 }
@@ -17,4 +27,9 @@ $3=="tun" || ($4~/^tap/ || $3~/^tap/) {
     status="ON"
     color=on_color
 }
-END {if(status) printf("%s\n%s\n%s\n", name, status, color)}'
+END {
+    if(status) {
+       name=join(names, num)
+       printf("%s\n%s\n%s\n", name, status, color)
+    }
+}'
