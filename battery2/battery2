@@ -52,14 +52,14 @@ else:
         percentleft = 0
 
     # stands for charging
-    color = config.get("color_charging", "yellow")
-    FA_LIGHTNING = "<span color='{}'><span font='FontAwesome'>\uf0e7</span></span>".format(color)
+    color = config.get("color_charging", "orange")
+    FA_LIGHTNING = "<span color='{}'><span font='FontAwesome'>\uf0e7 </span></span>".format(color)
 
     # stands for plugged in
-    FA_PLUG = "<span font='FontAwesome'>\uf1e6</span>"
+    FA_PLUG = "<span font='FontAwesome'>\uf1e6 </span>"
 
     # stands for using battery
-    FA_BATTERY = "<span font='FontAwesome'>\uf240</span>"
+    FA_BATTERY = "<span font='FontAwesome'>\uf240 </span>"
 
     # stands for unknown status of battery
     FA_QUESTION = "<span font='FontAwesome'>\uf128</span>"
@@ -76,28 +76,10 @@ else:
     else:
         fulltext = FA_LIGHTNING + " " + FA_PLUG + " "
 
-    def color(percent):
-        if percent < 10:
-            # exit code 33 will turn background red
-            return config.get("color_10", "#FFFFFF")
-        if percent < 20:
-            return config.get("color_20", "#FF3300")
-        if percent < 30:
-            return config.get("color_30", "#FF6600")
-        if percent < 40:
-            return config.get("color_40", "#FF9900")
-        if percent < 50:
-            return config.get("color_50", "#FFCC00")
-        if percent < 60:
-            return config.get("color_60", "#FFFF00")
-        if percent < 70:
-            return config.get("color_70", "#FFFF33")
-        if percent < 80:
-            return config.get("color_80", "#FFFF66")
-        return config.get("color_full", "#FFFFFF")
+    color = "#%02X%02X%02X" % (int((255 - percentleft * 122 / 100)),  int((percentleft * 255 / 100)),  0);
 
-    form =  '<span color="{}">{}%</span>'
-    fulltext += form.format(color(percentleft), percentleft)
+    form =  "<span color='{}'>{}%</span>".format(color, percentleft)
+    fulltext += form.format(percentleft)
     fulltext += timeleft
 
 print(fulltext)
