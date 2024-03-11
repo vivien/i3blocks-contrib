@@ -164,7 +164,7 @@ sed 's/.*= "\(.*\)".*/\1/')
     else
         print_format "$LONG_FORMAT"
         print_format "$SHORT_FORMAT"
-        echo "$COLOR"
+        test -n "$COLOR" && echo "$COLOR"
     fi
 }
 
