@@ -1,0 +1,14 @@
+#!/bin/bash
+# made by c404t 
+# https://github.com/c404t
+
+if [[ $BLOCK_BUTTON -eq 4 ]]; then
+    brightnessctl s +5% > /dev/null 2>&1
+elif [[ $BLOCK_BUTTON -eq 5 ]]; then
+    brightnessctl s 5%- > /dev/null 2>&1
+fi
+
+ICON="${LABEL:-moon}"
+
+echo "$ICON"
+echo "$ICON"
