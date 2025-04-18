@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+STEP=${STEP:-1}
+DISPLAY_NUM=${DISPLAY_NUM:-1}
+
+case $BLOCK_BUTTON in
+3) xset dpms force off ;;                              # right click
+4) ddcutil --display=$DISPLAY_NUM setvcp 10 + $STEP ;; # scroll up
+5) ddcutil --display=$DISPLAY_NUM setvcp 10 - $STEP ;; # scroll down, decrease
+esac
+
+brightness=$(ddcutil --display=$DISPLAY_NUM getvcp 10 | awk -F'=' '/current value/ {gsub(",", "", $2); print $2}' | awk '{print $1}')
+echo "$brightness"
