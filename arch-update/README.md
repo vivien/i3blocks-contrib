@@ -11,6 +11,7 @@ Be always on top of your available updates with this blocklet. Optionally show A
 * Arch Linux or another arch based distro
 * python3
 * [pacman-contrib](https://www.archlinux.org/packages/?name=pacman-contrib) for `checkupdates`
+* `yay` installed and available in PATH (if you intend on having yay + pacman updates)
 
 # Optional Dependencies
 
@@ -41,6 +42,14 @@ WATCH=^linux.* ^pacman.*
 BASE_COLOR=#5fff5f
 UPDATE_COLOR=#FFFF85
 AUR=true
+LABEL= 
+```
+Another example with AUR updates enabled:
+```ini
+[arch-updates]
+command=$SCRIPT_DIR/arch-update/arch-update -y
+markup=pango
+interval=3600
 LABEL= 
 ```
 # Configuration

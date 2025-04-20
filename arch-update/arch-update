@@ -107,14 +107,21 @@ def get_aur_yaourt_updates():
     return aur_updates
 
 def get_aur_yay_updates():
-    output = check_output(['yay', '-Qua']).decode('utf-8')
+    output = ''
+    try:
+        output = check_output(['yay', '-Qua']).decode('utf-8')
+    except subprocess.CalledProcessError as exc:
+        # yay returns exit code 1 when no AUR updates are availbale - safe to ignore
+        if not (exc.returncode == 1 and not exc.output):
+            raise exc
     if not output:
         return []
 
-    aur_updates = [line.split(' ')[0] for line in output.split('\n') if line]
+    aur_updates = [line.split(' ')[0] 
+                    for line in output.split('\n') 
+                    if line]
 
     return aur_updates
-
 
 def matching_updates(updates, watch_list):
     matches = set()
