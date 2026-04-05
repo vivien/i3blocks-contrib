@@ -106,10 +106,60 @@ function set_default_playback_device_next {
     move_sinks_to_new_default $default_sink
 }
 
+function get_all_outputs {
+    pactl list sinks | awk '
+        /^\s*Name:/ {
+            if (sink != "" && num_ports == 0) print sink "|"
+            sink = $2; num_ports = 0; in_ports = 0
+        }
+        /^\s*Ports:/       { in_ports = 1 }
+        /^\s*Active Port:/ { in_ports = 0 }
+        in_ports && /\[Out\]/ {
+            match($0, /\[Out\] [^:]+/)
+            print sink "|" substr($0, RSTART, RLENGTH)
+            num_ports++
+        }
+        END { if (sink != "" && num_ports == 0) print sink "|" }
+    '
+}
+
+function set_next_audio_output {
+    inc=${1:-1}
+    mapfile -t outputs < <(get_all_outputs)
+    num_outputs=${#outputs[@]}
+    [[ $num_outputs -le 1 ]] && return
+
+    current_sink=$(pactl get-default-sink)
+    current_port=$(pactl list sinks | awk -v sink="$current_sink" '
+        /Name:/ { found = ($2 == sink) }
+        found && /Active Port:/ {
+            match($0, /\[Out\] .+/)
+            print substr($0, RSTART, RLENGTH); exit
+        }
+    ')
+
+    current_index=0
+    for i in "${!outputs[@]}"; do
+        IFS='|' read -r s p <<< "${outputs[$i]}"
+        if [[ "$s" == "$current_sink" && "$p" == "$current_port" ]]; then
+            current_index=$i; break
+        fi
+    done
+
+    next_index=$(( ($current_index + $num_outputs + $inc) % $num_outputs ))
+    IFS='|' read -r new_sink new_port <<< "${outputs[$next_index]}"
+
+    if [[ "$new_sink" != "$current_sink" ]]; then
+        pactl set-default-sink "$new_sink"
+        move_sinks_to_new_default "$new_sink"
+    fi
+    [[ -n "$new_port" ]] && pactl set-sink-port "$new_sink" "$new_port"
+}
+
 case "$BLOCK_BUTTON" in
-    1) set_default_playback_device_next ;;
+    1) set_next_audio_output ;;
     2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
-    3) set_default_playback_device_next -1 ;;
+    3) set_next_audio_output -1 ;;
     4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
     5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
 esac
@@ -131,6 +181,21 @@ function print_block {
     VOL=$(echo "$VOL" | grep -o "[0-9]*%" | head -1 )
     VOL="${VOL%?}"
     NAME=$(echo "$NICK" | grep -o '".*"' | sed 's/"//g')
+
+    active_port_label=$(pactl list sinks | awk -v sink="$(pactl get-default-sink)" '
+        /Name:/ { found = ($2 == sink) }
+        found && /Active Port:/ {
+            match($0, /\[Out\] (.+)/, a); print a[1]; exit
+        }
+    ')
+    port_count=$(pactl list sinks | awk -v sink="$(pactl get-default-sink)" '
+        /Name:/ { found = ($2 == sink) }
+        found && /Ports:/       { in_ports = 1 }
+        found && /Active Port:/ { in_ports = 0 }
+        found && in_ports && /\[Out\]/ { n++ }
+        END { print n+0 }
+    ')
+    [[ $port_count -gt 1 && -n "$active_port_label" ]] && NAME="$NAME/$active_port_label"
 
     if [[ $USE_ALSA_NAME == 1 ]] ; then
         ALSA_NAME=$(pactl list sinks |\
