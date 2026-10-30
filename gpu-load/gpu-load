@@ -40,8 +40,34 @@ GetOptions("help|h" => \&help,
            "w=i"    => \$t_warn,
            "c=i"    => \$t_crit);
 
+sub nvidia_in_use {
+    for my $fd (glob "/proc/[0-9]*/fd/*") {
+        my $target = readlink($fd) // next;
+        next unless $target =~ m{^/dev/nvidia};
+        my ($pid) = $fd =~ m{^/proc/(\d+)/};
+        open(my $comm, '<', "/proc/$pid/comm") or next;
+        chomp(my $name = <$comm>);
+        return 1 unless $name eq "Xorg" || $name eq "Xwayland";
+    }
+    return 0;
+}
+
+sub nvidia_idle {
+    my ($dev) = glob "/sys/bus/pci/drivers/nvidia/0000:*" or return 0;
+    open(my $ctl, '<', "$dev/power/control") or return 0;
+    return 0 unless <$ctl> =~ /^auto/;
+    open(my $st, '<', "$dev/power/runtime_status") or return 0;
+    return 1 if <$st> =~ /^suspended/;
+    return !nvidia_in_use();
+}
+
 # Get GPU usage from nvidia-settings
 if ($gpu_brand eq "NVIDIA") {
+    # Querying a powered-off NVIDIA card wakes it, so check sysfs first
+    if (nvidia_idle()) {
+        print "off\noff\n";
+        exit 0;
+    }
     open (NVS, 'nvidia-settings -q GPUUtilization -t |') or die;
     while (<NVS>) {
         if (/^[a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+), [a-zA-Z]*=(\d+)$/) {
